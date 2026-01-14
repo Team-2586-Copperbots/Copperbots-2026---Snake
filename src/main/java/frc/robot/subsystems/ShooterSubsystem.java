@@ -12,6 +12,7 @@ public class ShooterSubsystem extends SubsystemBase {
     TalonFX shooterMotor2;
     TalonFXConfiguration shooterConfig;
     TalonFXConfiguration shooterConfig2;
+    private double shooterSpeed;
 
     public ShooterSubsystem() {
 
@@ -31,7 +32,28 @@ public class ShooterSubsystem extends SubsystemBase {
         shooterMotor.set(speed);
     }
 
+    public void setTargetShooterSpeed(double speed) {
+        shooterSpeed = speed;
+    }
+
+    public void increaseShooterSpeed() {
+        if (shooterSpeed < 1.0) {
+            shooterSpeed += 0.05;
+        }
+    }
+
+    public void decreaseShooterSpeed() {
+        if (shooterSpeed > 0.0) {
+            shooterSpeed -= 0.05;
+        }
+    }
+
     public double getShooterSpeed() {
         return shooterMotor.getVelocity().getValueAsDouble();
+    }
+
+    public double getTargetShooterSpeed() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getTargetShooterSpeed'");
     }
 }
