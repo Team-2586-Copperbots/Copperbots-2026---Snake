@@ -53,7 +53,6 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public double getTargetShooterSpeed() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getTargetShooterSpeed'");
+        return shooterSpeed;
     }
 }
