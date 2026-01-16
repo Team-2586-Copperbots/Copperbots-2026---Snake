@@ -23,7 +23,11 @@ public final class Constants {
 
   public static class CANIds {
     // FIXME: fix CAN ideas
-    public static final int ShooterMotor1CANID = 10;
-    public static final int ShooterMotor2CANID = 11;
+    // shooter motors
+    public static final int ShooterMotor1CANID = 7;
+    public static final int ShooterMotor2CANID = 10;
+    // 4 bar intake motors
+    public static final int IntakeMovementBarMotorCANID = 4;
+    public static final int IntakeSpinnerMotorCANID = 5;
   }
 }

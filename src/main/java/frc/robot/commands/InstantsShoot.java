@@ -9,9 +9,8 @@ public class InstantsShoot extends Command {
   ShooterSubsystem m_subsystem;
   double m_speed;
 
-  public InstantsShoot(ShooterSubsystem shooterSubsystem, double speed) {
+  public InstantsShoot(ShooterSubsystem shooterSubsystem) {
     m_subsystem = shooterSubsystem;
-    m_speed = speed;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(shooterSubsystem);
   }
@@ -24,12 +23,13 @@ public class InstantsShoot extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_subsystem.setShooterSpeed(m_speed);
+    m_subsystem.setShooterSpeed(0.05);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    m_subsystem.setShooterSpeed(0.0);
   }
 
 }

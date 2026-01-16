@@ -6,10 +6,14 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
+import frc.robot.commands.PIDShoot;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.InstantsShoot;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+
+import javax.print.ServiceUI;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -65,15 +69,17 @@ public class RobotContainer {
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is
     // pressed,
     // cancelling on release.
-    m_driverController.triangle().whileTrue(new InstantsShoot(m_Shooter, .1));
+    m_driverController.triangle().whileTrue(new InstantsShoot(m_Shooter));
 
-    m_driverController.povUp().onTrue(new RunCommand(() -> m_Shooter.increaseShooterSpeed()));
+    m_driverController.square().whileTrue(new PIDShoot(m_Shooter, 8));
 
-    m_driverController.povDown().onTrue(new RunCommand(() -> m_Shooter.decreaseShooterSpeed()));
+    m_driverController.povDown().whileTrue(new PIDShoot(m_Shooter, 0.3));
+
+    m_driverController.povUp().whileTrue(new PIDShoot(m_Shooter, 0.1));
+
   }
 
   /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
    */
