@@ -5,11 +5,6 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Autos;
-import frc.robot.commands.PIDShoot;
-import frc.robot.commands.ExampleCommand;
-import frc.robot.commands.InstantsShoot;
-import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
 import javax.print.ServiceUI;
@@ -32,11 +27,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-  private final ShooterSubsystem m_Shooter = new ShooterSubsystem();
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandPS4Controller m_driverController = new CommandPS4Controller(
+  private final ShooterSubsystem shooter = new ShooterSubsystem();
+  private final CommandPS4Controller driveController = new CommandPS4Controller(
       OperatorConstants.DriverControllerPort);
 
   /**
@@ -62,20 +54,14 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    new Trigger(m_exampleSubsystem::exampleCondition)
-        .onTrue(new ExampleCommand(m_exampleSubsystem));
 
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is
-    // pressed,
-    // cancelling on release.
-    m_driverController.triangle().whileTrue(new InstantsShoot(m_Shooter));
+    driveController.triangle().whileTrue(shooter.setShooterSpeed(0));
 
-    m_driverController.square().whileTrue(new PIDShoot(m_Shooter, 8));
+    driveController.square().whileTrue(shooter.setShooterSpeed(10));
 
-    m_driverController.povDown().whileTrue(new PIDShoot(m_Shooter, 0.3));
+    driveController.povDown().whileTrue(shooter.setShooterSpeed(30));
 
-    m_driverController.povUp().whileTrue(new PIDShoot(m_Shooter, 0.1));
+    driveController.povUp().whileTrue(shooter.setShooterSpeed(75));
 
   }
 
@@ -84,7 +70,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    return Autos.exampleAuto(m_exampleSubsystem);
+    return null;
   }
 }

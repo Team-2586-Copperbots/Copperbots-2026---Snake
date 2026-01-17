@@ -2,77 +2,80 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.CANIds;
+import static frc.robot.Constants.CANIds.*;
+import static frc.robot.Constants.ShooterConstants.*;
 
 public class ShooterSubsystem extends SubsystemBase {
-    private TalonFX shooterMotor;
-    private TalonFX shooterMotor2;
-    private TalonFXConfiguration shooterConfig;
-    private TalonFXConfiguration shooterConfig2;
-    private double shooterSpeed;
-    private ProfiledPIDController PIDController;
+    // motors
+    private final TalonFX shooterMotor;
+    private final TalonFX shooterMotor2;
+
+    // config vars
+    private final TalonFXConfiguration shooterConfig;
+    private final VelocityVoltage velocityVoltage = new VelocityVoltage(0.0).withSlot(0);
 
     public ShooterSubsystem() {
 
-        shooterMotor = new TalonFX(CANIds.ShooterMotor1CANID);
-        shooterMotor2 = new TalonFX(CANIds.ShooterMotor2CANID);
+        shooterMotor = new TalonFX(ShooterMotor1CANID);
+        shooterMotor2 = new TalonFX(ShooterMotor2CANID);
 
         shooterConfig = new TalonFXConfiguration();
-        shooterConfig2 = new TalonFXConfiguration();
+
+        var motorOutputConfigs = shooterConfig.MotorOutput;
+        motorOutputConfigs.NeutralMode = motorOutputConfigs.NeutralMode.Coast;
+
+        var pitConfig = shooterConfig.Slot0;
+        pitConfig.kP = 0.28;
+        pitConfig.kI = 0.0;
+        pitConfig.kD = 0.0075;
+        pitConfig.kV = 0.11;
 
         shooterMotor.getConfigurator().apply(shooterConfig);
-        shooterMotor2.getConfigurator().apply(shooterConfig2);
-
-        shooterSpeed = 0.0;
-
-        PIDController = new ProfiledPIDController(0.005, 0.1, 0.0, new Constraints(1000, 2000));
+        shooterMotor2.getConfigurator().apply(shooterConfig);
+        shooterMotor2.setControl(new Follower(shooterMotor.getDeviceID(), MotorAlignmentValue.Opposed));
     }
 
-    public void setShooterSpeed(double speed) {
-        shooterMotor.set(speed);
-        shooterMotor2.set(-speed);
+    /** Set and forget command to change the shooter's speed */
+    public Command setShooterSpeed(double speed) {
+        return runOnce(() -> {
+            shooterMotor.setControl(velocityVoltage.withVelocity(speed));
+        });
     }
 
-    public void resetPID() {
-        PIDController.reset(getShooterMotorSpeed());
+    /** run end command to run the shooter at a speed and set to zero upon ending */
+    public Command runShooter(double speed) {
+        return runEnd(() -> {
+            shooterMotor.setControl(velocityVoltage.withVelocity(speed));
+        }, () -> {
+            shooterMotor.setControl(velocityVoltage.withVelocity(0.0));
+        });
     }
 
-    public double getCurrentPosition() {
-        return shooterMotor.getVelocity().getValueAsDouble();
-    }
-
-    public void setTargetSpeed(double speed) {
-        shooterSpeed = speed;
-    }
-
-    public double getTargetSpeed() {
-        return shooterSpeed;
-    }
-
-    public void placeholder(double goal) {
-
-        PIDController.setGoal(goal);
-        setShooterSpeed(PIDController.calculate(getCurrentPosition()));
-
+    /**
+     * run end command to run the shooter at a speed and set to default speed upon
+     * ending
+     */
+    public Command increaseShooterSpeedTemp(double speed) {
+        return runEnd(() -> {
+            shooterMotor.setControl(velocityVoltage.withVelocity(speed));
+        }, () -> {
+            shooterMotor.setControl(velocityVoltage.withVelocity(SHOOTER_SPEED));
+        });
     }
 
     public double getShooterMotorSpeed() {
         return shooterMotor.getVelocity().getValueAsDouble();
     }
 
-    public double getTargetShooterSpeed() {
-        return shooterSpeed;
-    }
-
     @Override
     public void periodic() {
         SmartDashboard.putNumber("ShooterSpeed", getShooterMotorSpeed());
-        SmartDashboard.putNumber("TargetShooterSpeed", shooterSpeed);
     }
 }

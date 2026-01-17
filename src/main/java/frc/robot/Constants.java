@@ -30,4 +30,8 @@ public final class Constants {
     public static final int IntakeMovementBarMotorCANID = 4;
     public static final int IntakeSpinnerMotorCANID = 5;
   }
+
+  public static class ShooterConstants {
+    public static final double SHOOTER_SPEED = 20.0; // RPM
+  }
 }
