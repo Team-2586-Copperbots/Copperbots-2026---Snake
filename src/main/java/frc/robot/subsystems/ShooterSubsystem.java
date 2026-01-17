@@ -31,11 +31,11 @@ public class ShooterSubsystem extends SubsystemBase {
         var motorOutputConfigs = shooterConfig.MotorOutput;
         motorOutputConfigs.NeutralMode = motorOutputConfigs.NeutralMode.Coast;
 
-        var pitConfig = shooterConfig.Slot0;
-        pitConfig.kP = 0.28;
-        pitConfig.kI = 0.0;
-        pitConfig.kD = 0.0075;
-        pitConfig.kV = 0.11;
+        var pidConfig = shooterConfig.Slot0;
+        pidConfig.kP = 0.28;
+        pidConfig.kI = 0.0;
+        pidConfig.kD = 0.0075;
+        pidConfig.kV = 0.11;
 
         shooterMotor.getConfigurator().apply(shooterConfig);
         shooterMotor2.getConfigurator().apply(shooterConfig);
@@ -50,7 +50,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /** run end command to run the shooter at a speed and set to zero upon ending */
-    public Command runShooter(double speed) {
+    public Command runShooterTemp(double speed) {
         return runEnd(() -> {
             shooterMotor.setControl(velocityVoltage.withVelocity(speed));
         }, () -> {

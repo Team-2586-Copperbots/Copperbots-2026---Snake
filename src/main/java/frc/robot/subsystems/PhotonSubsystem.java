@@ -2,27 +2,17 @@ package frc.robot.subsystems;
 
 import java.util.Optional;
 
-import javax.xml.crypto.dsig.Transform;
-
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class PhotonSubsystem extends SubsystemBase {
@@ -47,7 +37,7 @@ public class PhotonSubsystem extends SubsystemBase {
     // public final Transform3d aprilTag3Pos = new Transform3d(0.2667, 0.29845,
     // 0.2794, new Rotation3d(0,0,Math.toRadians(-45)));
 
-    public final AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+    public final AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
     // Constants such as camera and target height stored. Change per robot and goal!
     /*
      * final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(24);//TODO: measure

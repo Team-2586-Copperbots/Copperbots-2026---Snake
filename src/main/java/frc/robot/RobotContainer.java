@@ -12,15 +12,10 @@ import frc.robot.subsystems.ShooterSubsystem;
 
 import static edu.wpi.first.units.Units.*;
 
-import javax.print.ServiceUI;
-
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -90,7 +85,6 @@ public class RobotContainer {
 
     // Idle while the robot is disabled. This ensures the configured
     // neutral mode is applied to the drive motors while disabled.
-    final var idle = new SwerveRequest.Idle();
 
     driveController.triangle().whileTrue(shooter.setShooterSpeed(0));
 
