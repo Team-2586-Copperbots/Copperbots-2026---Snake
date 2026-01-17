@@ -27,7 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class PhotonSubsystem extends SubsystemBase {
 
-    PhotonCamera aprilTag1 = new PhotonCamera("Apriltag_1");
+    PhotonCamera aprilTag1 = new PhotonCamera("TempCamera");
     // PhotonCamera aprilTag3 = new PhotonCamera("Apriltag_3");
 
     // location of camera on the robot
@@ -108,6 +108,8 @@ public class PhotonSubsystem extends SubsystemBase {
         if (result.hasTargets()) {
             var target = result.getBestTarget();
             yaw = target.getYaw();
+        } else {
+            yaw = 0;
         }
         return yaw;
     }

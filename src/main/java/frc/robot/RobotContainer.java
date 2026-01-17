@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
 import javax.print.ServiceUI;
@@ -27,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  private final PhotonSubsystem vision = new PhotonSubsystem();
   private final ShooterSubsystem shooter = new ShooterSubsystem();
   private final CommandPS4Controller driveController = new CommandPS4Controller(
       OperatorConstants.DriverControllerPort);
