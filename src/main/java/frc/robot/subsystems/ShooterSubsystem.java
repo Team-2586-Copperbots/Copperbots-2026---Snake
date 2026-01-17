@@ -23,8 +23,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public ShooterSubsystem() {
 
-        shooterMotor = new TalonFX(ShooterMotor1CANID);
-        shooterMotor2 = new TalonFX(ShooterMotor2CANID);
+        shooterMotor = new TalonFX(SHOOTER_MOTOR_1_ID);
+        shooterMotor2 = new TalonFX(SHOOTER_MOTOR_2_ID);
 
         shooterConfig = new TalonFXConfiguration();
 

@@ -36,8 +36,8 @@ public class Intake extends SubsystemBase {
     }
 
     public Intake() {
-        movementBarMotor = new TalonFX(CANIds.IntakeMovementBarMotorCANID);
-        spinnerMotor = new TalonFX(CANIds.IntakeSpinnerMotorCANID);
+        movementBarMotor = new TalonFX(CANIds.INTAKE_BAR_MOVEMENT_MOTOR_ID);
+        spinnerMotor = new TalonFX(CANIds.INTAKE_SPINNER_MOTOR_ID);
 
         movementBarMotor.getConfigurator().apply(movementBarMotorConfig);
         spinnerMotor.getConfigurator().apply(spinnerMotorConfig);
