@@ -21,6 +21,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 public final class Constants {
   public static class OperatorConstants {
     public static final int DriverControllerPort = 0;
+    public static final double MAX_SPEED_LIMITER = .7;
   }
 
   public static class places {

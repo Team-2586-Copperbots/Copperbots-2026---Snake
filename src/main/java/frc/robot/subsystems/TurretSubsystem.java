@@ -73,11 +73,11 @@ public class TurretSubsystem extends SubsystemBase {
     // schoeing element by way of math and arcsin()
     public double getAngleToHub(CommandSwerveDrivetrain drivetrain) {
         double angle = 0;
-        Pose2d dritrainPose2d = drivetrain.getState().Pose;
+        Pose2d drivetrainPose2d = drivetrain.getState().Pose;
         Pose2d hubPose2d = places.CENTER_OF_HUB;
-        if (hubPose2d.getX() - dritrainPose2d.getX() > 0) {
-            Pose2d relitiveHubPose2d = new Pose2d((dritrainPose2d.getX() - hubPose2d.getX()),
-                    (dritrainPose2d.getY() - hubPose2d.getY()), null);
+        if (hubPose2d.getX() - drivetrainPose2d.getX() > 0) {
+            Pose2d relitiveHubPose2d = new Pose2d((drivetrainPose2d.getX() - hubPose2d.getX()),
+                    (drivetrainPose2d.getY() - hubPose2d.getY()), null);
 
             angle = (Math.asin(Math.abs(relitiveHubPose2d.getY()) / Math.abs(relitiveHubPose2d.getX())) / Math.PI)
                     * 180;
