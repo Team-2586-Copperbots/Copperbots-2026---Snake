@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
  * numerical or boolean
@@ -21,6 +23,9 @@ public final class Constants {
     public static final int DriverControllerPort = 0;
   }
 
+  public static class places {
+    public static final Pose2d CENTER_OF_HUB = new Pose2d(4.62, 4.04, null);
+  }
   public static class CANIds {
     // FIXME: fix CAN ideas
     // shooter motors
@@ -34,9 +39,16 @@ public final class Constants {
     // turret motors
     public static final int TURRET_TURN_MOTOR = 1;
     public static final int TURRET_SPIN_MOTOR = 2;
+    public static final int TURRET_CANCODER_ID = 3;
   }
 
   public static class ShooterConstants {
     public static final double SHOOTER_SPEED = 20.0; // RPM
+  }
+  public static class TurretConstants {
+    public static double CANCODER_OFFSET = 0;
+    public static void setCANcoderOffset(double offset) {
+      CANCODER_OFFSET = offset;
+    }
   }
 }
