@@ -17,6 +17,8 @@ public class ShooterSubsystem extends SubsystemBase {
     private final TalonFX shooterMotor;
     private final TalonFX shooterMotor2;
 
+    private double speed;
+
     // config vars
     private final TalonFXConfiguration shooterConfig;
     private final VelocityVoltage velocityVoltage = new VelocityVoltage(0.0).withSlot(0);
@@ -37,6 +39,8 @@ public class ShooterSubsystem extends SubsystemBase {
         pidConfig.kD = 0.0075;
         pidConfig.kV = 0.11;
 
+        speed = 0;
+
         shooterMotor.getConfigurator().apply(shooterConfig);
         shooterMotor2.getConfigurator().apply(shooterConfig);
         shooterMotor2.setControl(new Follower(shooterMotor.getDeviceID(), MotorAlignmentValue.Opposed));
@@ -47,6 +51,16 @@ public class ShooterSubsystem extends SubsystemBase {
         return runOnce(() -> {
             shooterMotor.setControl(velocityVoltage.withVelocity(speed));
         });
+    }
+
+    public Command setShooterSpeedAmount(double speedSet) {
+        speed = speedSet;
+        return setShooterSpeed(speed);
+    }
+
+    public Command setShooterSpeedAjust(double amount) {
+        speed = speed + amount;
+        return setShooterSpeed(speed);
     }
 
     /** run end command to run the shooter at a speed and set to zero upon ending */
