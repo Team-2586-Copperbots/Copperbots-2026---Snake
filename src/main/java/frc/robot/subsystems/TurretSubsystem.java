@@ -60,6 +60,10 @@ public class TurretSubsystem extends SubsystemBase {
         }
     }
 
+    public Command aimFoward() {
+        return setintakePosition(0.0);
+    }
+
     public Command aimAtHub(CommandSwerveDrivetrain drivetrain) {
         double angle = 0;
         double robotAngle = drivetrain.getState().Pose.getRotation().getDegrees();
