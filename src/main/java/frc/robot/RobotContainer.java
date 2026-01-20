@@ -48,7 +48,9 @@ public class RobotContainer {
   private final PhotonSubsystem vision = new PhotonSubsystem();
   private final ShooterSubsystem shooter = new ShooterSubsystem();
   private final CommandPS4Controller driveController = new CommandPS4Controller(
-      OperatorConstants.DriverControllerPort);
+      OperatorConstants.DRIVER_CONTROLER_PORT);
+  private final CommandPS4Controller operatorController = new CommandPS4Controller(
+      OperatorConstants.OPERATOR_CONTROLER_PORT);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -87,22 +89,22 @@ public class RobotContainer {
     // Idle while the robot is disabled. This ensures the configured
     // neutral mode is applied to the drive motors while disabled.
 
-    driveController.triangle().whileTrue(shooter.setShooterSpeed(0));
+    operatorController.triangle().whileTrue(shooter.setShooterSpeed(0));
 
-    driveController.square().whileTrue(shooter.setShooterSpeed(43));
+    operatorController.square().whileTrue(shooter.setShooterSpeed(43));
 
-    driveController.cross().whileTrue(shooter.setShooterSpeed(45));
+    operatorController.cross().whileTrue(shooter.setShooterSpeed(45));
 
-    driveController.circle().whileTrue(shooter.setShooterSpeed(40));
+    operatorController.circle().whileTrue(shooter.setShooterSpeed(40));
 
 
-    // driveController.povLeft().whileTrue(shooter.setShooterSpeedAmount(20));
+    // operatorController.povLeft().whileTrue(shooter.setShooterSpeedAmount(20));
 
-    driveController.povUp().whileTrue(new SequentialCommandGroup(
+    operatorController.povUp().whileTrue(new SequentialCommandGroup(
       shooter.runOnce(() -> shooter.setDynamicSpeedAjust(1)),
       shooter.setShooterSpeedToSpeed()));
 
-    driveController.povDown().whileTrue(new SequentialCommandGroup(
+    operatorController.povDown().whileTrue(new SequentialCommandGroup(
       shooter.runOnce(() -> shooter.setDynamicSpeedAjust(-1)),
       shooter.setShooterSpeedToSpeed()));
   }
