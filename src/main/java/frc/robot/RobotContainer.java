@@ -16,6 +16,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -88,12 +89,22 @@ public class RobotContainer {
 
     driveController.triangle().whileTrue(shooter.setShooterSpeed(0));
 
-    driveController.square().whileTrue(shooter.setShooterSpeed(10));
+    driveController.square().whileTrue(shooter.setShooterSpeed(43));
 
-    driveController.cross().whileTrue(shooter.setShooterSpeed(30));
+    driveController.cross().whileTrue(shooter.setShooterSpeed(45));
 
-    driveController.circle().whileTrue(shooter.setShooterSpeed(75));
+    driveController.circle().whileTrue(shooter.setShooterSpeed(40));
 
+
+    // driveController.povLeft().whileTrue(shooter.setShooterSpeedAmount(20));
+
+    driveController.povUp().whileTrue(new SequentialCommandGroup(
+      shooter.runOnce(() -> shooter.setDynamicSpeedAjust(1)),
+      shooter.setShooterSpeedToSpeed()));
+
+    driveController.povDown().whileTrue(new SequentialCommandGroup(
+      shooter.runOnce(() -> shooter.setDynamicSpeedAjust(-1)),
+      shooter.setShooterSpeedToSpeed()));
   }
 
   /**

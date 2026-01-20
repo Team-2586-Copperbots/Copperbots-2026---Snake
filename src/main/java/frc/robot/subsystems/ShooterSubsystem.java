@@ -17,7 +17,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private final TalonFX shooterMotor;
     private final TalonFX shooterMotor2;
 
-    private double speed;
+    private double dynamicSpeed;
 
     // config vars
     private final TalonFXConfiguration shooterConfig;
@@ -39,7 +39,7 @@ public class ShooterSubsystem extends SubsystemBase {
         pidConfig.kD = 0.0075;
         pidConfig.kV = 0.11;
 
-        speed = 0;
+        dynamicSpeed = 30;
 
         shooterMotor.getConfigurator().apply(shooterConfig);
         shooterMotor2.getConfigurator().apply(shooterConfig);
@@ -47,20 +47,24 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /** Set and forget command to change the shooter's speed */
-    public Command setShooterSpeed(double speed) {
+    public Command setShooterSpeed(double wheelSpeed) {
         return runOnce(() -> {
-            shooterMotor.setControl(velocityVoltage.withVelocity(speed));
+            shooterMotor.setControl(velocityVoltage.withVelocity(wheelSpeed));
         });
     }
 
-    public Command setShooterSpeedAmount(double speedSet) {
-        speed = speedSet;
-        return setShooterSpeed(speed);
+    public Command setShooterSpeedToSpeed() {
+        return runOnce(() -> {
+            shooterMotor.setControl(velocityVoltage.withVelocity(dynamicSpeed));
+        });
     }
 
-    public Command setShooterSpeedAjust(double amount) {
-        speed = speed + amount;
-        return setShooterSpeed(speed);
+    public void setDynamicSpeedAmount(double speedSet) {
+        dynamicSpeed = speedSet;
+    }
+
+    public void setDynamicSpeedAjust(double amount) {
+        dynamicSpeed = (dynamicSpeed + amount);
     }
 
     /** run end command to run the shooter at a speed and set to zero upon ending */
@@ -88,8 +92,12 @@ public class ShooterSubsystem extends SubsystemBase {
         return shooterMotor.getVelocity().getValueAsDouble();
     }
 
+    public double getWheeleSpeed() {
+        return dynamicSpeed;
+    }
     @Override
     public void periodic() {
         SmartDashboard.putNumber("ShooterSpeed", getShooterMotorSpeed());
+        SmartDashboard.putNumber("set dynamic speed", getWheeleSpeed());
     }
 }

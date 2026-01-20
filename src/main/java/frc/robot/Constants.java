@@ -30,8 +30,8 @@ public final class Constants {
   public static class CANIds {
     // FIXME: fix CAN ideas
     // shooter motors
-    public static final int SHOOTER_MOTOR_1_ID = 7;
-    public static final int SHOOTER_MOTOR_2_ID = 10;
+    public static final int SHOOTER_MOTOR_1_ID = 20;
+    public static final int SHOOTER_MOTOR_2_ID = 21;
     // 4 bar intake motors
     public static final int INTAKE_MOVEMENT_MOTOR_ID = 4;
     public static final int INTAKE_SPINNER_MOTOR_ID = 5;
