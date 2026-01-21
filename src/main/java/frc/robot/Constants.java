@@ -26,7 +26,8 @@ public final class Constants {
   }
 
   public static class places {
-    public static final Pose2d CENTER_OF_HUB = new Pose2d(4.62, 4.04, null);
+    public static final Pose2d CENTER_OF_BLUE_HUB = new Pose2d(4.625, 4.035, null);
+    public static final Pose2d CENTER_OF_RED_HUB = new Pose2d(11.915, 4.035, null);
   }
   public static class CANIds {
     // FIXME: fix CAN ideas

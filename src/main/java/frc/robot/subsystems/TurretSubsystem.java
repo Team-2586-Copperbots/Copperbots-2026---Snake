@@ -10,6 +10,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import java.lang.Math;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -26,14 +28,12 @@ public class TurretSubsystem extends SubsystemBase {
     private final CANcoder CANcoder;
     private final PositionVoltage positionVoltage = new PositionVoltage(0);
     private double angleToHub;
-    private final Field2d drivetrainField;
 
     public TurretSubsystem() {
         turnMotor = new TalonFX(CANIds.TURRET_TURN_MOTOR);
         spinnerMotor = new TalonFX(CANIds.TURRET_SPIN_MOTOR);
         CANcoder = new CANcoder(CANIds.TURRET_CANCODER_ID);
         angleToHub = 0.0;
-        drivetrainField = new Field2d();
 
         turnMotorConfig = new TalonFXConfiguration();
         spinnerMotorConfig = new TalonFXConfiguration();
@@ -46,8 +46,8 @@ public class TurretSubsystem extends SubsystemBase {
         var motorOutputConfigs = turnMotorConfig.MotorOutput;
         motorOutputConfigs.NeutralMode = NeutralModeValue.Coast;
 
+        // pid control of the falcon through CTRE's motor configs
         var pidConfig = turnMotorConfig.Slot0;
-        // TODO: tune pid
         pidConfig.kP = 1.50;
         pidConfig.kI = 0.00;
         pidConfig.kD = 0.00;
@@ -61,16 +61,19 @@ public class TurretSubsystem extends SubsystemBase {
 
     }
 
+    // set comand to set the turning motor to a speed -1 to 1
     public Command setTurnMotorSpeed(double speed) {
         return runEnd(() -> turnMotor.set(speed), () -> turnMotor.set(0));
     }
 
+    // set the turn motors's internal encoder
     public Command setTurnMotorPosition(double rotation) {
         return runOnce(() -> turnMotor.setPosition(rotation));
     }
 
-    // this uses the CTRE motors builtin constants to set the angle of the turret
-    // with in the limits of 0-320 degreas
+    // this uses the CTRE motors built-in positionVoltage controler to set the angle
+    // of the turret
+    // with in the limits of 0-320 degreas (commented out)
     public Command setIntakePosition(Double angle) {
         return runOnce(() -> turnMotor.setControl(positionVoltage.withPosition(angle * 11.2)));
         // if (angle >= 0 && angle < 320) {
@@ -82,30 +85,46 @@ public class TurretSubsystem extends SubsystemBase {
         // }
     }
 
+    // aims "forward"
     public Command aimFoward() {
         return setIntakePosition(0.0);
     }
 
+    // command to aim at the hub
+    // drivtraing is passed to the calculating method
     public Command aimAtHub(CommandSwerveDrivetrain drivetrain) {
 
+        // passes the drivtrain's pose2D to the calculating method
         return setIntakePosition(getAngleToHub(drivetrain.getState().Pose));
     }
 
-    // this returns the angle fron the center of the robot to the center of the hubs
-    // schoeing element by way of math and arcsin()
+    // this returns the angle fron the center of the robot to the center of the hub,
+    // using the relitive X and Y to find the needed angle
     public double getAngleToHub(Pose2d drivetrainPose2d) {
+        // angle to be returned
         double angle = 0;
-        drivetrainField.setRobotPose(drivetrainPose2d);
-        Pose2d hubPose2d = places.CENTER_OF_HUB;
+        // grabs the hub's X and Y
+        if (DriverStation.getAlliance() == Alliance.Red) {
+            Pose2d hubPose2d = places.CENTER_OF_RED_HUB;
+        }
+        //
+        // if the robot is outside of our aliance zone, it will not aim at the
         if (hubPose2d.getX() - drivetrainPose2d.getX() > 0) {
-            Pose2d relitiveHubPose2d = new Pose2d((drivetrainPose2d.getX() - hubPose2d.getX()),
-                    (drivetrainPose2d.getY() - hubPose2d.getY()), null);
+            Pose2d relitiveHubPose2d =
+                    // makes a new object from the
+                    new Pose2d((drivetrainPose2d.getX() - hubPose2d.getX()),
+                            (drivetrainPose2d.getY() - hubPose2d.getY()), null);
 
+            //
             angle = (Math.asin(Math.abs(relitiveHubPose2d.getY()) / Math.abs(relitiveHubPose2d.getX())) / Math.PI)
                     * 180;
+
             if (relitiveHubPose2d.getY() > 0) {
                 angle = -angle;
             }
+        } else {
+
+            System.out.println("TurretSubsystem, line 113: outside of aliance zone");
         }
 
         periodic();
@@ -137,7 +156,6 @@ public class TurretSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("turret encoder", CANcoder.getAbsolutePosition().getValueAsDouble());
         SmartDashboard.putString("positionVoltage", positionVoltage.getPositionMeasure().toLongString());
         SmartDashboard.putNumber("angle to hub", angleToHub);
-        SmartDashboard.putData("drivtrain field from turret subsystem", drivetrainField);
         // SmartDashboard.putNumber("angle to hub", getAngleToHub());
 
     }
