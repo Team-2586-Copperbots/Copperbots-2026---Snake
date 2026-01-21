@@ -2,10 +2,14 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Degree;
 
+import com.ctre.phoenix6.configs.DifferentialSensorsConfigs;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.revrobotics.spark.FeedbackSensor;
 
 import java.lang.Math;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -31,18 +35,27 @@ public class TurretSubsystem extends SubsystemBase {
     public TurretSubsystem() {
         turnMotor = new TalonFX(CANIds.TURRET_TURN_MOTOR);
         spinnerMotor = new TalonFX(CANIds.TURRET_SPIN_MOTOR);
-        CANcoder = new CANcoder(0);
+        CANcoder = new CANcoder(CANIds.TURRET_CANCODER_ID);
+
         turnMotorConfig = new TalonFXConfiguration();
         spinnerMotorConfig = new TalonFXConfiguration();
+
+        // turnMotorConfig.Feedback.FeedbackRemoteSensorID = CANIds.TURRET_CANCODER_ID;
+        // turnMotorConfig.Feedback.FeedbackSensorSource =
+        // FeedbackSensorSourceValue.RemoteCANcoder;
 
         var motorOutputConfigs = turnMotorConfig.MotorOutput;
         motorOutputConfigs.NeutralMode = motorOutputConfigs.NeutralMode.Coast;
 
         var pidConfig = turnMotorConfig.Slot0;
         // TODO: tune pid
-        pidConfig.kP = 0.0;
-        pidConfig.kI = 0.0;
-        pidConfig.kD = 0.0;
+        pidConfig.kP = 6.00;
+        pidConfig.kI = 0.00;
+        pidConfig.kD = 0.05;
+        // pidConfig.kA = 0.00;
+        // pidConfig.kG = 0.00;
+        // pidConfig.kS = 1.00;
+        // pidConfig.kV = 0.00;
 
         turnMotor.getConfigurator().apply(turnMotorConfig);
         spinnerMotor.getConfigurator().apply(spinnerMotorConfig);
@@ -50,27 +63,34 @@ public class TurretSubsystem extends SubsystemBase {
         TurretConstants.setCANcoderOffset(CANcoder.getAbsolutePosition().getValueAsDouble());
     }
 
+    public Command setTurnMotor(double speed) {
+        return runEnd(() -> turnMotor.set(speed), () -> turnMotor.set(0));
+    }
+
     // this uses the CTRE motors builtin constants to set the angle of the turret
     // with in the limits of 0-320 degreas
-    public Command setintakePosition(Double angle) {
-        if (angle > 0 && angle < 320) {
-            return runOnce(() -> turnMotor.setControl(positionVoltage.withPosition(angle / 360)));
-        } else {
-            return runOnce(() -> turnMotor.setControl(positionVoltage.withPosition(0 / 360)));
-        }
+    public Command setIntakePosition(Double angle) {
+        return runOnce(() -> turnMotor.setControl(positionVoltage.withPosition(angle * 11.2)));
+        // if (angle >= 0 && angle < 320) {
+        // return runOnce(() -> turnMotor.setControl(positionVoltage.withPosition(angle
+        // / 360)));
+        // } else {
+        // return runOnce(() -> turnMotor.setControl(positionVoltage.withPosition(0 /
+        // 360)));
+        // }
     }
 
     public Command aimFoward() {
-        return setintakePosition(0.0);
+        return setIntakePosition(0.0);
     }
 
     public Command aimAtHub(CommandSwerveDrivetrain drivetrain) {
         double angle = 0;
-        double robotAngle = drivetrain.getState().Pose.getRotation().getDegrees();
+        double robotAngle = drivetrain.getState().Pose.getRotation().getRotations();
         SmartDashboard.putNumber("Robot Angle", robotAngle);
         double angleToHub = robotAngle + getAngleToHub(drivetrain);
 
-        return setintakePosition(angleToHub);
+        return setIntakePosition(angleToHub);
     }
 
     // this returns the angle fron the center of the robot to the center of the hubs
@@ -90,7 +110,9 @@ public class TurretSubsystem extends SubsystemBase {
             }
         }
 
-        SmartDashboard.putNumber("Angle to Hub", angle);
+        SmartDashboard.putNumber("Angle to Hub (degres)", angle);
+        angle = angle / 360;
+        SmartDashboard.putNumber("Angle to Hub (rot)", angle);
         return angle;
     }
 
@@ -103,7 +125,10 @@ public class TurretSubsystem extends SubsystemBase {
         spinnerMotor.set(speed);
     }
 
-    public double getMovementBarSpeed() {
-        return turnMotor.getPosition().getValueAsDouble();
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("turret Motor", turnMotor.getDifferentialAveragePosition().getValueAsDouble());
+        SmartDashboard.putNumber("turret encoder", CANcoder.getPositionSinceBoot().getValueAsDouble());
+        SmartDashboard.putNumber("cancoder offset", TurretConstants.CANCODER_OFFSET);
     }
 }

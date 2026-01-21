@@ -95,6 +95,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public double getWheeleSpeed() {
         return dynamicSpeed;
     }
+    
     @Override
     public void periodic() {
         SmartDashboard.putNumber("ShooterSpeed", getShooterMotorSpeed());

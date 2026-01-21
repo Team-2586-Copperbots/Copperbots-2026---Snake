@@ -9,13 +9,16 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.TurretSubsystem;
 
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -31,8 +34,10 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  private double MaxSpeed = OperatorConstants.MAX_SPEED_LIMITER * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
-                                                                                      // speed
+  private double MaxSpeed = OperatorConstants.MAX_SPEED_LIMITER * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts
+                                                                                                                      // desired
+                                                                                                                      // top
+  // speed
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max
                                                                                     // angular velocity
   /* Setting up bindings for necessary control of the swerve drive platform */
@@ -47,6 +52,7 @@ public class RobotContainer {
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final PhotonSubsystem vision = new PhotonSubsystem();
   private final ShooterSubsystem shooter = new ShooterSubsystem();
+  private final TurretSubsystem turret = new TurretSubsystem();
   private final CommandPS4Controller driveController = new CommandPS4Controller(
       OperatorConstants.DRIVER_CONTROLER_PORT);
   private final CommandPS4Controller operatorController = new CommandPS4Controller(
@@ -78,11 +84,11 @@ public class RobotContainer {
 
     drivetrain.setDefaultCommand(
         // Drivetrain will execute this command periodically
-        drivetrain.applyRequest(() -> drive.withVelocityX(-driveController.getLeftY() * MaxSpeed) // Drive forward with
+        drivetrain.applyRequest(() -> drive.withVelocityX(driveController.getLeftY() * MaxSpeed) // Drive forward with
             // negative Y
             // (forward)
-            .withVelocityY(-driveController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-            .withRotationalRate(-driveController.getRightX() * MaxAngularRate) // Drive counterclockwise with
+            .withVelocityY(driveController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+            .withRotationalRate(driveController.getRightX() * MaxAngularRate) // Drive counterclockwise with
         // negative X (left)
         ));
 
@@ -97,16 +103,25 @@ public class RobotContainer {
 
     operatorController.circle().whileTrue(shooter.setShooterSpeed(40));
 
+    operatorController.L1().whileTrue(turret.setIntakePosition(0.0));
+    operatorController.L2().whileTrue(turret.setIntakePosition(.5));
+
+    operatorController.R1().whileTrue(turret.aimAtHub(drivetrain));
+
+    operatorController.options().whileTrue(turret.setTurnMotor(0.1));
+    operatorController.share().whileTrue(turret.setTurnMotor(-0.1));
 
     // operatorController.povLeft().whileTrue(shooter.setShooterSpeedAmount(20));
 
     operatorController.povUp().whileTrue(new SequentialCommandGroup(
-      shooter.runOnce(() -> shooter.setDynamicSpeedAjust(1)),
-      shooter.setShooterSpeedToSpeed()));
+        shooter.runOnce(() -> shooter.setDynamicSpeedAjust(1)),
+        shooter.setShooterSpeedToSpeed()));
 
     operatorController.povDown().whileTrue(new SequentialCommandGroup(
-      shooter.runOnce(() -> shooter.setDynamicSpeedAjust(-1)),
-      shooter.setShooterSpeedToSpeed()));
+        shooter.runOnce(() -> shooter.setDynamicSpeedAjust(-1)),
+        shooter.setShooterSpeedToSpeed()));
+
+    SmartDashboard.putBoolean("operator controler r1", operatorController.R1().getAsBoolean());
   }
 
   /**
@@ -116,4 +131,5 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return null;
   }
+
 }
