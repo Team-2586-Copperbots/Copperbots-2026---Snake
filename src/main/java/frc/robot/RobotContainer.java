@@ -18,6 +18,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
@@ -109,18 +110,20 @@ public class RobotContainer {
 
     operatorController.povUp().whileTrue(turret.aimAtHub(drivetrain));
 
-    operatorController.options().whileTrue(turret.setTurnMotor(0.1));
-    operatorController.share().whileTrue(turret.setTurnMotor(-0.1));
+    operatorController.touchpad().onTrue(turret.setTurnMotorPosition(0));
+
+    operatorController.options().whileTrue(turret.setTurnMotorSpeed(0.1));
+    operatorController.share().whileTrue(turret.setTurnMotorSpeed(-0.1));
 
     // operatorController.povLeft().whileTrue(shooter.setShooterSpeedAmount(20));
 
     // operatorController.povUp().whileTrue(new SequentialCommandGroup(
-    //     shooter.runOnce(() -> shooter.setDynamicSpeedAjust(1)),
-    //     shooter.setShooterSpeedToSpeed()));
+    // shooter.runOnce(() -> shooter.setDynamicSpeedAjust(1)),
+    // shooter.setShooterSpeedToSpeed()));
 
     // operatorController.povDown().whileTrue(new SequentialCommandGroup(
-    //     shooter.runOnce(() -> shooter.setDynamicSpeedAjust(-1)),
-    //     shooter.setShooterSpeedToSpeed()));
+    // shooter.runOnce(() -> shooter.setDynamicSpeedAjust(-1)),
+    // shooter.setShooterSpeedToSpeed()));
 
   }
 

@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.lang.reflect.Array;
 import java.util.Optional;
 
 import org.photonvision.EstimatedRobotPose;
@@ -12,6 +13,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.networktables.DoubleArrayEntry;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -143,9 +145,8 @@ public class PhotonSubsystem extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("AprilTag_1 yaw ", getCamera1Yaw());
         // SmartDashboard.putNumber("AprilTag_3 yaw ", getCamera3Yaw());
-        // getRobotPose().get().estimatedPose
-        // SmartDashboard.putNumber("AprilTag y translation (TODO: measure/verify) ",
-        // getY1TranslationFromTarget());
+
+
     }
 
 }

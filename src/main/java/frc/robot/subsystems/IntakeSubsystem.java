@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANIds;
 
-public class Intake extends SubsystemBase {
+public class IntakeSubsystem extends SubsystemBase {
     private final TalonFX movementMotor;
     private final TalonFX spinnerMotor;
     private final TalonFXConfiguration movementMotorConfig;
@@ -39,7 +39,7 @@ public class Intake extends SubsystemBase {
         }
     }
 
-    public Intake() {
+    public IntakeSubsystem() {
         movementMotor = new TalonFX(CANIds.INTAKE_MOVEMENT_MOTOR_ID);
         spinnerMotor = new TalonFX(CANIds.INTAKE_SPINNER_MOTOR_ID);
 

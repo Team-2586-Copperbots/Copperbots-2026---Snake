@@ -41,7 +41,7 @@ public final class Constants {
     // turret motors
     public static final int TURRET_TURN_MOTOR = 22;
     public static final int TURRET_SPIN_MOTOR = 24;
-    public static final int TURRET_CANCODER_ID = 23;
+    public static final int TURRET_CANCODER_ID = 12;
   }
 
   public static class ShooterConstants {
