@@ -49,8 +49,8 @@ public class RobotContainer {
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
-  private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-  private final PhotonSubsystem vision = new PhotonSubsystem();
+  public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+  public final PhotonSubsystem vision = new PhotonSubsystem();
   private final ShooterSubsystem shooter = new ShooterSubsystem();
   private final TurretSubsystem turret = new TurretSubsystem();
   private final CommandPS4Controller driveController = new CommandPS4Controller(
@@ -104,24 +104,24 @@ public class RobotContainer {
     operatorController.circle().whileTrue(shooter.setShooterSpeed(40));
 
     operatorController.L1().whileTrue(turret.setIntakePosition(0.0));
-    operatorController.L2().whileTrue(turret.setIntakePosition(.5));
 
-    operatorController.R1().whileTrue(turret.aimAtHub(drivetrain));
+    operatorController.L2().whileTrue(turret.setIntakePosition(0.75));
+
+    operatorController.povUp().whileTrue(turret.aimAtHub(drivetrain));
 
     operatorController.options().whileTrue(turret.setTurnMotor(0.1));
     operatorController.share().whileTrue(turret.setTurnMotor(-0.1));
 
     // operatorController.povLeft().whileTrue(shooter.setShooterSpeedAmount(20));
 
-    operatorController.povUp().whileTrue(new SequentialCommandGroup(
-        shooter.runOnce(() -> shooter.setDynamicSpeedAjust(1)),
-        shooter.setShooterSpeedToSpeed()));
+    // operatorController.povUp().whileTrue(new SequentialCommandGroup(
+    //     shooter.runOnce(() -> shooter.setDynamicSpeedAjust(1)),
+    //     shooter.setShooterSpeedToSpeed()));
 
-    operatorController.povDown().whileTrue(new SequentialCommandGroup(
-        shooter.runOnce(() -> shooter.setDynamicSpeedAjust(-1)),
-        shooter.setShooterSpeedToSpeed()));
+    // operatorController.povDown().whileTrue(new SequentialCommandGroup(
+    //     shooter.runOnce(() -> shooter.setDynamicSpeedAjust(-1)),
+    //     shooter.setShooterSpeedToSpeed()));
 
-    SmartDashboard.putBoolean("operator controler r1", operatorController.R1().getAsBoolean());
   }
 
   /**
