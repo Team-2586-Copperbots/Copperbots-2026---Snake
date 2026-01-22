@@ -18,7 +18,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.CANIds;
-import frc.robot.Constants.places;
+import frc.robot.Constants.PLACES;
+import frc.robot.Constants.TURRET_CONSTANTS;
 
 public class TurretSubsystem extends SubsystemBase {
     private final TalonFX turnMotor;
@@ -72,10 +73,14 @@ public class TurretSubsystem extends SubsystemBase {
     }
 
     // this uses the CTRE motors built-in positionVoltage controler to set the angle
-    // of the turret
-    // with in the limits of 0-320 degreas (commented out)
+    // of the turret within the limits of 0-320 degreas (commented out)
     public Command setIntakePosition(Double angle) {
-        return runOnce(() -> turnMotor.setControl(positionVoltage.withPosition(angle * 11.2)));
+        // over 360 is to convert fron degres to rotations
+        return runOnce(() -> turnMotor.setControl(positionVoltage.withPosition((angle / 360) * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO)));
+        
+        
+        
+        // code to limit how far the turret ring can rotate for when we put electronis/wires on it
         // if (angle >= 0 && angle < 320) {
         // return runOnce(() -> turnMotor.setControl(positionVoltage.withPosition(angle
         // / 360)));
@@ -95,53 +100,7 @@ public class TurretSubsystem extends SubsystemBase {
     public Command aimAtHub(CommandSwerveDrivetrain drivetrain) {
 
         // passes the drivtrain's pose2D to the calculating method
-        return setIntakePosition(getAngleToHub(drivetrain.getState().Pose));
-    }
-
-    // this returns the angle fron the center of the robot to the center of the hub,
-    // using the relitive X and Y to find the needed angle
-    public double getAngleToHub(Pose2d drivetrainPose2d) {
-        // angle to be returned
-        double angle = 0;
-        // grabs the hub's X and Y
-        if (DriverStation.getAlliance() == Alliance.Red) {
-            Pose2d hubPose2d = places.CENTER_OF_RED_HUB;
-        }
-        //
-        // if the robot is outside of our aliance zone, it will not aim at the
-        if (hubPose2d.getX() - drivetrainPose2d.getX() > 0) {
-            Pose2d relitiveHubPose2d =
-                    // makes a new object from the
-                    new Pose2d((drivetrainPose2d.getX() - hubPose2d.getX()),
-                            (drivetrainPose2d.getY() - hubPose2d.getY()), null);
-
-            //
-            angle = (Math.asin(Math.abs(relitiveHubPose2d.getY()) / Math.abs(relitiveHubPose2d.getX())) / Math.PI)
-                    * 180;
-
-            if (relitiveHubPose2d.getY() > 0) {
-                angle = -angle;
-            }
-        } else {
-
-            System.out.println("TurretSubsystem, line 113: outside of aliance zone");
-        }
-
-        periodic();
-        // System.out.println(angle);
-        angle = angle / 360;
-
-        double robotAngle = drivetrainPose2d.getRotation().getRotations();
-        if (drivetrainPose2d.getY() > places.CENTER_OF_HUB.getY()) {
-            angleToHub = robotAngle + angle;
-        } else if (drivetrainPose2d.getY() < places.CENTER_OF_HUB.getY()) {
-            angleToHub = -robotAngle + angle;
-        } else {
-            angleToHub = -robotAngle + angle;
-        }
-        angleToHub = -robotAngle + angle;
-
-        return angleToHub;
+        return setIntakePosition(drivetrain.getAngleToHub());
     }
 
     // this gets the angle of the cancoder sence the subsystem was initiated

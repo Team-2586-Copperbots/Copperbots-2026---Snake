@@ -19,16 +19,17 @@ import edu.wpi.first.math.geometry.Pose2d;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static class OperatorConstants {
+  public static class OPERATOR_CONSTANTS {
     public static final int DRIVER_CONTROLER_PORT = 0;
     public static final int OPERATOR_CONTROLER_PORT = 1;
     public static final double MAX_SPEED_LIMITER = .7;
   }
 
-  public static class places {
+  public static class PLACES {
     public static final Pose2d CENTER_OF_BLUE_HUB = new Pose2d(4.625, 4.035, null);
     public static final Pose2d CENTER_OF_RED_HUB = new Pose2d(11.915, 4.035, null);
   }
+
   public static class CANIds {
     // FIXME: fix CAN ideas
     // shooter motors
@@ -45,13 +46,11 @@ public final class Constants {
     public static final int TURRET_CANCODER_ID = 12;
   }
 
-  public static class ShooterConstants {
+  public static class SHOOTER_CONSTANTS {
     public static final double SHOOTER_SPEED = 20.0; // RPM
   }
-  public static class TurretConstants {
-    public static double CANCODER_OFFSET = 0;
-    public static void setCANcoderOffset(double offset) {
-      CANCODER_OFFSET = offset;
-    }
+
+  public static class TURRET_CONSTANTS {
+    public static final double MOTOR_TO_RING_RATIO = 11.2;
   }
 }

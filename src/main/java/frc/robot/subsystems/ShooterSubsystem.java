@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static frc.robot.Constants.CANIds.*;
-import static frc.robot.Constants.ShooterConstants.*;
+import static frc.robot.Constants.SHOOTER_CONSTANTS.*;
 
 public class ShooterSubsystem extends SubsystemBase {
     // motors
@@ -95,7 +95,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public double getWheeleSpeed() {
         return dynamicSpeed;
     }
-    
+
     @Override
     public void periodic() {
         SmartDashboard.putNumber("ShooterSpeed", getShooterMotorSpeed());
