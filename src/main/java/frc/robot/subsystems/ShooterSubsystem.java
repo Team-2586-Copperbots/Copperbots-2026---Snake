@@ -34,10 +34,11 @@ public class ShooterSubsystem extends SubsystemBase {
         motorOutputConfigs.NeutralMode = motorOutputConfigs.NeutralMode.Coast;
 
         var pidConfig = shooterConfig.Slot0;
-        pidConfig.kP = 0.28;
-        pidConfig.kI = 0.0;
-        pidConfig.kD = 0.0075;
-        pidConfig.kV = 0.11;
+        pidConfig.kP = 0.00;
+        pidConfig.kI = 0.00;
+        pidConfig.kD = 0.000;
+        pidConfig.kV = 0.110;
+        pidConfig.kS = 0.250;
 
         dynamicSpeed = 30;
 
@@ -53,7 +54,7 @@ public class ShooterSubsystem extends SubsystemBase {
         });
     }
 
-    public Command setShooterSpeedToSpeed() {
+    public Command setShooterSpeedToDynamicSpeed() {
         return runOnce(() -> {
             shooterMotor.setControl(velocityVoltage.withVelocity(dynamicSpeed));
         });
@@ -68,7 +69,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /** run end command to run the shooter at a speed and set to zero upon ending */
-    public Command runShooterTemp(double speed) {
+    public Command runEndShooterSpeed(double speed) {
         return runEnd(() -> {
             shooterMotor.setControl(velocityVoltage.withVelocity(speed));
         }, () -> {
@@ -92,13 +93,15 @@ public class ShooterSubsystem extends SubsystemBase {
         return shooterMotor.getVelocity().getValueAsDouble();
     }
 
-    public double getWheeleSpeed() {
+    public double getDynamicSpeed() {
         return dynamicSpeed;
     }
     
     @Override
     public void periodic() {
+        SmartDashboard.putNumber("Shooter setpoint", velocityVoltage.Velocity);
         SmartDashboard.putNumber("ShooterSpeed", getShooterMotorSpeed());
-        SmartDashboard.putNumber("set dynamic speed", getWheeleSpeed());
+        SmartDashboard.putNumber("set dynamic speed", getDynamicSpeed());
+        SmartDashboard.putNumber("shotter current", shooterMotor.getStatorCurrent().getValueAsDouble());
     }
 }

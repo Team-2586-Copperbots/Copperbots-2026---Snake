@@ -97,11 +97,11 @@ public class RobotContainer {
 
     operatorController.triangle().whileTrue(shooter.setShooterSpeed(0));
 
-    operatorController.square().whileTrue(shooter.setShooterSpeed(43));
+    operatorController.square().whileTrue(shooter.setShooterSpeed(10));
 
-    operatorController.cross().whileTrue(shooter.setShooterSpeed(45));
+    operatorController.cross().whileTrue(shooter.setShooterSpeed(20));
 
-    operatorController.circle().whileTrue(shooter.setShooterSpeed(40));
+    operatorController.circle().whileTrue(shooter.setShooterSpeed(75));
 
     operatorController.L1().whileTrue(turret.setIntakePosition(0.0));
 
