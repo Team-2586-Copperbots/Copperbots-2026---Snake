@@ -42,6 +42,8 @@ public final class Constants {
     public static final int TURRET_TURN_MOTOR = 22;
     public static final int TURRET_SPIN_MOTOR = 24;
     public static final int TURRET_CANCODER_ID = 12;
+
+    public static final int CANDLE_ID = 40;
   }
 
   public static class SHOOTER_CONSTANTS {
@@ -51,5 +53,24 @@ public final class Constants {
 
   public static class TURRET_CONSTANTS {
     public static final double MOTOR_TO_RING_RATIO = 11.2;
+  }
+
+  public static class CANDLE_CONSTANTS {
+    // added index traker for diffrent strips of the CANDle  
+    public static enum STRIPS {
+        // TODO: fix indexed when strips are made
+        BUILT_IN(0,7),
+        FIRST(8,77),
+        SECOND(78,147),
+        THIRD(148,217);
+
+        public final int start;
+        public final int end;
+
+        private STRIPS(int start, int end) {
+            this.start = start;
+            this.end = end;
+        }
+    }
   }
 }

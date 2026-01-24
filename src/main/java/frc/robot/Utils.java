@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants.PLACES;
 import frc.robot.Constants.SHOOTER_CONSTANTS;
@@ -9,6 +10,8 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public final class Utils {
 
+
+    
     public static boolean isAllianceBlue() {
         var alliance = DriverStation.getAlliance();
         if (alliance.isPresent()) {
@@ -41,23 +44,15 @@ public final class Utils {
     // schoeing element by way of math and arcsin()
     public static double getAngleToHub(CommandSwerveDrivetrain drivetrain) {
         double angle = 0;
-        Pose2d drivetrainPose2d = drivetrain.getState().Pose;
-        Pose3d hubPose3d = PLACES.CENTER_OF_HUB;
-        if (hubPose3d.getX() - drivetrainPose2d.getX() > 0) {
-            Pose2d relitiveHubPose2d = new Pose2d((drivetrainPose2d.getX() - hubPose3d.getX()),
-                    (drivetrainPose2d.getY() - hubPose3d.getY()), null);
 
-            angle = (Math.asin(Math.abs(relitiveHubPose2d.getY()) / Math.abs(relitiveHubPose2d.getX())) / Math.PI)
-                    * 180;
-            if (relitiveHubPose2d.getY() > 0) {
-                angle = -angle;
-            }
-        }
-        // degres to rotations
-        angle = angle / 360;
+        double x = drivetrain.getState().Pose.getX() - PLACES.CENTER_OF_HUB.getX();
+        double y = drivetrain.getState().Pose.getY() - PLACES.CENTER_OF_HUB.getY();
+        angle = Units.radiansToRotations(Math.atan(y / x));
 
         // factor in drivetrain rotation
-        angle = angle + -drivetrainPose2d.getRotation().getRotations();
+        angle = angle + -drivetrain.getState().Pose.getRotation().getRotations();
+
+        
         return angle;
     }
 

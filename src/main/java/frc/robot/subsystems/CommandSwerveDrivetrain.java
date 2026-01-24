@@ -270,7 +270,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SmartDashboard.putNumber("robot Pose X", getState().Pose.getX());
         SmartDashboard.putNumber("robot Pose Y", getState().Pose.getY());
         SmartDashboard.putNumber("robot Pose R in degrees", getState().Pose.getRotation().getDegrees());
-        SmartDashboard.putNumber("angle to hub", getAngleToHub());
     }
 
     private void startSimThread() {
@@ -342,13 +341,4 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return super.samplePoseAt(Utils.fpgaToCurrentTime(timestampSeconds));
     }
 
-    public double getAngleToHub() {
-        double angle = 0;
-
-        double x = getState().Pose.getX() - PLACES.CENTER_OF_BLUE_HUB.getX();
-        double y = getState().Pose.getY() - PLACES.CENTER_OF_BLUE_HUB.getY();
-        angle = Units.radiansToDegrees(Math.atan(y / x));
-
-        return angle;
-    }
 }

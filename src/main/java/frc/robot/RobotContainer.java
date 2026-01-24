@@ -109,8 +109,6 @@ public class RobotContainer {
 
         operatorController.L2().whileTrue(turret.setIntakePosition(0.75));
 
-        operatorController.povUp().whileTrue(turret.aimAtHub(drivetrain));
-
         operatorController.touchpad().onTrue(turret.setTurnMotorPosition(0));
 
         operatorController.options().whileTrue(turret.setTurnMotorSpeed(0.1));

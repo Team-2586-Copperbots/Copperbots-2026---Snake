@@ -68,7 +68,7 @@ public class TurretSubsystem extends SubsystemBase {
     // of the turret within the limits of 0-320 degreas (commented out)
     public Command setIntakePosition(Double angle) {
         return runOnce(() -> turnMotor
-                .setControl(positionVoltage.withPosition(angle * TURRET_CONSTANTS.TURRET_MOTOR_TO_RING_RATIO)));
+                .setControl(positionVoltage.withPosition(angle * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO)));
         // if (angle >= 0 && angle < 320) {
         // return runOnce(() -> turnMotor.setControl(positionVoltage.withPosition(angle
         // / 360)));
@@ -78,20 +78,14 @@ public class TurretSubsystem extends SubsystemBase {
         // }
     }
 
-    // aims "forward"
-    public Command aimFoward() {
-        return setIntakePosition(0.0);
-    }
-
     // command to aim at the hub
-    // drivtraing is passed to the calculating method
-    public Command aimAtHub(CommandSwerveDrivetrain drivetrain) {
-
-        // passes the drivtrain's pose2D to the calculating method
-        return setIntakePosition(drivetrain.getAngleToHub());
+    // drivetrain is passed to the calculating method
+    public void aimAtHub(CommandSwerveDrivetrain drivetrain) {
+        // aims at hub
+        setIntakePosition(Utils.getAngleToHub(drivetrain));
     }
 
-    // this gets the angle of the cancoder sence the subsystem was initiated
+
 
     public void setSpinnerSpeed(double speed) {
         spinnerMotor.set(speed);
