@@ -41,7 +41,7 @@ public final class Constants {
     // turret motors
     public static final int TURRET_TURN_MOTOR = 22;
     public static final int TURRET_SPIN_MOTOR = 24;
-    public static final int TURRET_CANCODER_ID = 23;
+    public static final int TURRET_CANCODER_ID = 12;
   }
 
   public static class SHOOTER_CONSTANTS {
@@ -50,7 +50,6 @@ public final class Constants {
   }
 
   public static class TURRET_CONSTANTS {
-    public static double CANCODER_OFFSET = 0;
-    public static double TURRET_MOTOR_TO_RING_RATIO = 11.2;
+    public static final double MOTOR_TO_RING_RATIO = 11.2;
   }
 }

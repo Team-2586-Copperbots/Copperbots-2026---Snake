@@ -39,8 +39,8 @@ public class TurretSubsystem extends SubsystemBase {
         var motorOutputConfigs = turnMotorConfig.MotorOutput;
         motorOutputConfigs.NeutralMode = NeutralModeValue.Coast;
 
+        // pid control of the falcon through CTRE's motor configs
         var pidConfig = turnMotorConfig.Slot0;
-        // TODO: tune pid
         pidConfig.kP = 1.50;
         pidConfig.kI = 0.00;
         pidConfig.kD = 0.00;
@@ -54,14 +54,21 @@ public class TurretSubsystem extends SubsystemBase {
 
     }
 
-    public Command setTurnMotor(double speed) {
+    // set comand to set the turning motor to a speed -1 to 1
+    public Command setTurnMotorSpeed(double speed) {
         return runEnd(() -> turnMotor.set(speed), () -> turnMotor.set(0));
     }
 
-    // this uses the CTRE motors builtin constants to set the angle of the turret
-    // with in the limits of 0-320 degreas
+    // set the turn motors's internal encoder
+    public Command setTurnMotorPosition(double rotation) {
+        return runOnce(() -> turnMotor.setPosition(rotation));
+    }
+
+    // this uses the CTRE motors built-in positionVoltage controler to set the angle
+    // of the turret within the limits of 0-320 degreas (commented out)
     public Command setIntakePosition(Double angle) {
-        return runOnce(() -> turnMotor.setControl(positionVoltage.withPosition(angle * TURRET_CONSTANTS.TURRET_MOTOR_TO_RING_RATIO)));
+        return runOnce(() -> turnMotor
+                .setControl(positionVoltage.withPosition(angle * TURRET_CONSTANTS.TURRET_MOTOR_TO_RING_RATIO)));
         // if (angle >= 0 && angle < 320) {
         // return runOnce(() -> turnMotor.setControl(positionVoltage.withPosition(angle
         // / 360)));
@@ -71,22 +78,20 @@ public class TurretSubsystem extends SubsystemBase {
         // }
     }
 
+    // aims "forward"
     public Command aimFoward() {
         return setIntakePosition(0.0);
     }
 
-    public void aimAtHub(CommandSwerveDrivetrain drivetrain) {
-        double robotAngle = drivetrain.getState().Pose.getRotation().getRotations();
-        angleToHub = robotAngle + Utils.getAngleToHub(drivetrain);
-        setIntakePosition(angleToHub);
-    }
+    // command to aim at the hub
+    // drivtraing is passed to the calculating method
+    public Command aimAtHub(CommandSwerveDrivetrain drivetrain) {
 
-    
+        // passes the drivtrain's pose2D to the calculating method
+        return setIntakePosition(drivetrain.getAngleToHub());
+    }
 
     // this gets the angle of the cancoder sence the subsystem was initiated
-    public double getTurretAngle() {
-        return CANcoder.getAbsolutePosition().getValueAsDouble();
-    }
 
     public void setSpinnerSpeed(double speed) {
         spinnerMotor.set(speed);
@@ -94,8 +99,8 @@ public class TurretSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("turret Motor", turnMotor.getDifferentialAveragePosition().getValueAsDouble());
-        SmartDashboard.putNumber("turret encoder", CANcoder.getPositionSinceBoot().getValueAsDouble());
+        SmartDashboard.putNumber("turret Motor", turnMotor.getPosition().getValueAsDouble());
+        SmartDashboard.putNumber("turret encoder", CANcoder.getAbsolutePosition().getValueAsDouble());
         SmartDashboard.putString("positionVoltage", positionVoltage.getPositionMeasure().toLongString());
         SmartDashboard.putNumber("angle to hub", angleToHub);
 
