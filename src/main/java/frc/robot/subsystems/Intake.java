@@ -1,14 +1,9 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Degree;
-
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANIds;
@@ -39,6 +34,7 @@ public class Intake extends SubsystemBase {
         }
     }
 
+    @SuppressWarnings("static-access")
     public Intake() {
         movementMotor = new TalonFX(CANIds.INTAKE_MOVEMENT_MOTOR_ID);
         spinnerMotor = new TalonFX(CANIds.INTAKE_SPINNER_MOTOR_ID);
@@ -50,7 +46,7 @@ public class Intake extends SubsystemBase {
         motorOutputConfigs.NeutralMode = motorOutputConfigs.NeutralMode.Coast;
 
         var pidConfig = movementMotorConfig.Slot0;
-        // TODO: tune pid
+        // TODO: tune pid better?
         pidConfig.kP = 0.28;
         pidConfig.kI = 0.0;
         pidConfig.kD = 0.0075;

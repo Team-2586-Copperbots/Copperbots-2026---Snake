@@ -4,16 +4,13 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
-import java.lang.Math;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Utils;
 import frc.robot.Constants.CANIds;
-import frc.robot.Constants.PLACES;
 import frc.robot.Constants.TURRET_CONSTANTS;
 
 public class TurretSubsystem extends SubsystemBase {
@@ -40,7 +37,7 @@ public class TurretSubsystem extends SubsystemBase {
         // turnMotorConfig.Feedback.RotorToSensorRatio = 11.2;
 
         var motorOutputConfigs = turnMotorConfig.MotorOutput;
-        motorOutputConfigs.NeutralMode = motorOutputConfigs.NeutralMode.Coast;
+        motorOutputConfigs.NeutralMode = NeutralModeValue.Coast;
 
         var pidConfig = turnMotorConfig.Slot0;
         // TODO: tune pid

@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 
 /**
@@ -31,7 +30,6 @@ public final class Constants {
   }
 
   public static class CANIds {
-    // FIXME: fix CAN ideas
     // shooter motors
     public static final int SHOOTER_MOTOR_1_ID = 20;
     public static final int SHOOTER_MOTOR_2_ID = 21;

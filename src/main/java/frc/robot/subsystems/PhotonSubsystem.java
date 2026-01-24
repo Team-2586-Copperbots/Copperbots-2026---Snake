@@ -38,15 +38,7 @@ public class PhotonSubsystem extends SubsystemBase {
     // 0.2794, new Rotation3d(0,0,Math.toRadians(-45)));
 
     public final AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
-    // Constants such as camera and target height stored. Change per robot and goal!
-    /*
-     * final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(24);//TODO: measure
-     * final double TARGET_HEIGHT_METERS = 0.3;//TODO: verify
-     * // Angle between horizontal and the camera.
-     * final double CAMERA_PITCH_RADIANS = Units.degreesToRadians(0); // TODO:
-     * verify
-     */
-
+        
     PhotonPoseEstimator poseEstimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
             aprilTag1Pos);
 
@@ -144,8 +136,6 @@ public class PhotonSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("AprilTag_1 yaw ", getCamera1Yaw());
         // SmartDashboard.putNumber("AprilTag_3 yaw ", getCamera3Yaw());
         // getRobotPose().get().estimatedPose
-        // SmartDashboard.putNumber("AprilTag y translation (TODO: measure/verify) ",
-        // getY1TranslationFromTarget());
-    }
+     }
 
 }

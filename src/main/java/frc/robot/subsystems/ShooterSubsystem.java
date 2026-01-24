@@ -5,6 +5,7 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -31,7 +32,7 @@ public class ShooterSubsystem extends SubsystemBase {
         shooterConfig = new TalonFXConfiguration();
 
         var motorOutputConfigs = shooterConfig.MotorOutput;
-        motorOutputConfigs.NeutralMode = motorOutputConfigs.NeutralMode.Coast;
+        motorOutputConfigs.NeutralMode = NeutralModeValue.Coast;
 
         var pidConfig = shooterConfig.Slot0;
         pidConfig.kP = 0.00;
