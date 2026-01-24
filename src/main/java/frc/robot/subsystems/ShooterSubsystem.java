@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static frc.robot.Constants.CANIds.*;
-import static frc.robot.Constants.ShooterConstants.*;
+import static frc.robot.Constants.SHOOTER_CONSTANTS.*;
 
 public class ShooterSubsystem extends SubsystemBase {
     // motors
@@ -48,10 +48,14 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /** Set and forget command to change the shooter's speed */
-    public Command setShooterSpeed(double wheelSpeed) {
+    public Command setShooterSpeedCommand(double wheelSpeed) {
         return runOnce(() -> {
             shooterMotor.setControl(velocityVoltage.withVelocity(wheelSpeed));
         });
+    }
+
+    public void setShooterSpeed(double speed) {
+        shooterMotor.setControl(velocityVoltage.withVelocity(speed));
     }
 
     public Command setShooterSpeedToDynamicSpeed() {
@@ -89,18 +93,18 @@ public class ShooterSubsystem extends SubsystemBase {
         });
     }
 
-    public double getShooterMotorSpeed() {
+    public double getCurrentMotorSpeed() {
         return shooterMotor.getVelocity().getValueAsDouble();
     }
 
     public double getDynamicSpeed() {
         return dynamicSpeed;
     }
-    
+
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Shooter setpoint", velocityVoltage.Velocity);
-        SmartDashboard.putNumber("ShooterSpeed", getShooterMotorSpeed());
+        SmartDashboard.putNumber("ShooterSpeed", getCurrentMotorSpeed());
         SmartDashboard.putNumber("set dynamic speed", getDynamicSpeed());
         SmartDashboard.putNumber("shotter current", shooterMotor.getStatorCurrent().getValueAsDouble());
     }
