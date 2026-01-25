@@ -8,10 +8,16 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class IndexerSubsystem extends SubsystemBase {
     private final TalonFX indexerMotor;
     private final TalonFXConfiguration indexerMotorConfig;
+
     public IndexerSubsystem() {
         indexerMotor = new TalonFX(0);
         indexerMotorConfig = new TalonFXConfiguration();
+
         indexerMotor.getConfigurator().apply(indexerMotorConfig);
+    }
+
+    public void setIndexerSpeed(double speed) {
+        indexerMotor.set(speed);
     }
 
 }

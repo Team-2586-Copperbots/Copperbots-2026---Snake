@@ -266,6 +266,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
         // update the elasticField
         elasticField.setRobotPose(getState().Pose);
+        SmartDashboard.putNumber("angle to hub", frc.robot.Utils.getAngleToHub(this));
         SmartDashboard.putData("field", elasticField);
         SmartDashboard.putNumber("robot Pose X", getState().Pose.getX());
         SmartDashboard.putNumber("robot Pose Y", getState().Pose.getY());

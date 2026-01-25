@@ -52,8 +52,8 @@ public class RobotContainer {
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     public final PhotonSubsystem vision = new PhotonSubsystem();
-    private final ShooterSubsystem shooter = new ShooterSubsystem();
-    private final TurretSubsystem turret = new TurretSubsystem();
+//     private final ShooterSubsystem shooter = new ShooterSubsystem();
+//     private final TurretSubsystem turret = new TurretSubsystem();
     private final CommandPS4Controller driveController = new CommandPS4Controller(
             OPERATOR_CONSTANTS.DRIVER_CONTROLER_PORT);
     private final CommandPS4Controller operatorController = new CommandPS4Controller(
@@ -97,22 +97,22 @@ public class RobotContainer {
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
 
-        operatorController.triangle().whileTrue(shooter.setShooterSpeedCommand(0));
+        // operatorController.triangle().whileTrue(shooter.setShooterSpeedCommand(0));
 
-        operatorController.square().whileTrue(shooter.setShooterSpeedCommand(10));
+        // operatorController.square().whileTrue(shooter.setShooterSpeedCommand(10));
 
-        operatorController.cross().whileTrue(shooter.setShooterSpeedCommand(20));
+        // operatorController.cross().whileTrue(shooter.setShooterSpeedCommand(20));
 
-        operatorController.circle().whileTrue(shooter.setShooterSpeedCommand(75));
+        // operatorController.circle().whileTrue(shooter.setShooterSpeedCommand(75));
 
-        operatorController.L1().whileTrue(turret.setIntakePosition(0.0));
+        // operatorController.L1().whileTrue(turret.setIntakePosition(0.0));
 
-        operatorController.L2().whileTrue(turret.setIntakePosition(0.75));
+        // operatorController.L2().whileTrue(turret.setIntakePosition(0.75));
 
-        operatorController.touchpad().onTrue(turret.setTurnMotorPosition(0));
+        // operatorController.touchpad().onTrue(turret.setTurnMotorPosition(0));
 
-        operatorController.options().whileTrue(turret.setTurnMotorSpeed(0.1));
-        operatorController.share().whileTrue(turret.setTurnMotorSpeed(-0.1));
+        // operatorController.options().whileTrue(turret.setTurnMotorSpeed(0.1));
+        // operatorController.share().whileTrue(turret.setTurnMotorSpeed(-0.1));
 
         // operatorController.povLeft().whileTrue(shooter.setShooterSpeedAmount(20));
 

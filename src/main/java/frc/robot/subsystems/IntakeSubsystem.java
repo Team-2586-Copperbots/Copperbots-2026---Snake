@@ -3,7 +3,9 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANIds;
@@ -15,13 +17,13 @@ public class IntakeSubsystem extends SubsystemBase {
     private final TalonFXConfiguration spinnerMotorConfig;
     private final PositionVoltage positionVoltage = new PositionVoltage(0);
 
-    public IntakePosition currentPosition = IntakePosition.in;
-    public IntakePosition targetPosition = IntakePosition.out;
+    public IntakePosition currentPosition = IntakePosition.IN;
+    public IntakePosition targetPosition = IntakePosition.OUT;
 
     public enum IntakePosition {
-        in(2),
-        out(40),
-        halfWay(12);
+        IN(2),
+        OUT(40),
+        HALFWAY(12);
 
         private final int value;
 
@@ -42,20 +44,20 @@ public class IntakeSubsystem extends SubsystemBase {
         spinnerMotorConfig = new TalonFXConfiguration();
 
         var motorOutputConfigs = movementMotorConfig.MotorOutput;
-        motorOutputConfigs.NeutralMode = motorOutputConfigs.NeutralMode.Coast;
+        motorOutputConfigs.NeutralMode = NeutralModeValue.Coast;
 
         var pidConfig = movementMotorConfig.Slot0;
-        // TODO: tune pid better?
-        pidConfig.kP = 0.28;
+        // TODO: tune pid at all!?
+        pidConfig.kP = 0.05;
         pidConfig.kI = 0.0;
-        pidConfig.kD = 0.0075;
+        pidConfig.kD = 0.0025;
 
         movementMotor.getConfigurator().apply(movementMotorConfig);
         spinnerMotor.getConfigurator().apply(spinnerMotorConfig);
     }
 
-    public Command setintakePosition(IntakePosition position) {
-        return runOnce(() -> movementMotor.setControl(positionVoltage.withPosition(position.getValue())));
+    public void setintakePosition(IntakePosition position) {
+        movementMotor.setControl(positionVoltage.withPosition(position.getValue()));
     }
 
     public void setMovementBarSpeed(double speed) {
@@ -66,7 +68,12 @@ public class IntakeSubsystem extends SubsystemBase {
         spinnerMotor.set(speed);
     }
 
-    public double getMovementBarSpeed() {
+    public double getMovementBarPosition() {
         return movementMotor.getPosition().getValueAsDouble();
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("intake position in rotations", getMovementBarPosition());
     }
 }
