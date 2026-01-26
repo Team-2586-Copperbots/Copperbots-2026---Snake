@@ -17,6 +17,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -31,107 +32,123 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-    private double MaxSpeed = OPERATOR_CONSTANTS.MAX_SPEED_LIMITER * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts
-                                                                                                                         // desired
-                                                                                                                         // top
-    // speed
-    private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second
-                                                                                      // max
-                                                                                      // angular velocity
-    /* Setting up bindings for necessary control of the swerve drive platform */
-    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
-    @SuppressWarnings("unused")
-    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-    @SuppressWarnings("unused")
-    private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+        private double MaxSpeed = OPERATOR_CONSTANTS.MAX_SPEED_LIMITER
+                        * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts
+                                                                              // desired
+                                                                              // top
+        // speed
+        private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per
+                                                                                          // second
+                                                                                          // max
+                                                                                          // angular velocity
+        /* Setting up bindings for necessary control of the swerve drive platform */
+        private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+                        .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+                        .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive
+                                                                                 // motors
+        @SuppressWarnings("unused")
+        private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+        @SuppressWarnings("unused")
+        private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
-    @SuppressWarnings("unused")
-    private final Telemetry logger = new Telemetry(MaxSpeed);
+        @SuppressWarnings("unused")
+        private final Telemetry logger = new Telemetry(MaxSpeed);
 
-    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-    public final PhotonSubsystem vision = new PhotonSubsystem();
-//     private final ShooterSubsystem shooter = new ShooterSubsystem();
-//     private final TurretSubsystem turret = new TurretSubsystem();
-    private final CommandPS4Controller driveController = new CommandPS4Controller(
-            OPERATOR_CONSTANTS.DRIVER_CONTROLER_PORT);
-    private final CommandPS4Controller operatorController = new CommandPS4Controller(
-            OPERATOR_CONSTANTS.OPERATOR_CONTROLER_PORT);
+        public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+        public final PhotonSubsystem vision = new PhotonSubsystem();
+        private final ShooterSubsystem shooter = new ShooterSubsystem();
+        private final TurretSubsystem turret = new TurretSubsystem();
+        private final CommandPS4Controller driveController = new CommandPS4Controller(
+                        OPERATOR_CONSTANTS.DRIVER_CONTROLER_PORT);
+        private final CommandPS4Controller operatorController = new CommandPS4Controller(
+                        OPERATOR_CONSTANTS.OPERATOR_CONTROLER_PORT);
 
-    /**
-     * The container for the robot. Contains subsystems, OI devices, and commands.
-     */
-    public RobotContainer() {
-        // Configure the trigger bindings
-        configureBindings();
-    }
+        /**
+         * The container for the robot. Contains subsystems, OI devices, and commands.
+         */
+        public RobotContainer() {
+                // Configure the trigger bindings
+                configureBindings();
+        }
 
-    /**
-     * Use this method to define your trigger->command mappings. Triggers can be
-     * created via the
-     * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
-     * an arbitrary
-     * predicate, or via the named factories in {@link
-     * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
-     * {@link
-     * CommandXboxController
-     * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-     * PS4} controllers or
-     * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-     * joysticks}.
-     */
-    private void configureBindings() {
+        /**
+         * Use this method to define your trigger->command mappings. Triggers can be
+         * created via the
+         * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
+         * an arbitrary
+         * predicate, or via the named factories in {@link
+         * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
+         * {@link
+         * CommandXboxController
+         * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
+         * PS4} controllers or
+         * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
+         * joysticks}.
+         */
+        private void configureBindings() {
 
-        drivetrain.setDefaultCommand(
-                // Drivetrain will execute this command periodically
-                drivetrain.applyRequest(() -> drive.withVelocityX(driveController.getLeftY() * MaxSpeed) // Drive
-                                                                                                         // forward with
-                        // negative Y
-                        // (forward)
-                        .withVelocityY(driveController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                        .withRotationalRate(driveController.getRightX() * MaxAngularRate) // Drive counterclockwise with
-                // negative X (left)
-                ));
+                drivetrain.setDefaultCommand(
+                                // Drivetrain will execute this command periodically
+                                drivetrain.applyRequest(() -> drive.withVelocityX(driveController.getLeftY() * MaxSpeed) // Drive
+                                                                                                                         // forward
+                                                                                                                         // with
+                                                // negative Y
+                                                // (forward)
+                                                .withVelocityY(driveController.getLeftX() * MaxSpeed) // Drive left with
+                                                                                                      // negative X
+                                                                                                      // (left)
+                                                .withRotationalRate(driveController.getRightX() * MaxAngularRate) // Drive
+                                                                                                                  // counterclockwise
+                                                                                                                  // with
+                                // negative X (left)
+                                ));
 
-        // Idle while the robot is disabled. This ensures the configured
-        // neutral mode is applied to the drive motors while disabled.
+                // Idle while the robot is disabled. This ensures the configured
+                // neutral mode is applied to the drive motors while disabled.
 
-        // operatorController.triangle().whileTrue(shooter.setShooterSpeedCommand(0));
+                driveController.triangle().onTrue(resetGyro());
 
-        // operatorController.square().whileTrue(shooter.setShooterSpeedCommand(10));
+                operatorController.triangle().whileTrue(shooter.setShooterSpeedCommand(0));
 
-        // operatorController.cross().whileTrue(shooter.setShooterSpeedCommand(20));
+                operatorController.square().whileTrue(shooter.setShooterSpeedCommand(10));
 
-        // operatorController.circle().whileTrue(shooter.setShooterSpeedCommand(75));
+                operatorController.cross().whileTrue(shooter.setShooterSpeedCommand(20));
 
-        // operatorController.L1().whileTrue(turret.setIntakePosition(0.0));
+                operatorController.circle().whileTrue(shooter.setShooterSpeedCommand(75));
 
-        // operatorController.L2().whileTrue(turret.setIntakePosition(0.75));
+                operatorController.L1().whileTrue(turret.setIntakePosition(0.0));
 
-        // operatorController.touchpad().onTrue(turret.setTurnMotorPosition(0));
+                operatorController.L2().whileTrue(turret.setIntakePosition(0.75));
 
-        // operatorController.options().whileTrue(turret.setTurnMotorSpeed(0.1));
-        // operatorController.share().whileTrue(turret.setTurnMotorSpeed(-0.1));
+                operatorController.touchpad().onTrue(turret.setTurnMotorPosition(0));
 
-        // operatorController.povLeft().whileTrue(shooter.setShooterSpeedAmount(20));
+                operatorController.options().whileTrue(turret.setTurnMotorSpeed(0.1));
+                operatorController.share().whileTrue(turret.setTurnMotorSpeed(-0.1));
 
-        // operatorController.povUp().whileTrue(new SequentialCommandGroup(
-        // shooter.runOnce(() -> shooter.setDynamicSpeedAjust(1)),
-        // shooter.setShooterSpeedToSpeed()));
+                // operatorController.povLeft().whileTrue(shooter.setShooterSpeedAmount(20));
 
-        // operatorController.povDown().whileTrue(new SequentialCommandGroup(
-        // shooter.runOnce(() -> shooter.setDynamicSpeedAjust(-1)),
-        // shooter.setShooterSpeedToSpeed()));
+                // operatorController.povUp().whileTrue(new SequentialCommandGroup(
+                // shooter.runOnce(() -> shooter.setDynamicSpeedAjust(1)),
+                // shooter.setShooterSpeedToSpeed()));
 
-    }
+                // operatorController.povDown().whileTrue(new SequentialCommandGroup(
+                // shooter.runOnce(() -> shooter.setDynamicSpeedAjust(-1)),
+                // shooter.setShooterSpeedToSpeed()));
 
-    /**
-     *
-     * @return the command to run in autonomous
-     */
-    public Command getAutonomousCommand() {
-        return null;
-    }
+        }
+
+        public Command resetGyro() {
+                return Commands.runOnce(() -> {
+                        drivetrain.getPigeon2().reset();
+                });
+        }
+
+        /**
+         *
+         * @return the command to run in autonomous
+         */
+        public Command getAutonomousCommand() {
+                return null;
+        }
 
 }
