@@ -26,7 +26,7 @@ public class PhotonSubsystem extends SubsystemBase {
     private final PhotonCamera aprilTag1 = new PhotonCamera("TempCamera");
     // private final PhotonCameraSim aprilTag1Sim = new PhotonCameraSim(aprilTag1);
 
-    public final Transform3d aprilTag1Pos = new Transform3d(0.32766, 0, 0.244475, new Rotation3d());
+    public final Transform3d aprilTag1Pos = new Transform3d(0.3302, 0, 0.2714625, new Rotation3d());
 
     //private VisionSystemSim visonSim = new VisionSystemSim("Vision Sim");
     

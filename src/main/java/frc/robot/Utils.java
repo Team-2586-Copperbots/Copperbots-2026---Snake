@@ -10,8 +10,6 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public final class Utils {
 
-
-    
     public static boolean isAllianceBlue() {
         var alliance = DriverStation.getAlliance();
         if (alliance.isPresent()) {
@@ -52,7 +50,6 @@ public final class Utils {
         // factor in drivetrain rotation
         angle = angle + -drivetrain.getState().Pose.getRotation().getRotations();
 
-        
         return angle;
     }
 
