@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 
 /**
@@ -27,6 +28,10 @@ public final class Constants {
 
   public static class PLACES {
     public static final Pose3d CENTER_OF_HUB = new Pose3d(4.62, 4.04, 1.8288, null);
+  }
+
+  public static class TARGET_POSES {
+    public static final Pose2d FRONT_OF_HUB = new Pose2d(2.409, 4, null);
   }
 
   public static class CANIds {
@@ -56,21 +61,21 @@ public final class Constants {
   }
 
   public static class CANDLE_CONSTANTS {
-    // added index traker for diffrent strips of the CANDle  
+    // added index traker for diffrent strips of the CANDle
     public static enum STRIPS {
-        // TODO: fix indexed when strips are made
-        BUILT_IN(0,7),
-        FIRST(8,77),
-        SECOND(78,147),
-        THIRD(148,217);
+      // TODO: fix indexed when strips are made
+      BUILT_IN(0, 7),
+      FIRST(8, 77),
+      SECOND(78, 147),
+      THIRD(148, 217);
 
-        public final int start;
-        public final int end;
+      public final int start;
+      public final int end;
 
-        private STRIPS(int start, int end) {
-            this.start = start;
-            this.end = end;
-        }
+      private STRIPS(int start, int end) {
+        this.start = start;
+        this.end = end;
+      }
     }
   }
 }
