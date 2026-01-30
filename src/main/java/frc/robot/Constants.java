@@ -4,6 +4,10 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.controllers.PathFollowingController;
+import com.pathplanner.lib.path.PathConstraints;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 
@@ -20,6 +24,17 @@ import edu.wpi.first.math.geometry.Pose3d;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  /* Pathplanner Auton Config */
+        // public static final PathFollowingController pathFollowerConfig = new HolonomicPathFollowerConfig(
+        //                 new PIDConstants(kPXController, 0, 0), // Translation constants
+        //                 new PIDConstants(kPYController, 0, 0), // Rotation constants
+        //                 MAX_SPEED,
+        //                 Constants.DRIVEBASE_RADIUS, // Drive base radius (distance from center to furthest module)
+        //                 new ReplanningConfig(false, false));
+
+        // public static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(Constants.MAX_SPEED,
+        //                 Constants.AUTO_MAX_ACCELERATION_MPS_SQUARED, Units.degreesToRadians(540),
+        //                 Units.degreesToRadians(720));
   public static class OPERATOR_CONSTANTS {
     public static final int DRIVER_CONTROLER_PORT = 0;
     public static final int OPERATOR_CONTROLER_PORT = 1;

@@ -151,6 +151,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
 
         elasticField = new Field2d();
+        autoBuilder = new AutoBuilder();
         configurePathPlanner();
     }
 
@@ -178,6 +179,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
         elasticField = new Field2d();
+        autoBuilder = new AutoBuilder();
         configurePathPlanner();
     }
 
@@ -220,6 +222,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
         elasticField = new Field2d();
+        autoBuilder = new AutoBuilder();
         configurePathPlanner();
     }
 
@@ -256,15 +259,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return m_sysIdRoutineToApply.dynamic(direction);
     }
 
-
-
-    
     public Command followPathCommandtoHUB() {
         Pose2d target = TARGET_POSES.FRONT_OF_HUB;
         return AutoBuilder.pathfindToPose(target, new PathConstraints(2, 1.25, 1 * Math.PI, 0.5 * Math.PI), 0);
     }
 
     private void configurePathPlanner() {
+        // TODO: what are the next 5 lines for?
         double driveBaseRadius = 0;
         Translation2d[] mod_locations = getModuleLocations();
         for (var moduleLocation : mod_locations) {
@@ -272,6 +273,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
 
         RobotConfig config;
+        // Load the RobotConfig from the GUI settings. You should probably
+        // store this in your Constants file
+        try {
+            config = RobotConfig.fromGUISettings();
+        } catch (Exception e) {
+            // Handle exception as needed
+            e.printStackTrace();
+        }
+
         try {
             config = RobotConfig.fromGUISettings();
             AutoBuilder.configure(this::getPose,
@@ -307,8 +317,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
         }
 
-        
     }
+
     public Pose2d getPose() {
         return getState().Pose;
     }
@@ -317,8 +327,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
         return getState().Speeds;
     }
-
-
 
     @Override
     public void periodic() {

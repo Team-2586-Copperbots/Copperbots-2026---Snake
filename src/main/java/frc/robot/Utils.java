@@ -18,6 +18,16 @@ public final class Utils {
         return false;
     }
 
+    //TODO: when robot built, find if cole wants squared inputs
+    public static double squareInput(double input) {
+                boolean negative = input < 0;
+                if (negative) {
+                        return -Math.pow(input, 2);
+                } else {
+                        return Math.pow(input, 2);
+                }
+        }
+
     public static double shooterSpeedFromDistance(Pose3d taretPose3d, Pose3d shooterPose3d) {
         double speed = 0;
         double distanceX = Math.abs(taretPose3d.getX() - shooterPose3d.getX());

@@ -5,6 +5,8 @@
 package frc.robot;
 
 import frc.robot.Constants.OPERATOR_CONSTANTS;
+import frc.robot.Constants.PLACES;
+import frc.robot.commands.AimAndShoot;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.PhotonSubsystem;
@@ -14,10 +16,18 @@ import frc.robot.subsystems.TurretSubsystem;
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -46,6 +56,10 @@ public class RobotContainer {
                         .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive
                                                                                  // motors
+        // used 2025 for side to side movement
+        // TODO: ask cole/evyln if they want robot centric drive this year
+        private final SwerveRequest.RobotCentric rcDrive = new SwerveRequest.RobotCentric().withDeadband(MaxSpeed * 0.1)
+                        .withRotationalDeadband(MaxAngularRate * 0.1);
         @SuppressWarnings("unused")
         private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
         @SuppressWarnings("unused")
@@ -63,12 +77,46 @@ public class RobotContainer {
         private final CommandPS4Controller operatorController = new CommandPS4Controller(
                         OPERATOR_CONSTANTS.OPERATOR_CONTROLER_PORT);
 
+        private final SendableChooser<Command> autoChooser;
+
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
          */
         public RobotContainer() {
+                // add telemetry
+                drivetrain.registerTelemetry(logger::telemeterize);
                 // Configure the trigger bindings
                 configureBindings();
+                // make commands for autos
+                configureAutoCommands();
+
+                // For convenience a programmer could change this when going to competition.
+                boolean isCompetition = true;
+                // Build an auto chooser. This will use Commands.none() as the default option.
+                // As an example, this will only show autos that start with "comp" while at
+                // competition as defined by the programmer
+                autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier(
+                                (stream) -> isCompetition
+                                                ? stream.filter(auto -> auto.getName().startsWith("comp"))
+                                                : stream);
+                SmartDashboard.putData("Auto Mode", autoChooser);
+
+        }
+
+        private void configureAutoCommands() {
+
+                NamedCommands.registerCommand("aim'n'Shoot",
+                                new AimAndShoot(shooter, turret, drivetrain, PLACES.CENTER_OF_HUB));
+
+                // NamedCommands.registerCommand("Home", new SequentialCommandGroup(
+                // new StopShooterWheel(shooter),
+                // new RunCommand(() -> wristSubsystem
+                // .setCurrentPosition(WristPosition.HOME),
+                // wristSubsystem).withTimeout(0.1),
+                // new PIDElevator(ElevatorPosition.Home, elevatorSubsystem),
+                // new RunCommand(() -> elevatorSubsystem.setMotorSpeed(0),
+                // elevatorSubsystem).withTimeout(0.1)));
+
         }
 
         /**
@@ -89,17 +137,19 @@ public class RobotContainer {
 
                 drivetrain.setDefaultCommand(
                                 // Drivetrain will execute this command periodically
-                                drivetrain.applyRequest(() -> drive.withVelocityX(-driveController.getLeftY() * MaxSpeed) // Drive
-                                                                                                                         // forward
-                                                                                                                         // with
+                                drivetrain.applyRequest(() -> drive
+                                                .withVelocityX(-driveController.getLeftY() * MaxSpeed) // Drive
+                                                                                                       // forward
+                                                                                                       // with
                                                 // negative Y
                                                 // (forward)
-                                                .withVelocityY(-driveController.getLeftX() * MaxSpeed) // Drive left with
-                                                                                                      // negative X
-                                                                                                      // (left)
+                                                .withVelocityY(-driveController.getLeftX() * MaxSpeed) // Drive left
+                                                                                                       // with
+                                                                                                       // negative X
+                                                                                                       // (left)
                                                 .withRotationalRate(-driveController.getRightX() * MaxAngularRate) // Drive
-                                                                                                                  // counterclockwise
-                                                                                                                  // with
+                                                                                                                   // counterclockwise
+                                                                                                                   // with
                                 // negative X (left)
                                 ));
 
@@ -109,9 +159,6 @@ public class RobotContainer {
                 driveController.triangle().onTrue(resetGyro());
 
                 // driveController.povDown().whileTrue(drivetrain.followPathCommandtoHUB());
-
-
-
 
                 operatorController.triangle().whileTrue(shooter.setShooterSpeedCommand(0));
 
@@ -153,7 +200,7 @@ public class RobotContainer {
          * @return the command to run in autonomous
          */
         public Command getAutonomousCommand() {
-                return null;
+                return autoChooser.getSelected();
         }
 
 }
