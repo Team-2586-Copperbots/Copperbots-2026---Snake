@@ -4,6 +4,7 @@ import com.ctre.phoenix6.controls.SolidColor;
 import com.ctre.phoenix6.hardware.CANdle;
 import com.ctre.phoenix6.signals.RGBWColor;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.CANDLE_CONSTANTS;
@@ -15,11 +16,12 @@ public class CANDle extends SubsystemBase {
 
     public CANDle() {
         candle = new CANdle(CANIds.CANDLE_ID);
-        
+
     }
 
-    public void setLEDSTate(STRIPS strip, LEDState state) {
-        candle.setControl(new SolidColor(strip.start, strip.end).withColor(new RGBWColor(state.r, state.g, state.b)));
+    public Command setLEDSTate(STRIPS strip, LEDState state) {
+        return runOnce(() -> candle.setControl(
+                new SolidColor(strip.start, strip.end).withColor(new RGBWColor(state.r, state.g, state.b))));
     }
 
     public static enum LEDState {

@@ -8,10 +8,12 @@ import frc.robot.Constants.OPERATOR_CONSTANTS;
 import frc.robot.Constants.PLACES;
 import frc.robot.commands.AimAndShoot;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.CANDle;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
+import frc.robot.subsystems.CANDle.LEDState;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -57,7 +59,7 @@ public class RobotContainer {
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive
                                                                                  // motors
         // used 2025 for side to side movement
-        // TODO: ask cole/evyln if they want robot centric drive this year
+        // TODO: ask cole/evyln if they want robot centric drive this year?
         private final SwerveRequest.RobotCentric rcDrive = new SwerveRequest.RobotCentric().withDeadband(MaxSpeed * 0.1)
                         .withRotationalDeadband(MaxAngularRate * 0.1);
         @SuppressWarnings("unused")
@@ -72,6 +74,8 @@ public class RobotContainer {
         public final PhotonSubsystem vision = new PhotonSubsystem();
         private final ShooterSubsystem shooter = new ShooterSubsystem();
         private final TurretSubsystem turret = new TurretSubsystem();
+        private final CANDle candle = new CANDle();
+
         private final CommandPS4Controller driveController = new CommandPS4Controller(
                         OPERATOR_CONSTANTS.DRIVER_CONTROLER_PORT);
         private final CommandPS4Controller operatorController = new CommandPS4Controller(
@@ -177,15 +181,7 @@ public class RobotContainer {
                 operatorController.options().whileTrue(turret.setTurnMotorSpeed(0.1));
                 operatorController.share().whileTrue(turret.setTurnMotorSpeed(-0.1));
 
-                // operatorController.povLeft().whileTrue(shooter.setShooterSpeedAmount(20));
-
-                // operatorController.povUp().whileTrue(new SequentialCommandGroup(
-                // shooter.runOnce(() -> shooter.setDynamicSpeedAjust(1)),
-                // shooter.setShooterSpeedToSpeed()));
-
-                // operatorController.povDown().whileTrue(new SequentialCommandGroup(
-                // shooter.runOnce(() -> shooter.setDynamicSpeedAjust(-1)),
-                // shooter.setShooterSpeedToSpeed()));
+                operatorController.options().whileTrue(candle.setLEDSTate(Constants.CANDLE_CONSTANTS.STRIPS.BUILT_IN, LEDState.GREEN));
 
         }
 

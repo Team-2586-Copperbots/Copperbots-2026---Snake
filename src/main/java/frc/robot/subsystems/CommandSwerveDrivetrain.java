@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.PLACES;
+import frc.robot.Constants.ROBOT_PROPERTIES;
 import frc.robot.Constants.TARGET_POSES;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
@@ -272,18 +273,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             driveBaseRadius = Math.max(driveBaseRadius, moduleLocation.getNorm());
         }
 
-        RobotConfig config;
+        RobotConfig config = ROBOT_PROPERTIES.getROBOT_CONFIG();
         // Load the RobotConfig from the GUI settings. You should probably
         // store this in your Constants file
-        try {
-            config = RobotConfig.fromGUISettings();
-        } catch (Exception e) {
-            // Handle exception as needed
-            e.printStackTrace();
-        }
+        
 
         try {
-            config = RobotConfig.fromGUISettings();
+            // config = RobotConfig.fromGUISettings();
             AutoBuilder.configure(this::getPose,
                     this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
                     this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
@@ -312,7 +308,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
         } catch (Exception ex) {
             // Handle exception as needed
-            DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder",
+            DriverStation.reportError("Failed to load PathPlanner config? and configure AutoBuilder",
                     ex.getStackTrace());
 
         }

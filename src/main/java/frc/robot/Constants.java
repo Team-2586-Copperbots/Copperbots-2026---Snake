@@ -4,10 +4,9 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.controllers.PathFollowingController;
-import com.pathplanner.lib.path.PathConstraints;
+import java.io.IOException;
 
+import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 
@@ -24,20 +23,31 @@ import edu.wpi.first.math.geometry.Pose3d;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  /* Pathplanner Auton Config */
-        // public static final PathFollowingController pathFollowerConfig = new HolonomicPathFollowerConfig(
-        //                 new PIDConstants(kPXController, 0, 0), // Translation constants
-        //                 new PIDConstants(kPYController, 0, 0), // Rotation constants
-        //                 MAX_SPEED,
-        //                 Constants.DRIVEBASE_RADIUS, // Drive base radius (distance from center to furthest module)
-        //                 new ReplanningConfig(false, false));
+  public static class ROBOT_PROPERTIES {
+    private static RobotConfig ROBOT_CONFIG;
 
-        // public static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(Constants.MAX_SPEED,
-        //                 Constants.AUTO_MAX_ACCELERATION_MPS_SQUARED, Units.degreesToRadians(540),
-        //                 Units.degreesToRadians(720));
+    // what on earth does throws exception mean and what are exceptions and what do
+    // they do?
+    public static RobotConfig getROBOT_CONFIG() {
+      if (ROBOT_CONFIG == null) {
+        try {
+          ROBOT_CONFIG = RobotConfig.fromGUISettings();
+        } catch (IOException | org.json.simple.parser.ParseException e) {
+          throw new RuntimeException("Failed to load RobotConfig", e);
+        }
+      }
+      return ROBOT_CONFIG;
+    }
+    // public static final PathConstraints PATH_CONSTRAINTS = new
+    // PathConstraints(Constants.MAX_SPEED,
+    // Constants.AUTO_MAX_ACCELERATION_MPS_SQUARED, Units.degreesToRadians(540),
+    // Units.degreesToRadians(720));
+  }
+
   public static class OPERATOR_CONSTANTS {
     public static final int DRIVER_CONTROLER_PORT = 0;
     public static final int OPERATOR_CONTROLER_PORT = 1;
+    public static final int TEST_CONTROLER_PORT = 2;
     public static final double MAX_SPEED_LIMITER = .7;
   }
 
@@ -78,9 +88,9 @@ public final class Constants {
   public static class CANDLE_CONSTANTS {
     // added index traker for diffrent strips of the CANDle
     public static enum STRIPS {
-      // TODO: fix indexed when strips are made
+      // TODO: fix indexe (plural?) when strips are made
       BUILT_IN(0, 7),
-      FIRST(8, 77),
+      FIRST(8, 8+21),
       SECOND(78, 147),
       THIRD(148, 217);
 
