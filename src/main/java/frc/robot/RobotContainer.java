@@ -181,7 +181,7 @@ public class RobotContainer {
                 operatorController.options().whileTrue(turret.setTurnMotorSpeed(0.1));
                 operatorController.share().whileTrue(turret.setTurnMotorSpeed(-0.1));
 
-                operatorController.options().whileTrue(candle.setLEDSTate(Constants.CANDLE_CONSTANTS.STRIPS.BUILT_IN, LEDState.GREEN));
+                operatorController.povUp().whileTrue(candle.setLEDSTate(Constants.CANDLE_CONSTANTS.STRIPS.FIRST, LEDState.PINK));
 
         }
 

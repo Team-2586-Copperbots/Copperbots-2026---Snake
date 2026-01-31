@@ -73,7 +73,7 @@ public final class Constants {
     public static final int TURRET_SPIN_MOTOR = 24;
     public static final int TURRET_CANCODER_ID = 12;
 
-    public static final int CANDLE_ID = 40;
+    public static final int CANDLE_ID = 31;
   }
 
   public static class SHOOTER_CONSTANTS {
@@ -90,7 +90,7 @@ public final class Constants {
     public static enum STRIPS {
       // TODO: fix indexe (plural?) when strips are made
       BUILT_IN(0, 7),
-      FIRST(8, 8+21),
+      FIRST(8, 8 + 21),
       SECOND(78, 147),
       THIRD(148, 217);
 
