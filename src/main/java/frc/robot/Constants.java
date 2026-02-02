@@ -7,8 +7,12 @@ package frc.robot;
 import java.io.IOException;
 
 import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.path.PathConstraints;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -38,10 +42,9 @@ public final class Constants {
       }
       return ROBOT_CONFIG;
     }
-    // public static final PathConstraints PATH_CONSTRAINTS = new
-    // PathConstraints(Constants.MAX_SPEED,
-    // Constants.AUTO_MAX_ACCELERATION_MPS_SQUARED, Units.degreesToRadians(540),
-    // Units.degreesToRadians(720));
+
+    public static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(3, 4, Units.degreesToRadians(720),
+        Units.degreesToRadians(360));
   }
 
   public static class OPERATOR_CONSTANTS {
@@ -55,8 +58,8 @@ public final class Constants {
     public static final Pose3d CENTER_OF_HUB = new Pose3d(4.62, 4.04, 1.8288, null);
   }
 
-  public static class TARGET_POSES {
-    public static final Pose2d FRONT_OF_HUB = new Pose2d(2.409, 4, null);
+  public static class DRIVEBASE_TARGET_POSES {
+    public static final Pose2d TEST_POSE2D = new Pose2d(2, 2, new Rotation2d(Units.degreesToRadians(0)));
   }
 
   public static class CANIds {

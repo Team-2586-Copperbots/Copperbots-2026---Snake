@@ -162,6 +162,8 @@ public class RobotContainer {
 
                 driveController.triangle().onTrue(resetGyro());
 
+                driveController.options().whileTrue(drivetrain.followPathCommandtoTestPose());
+
                 // driveController.povDown().whileTrue(drivetrain.followPathCommandtoHUB());
 
                 operatorController.triangle().whileTrue(shooter.setShooterSpeedCommand(0));
