@@ -170,9 +170,9 @@ public class RobotContainer {
 
                 operatorController.square().whileTrue(shooter.setShooterSpeedCommand(10));
 
-                operatorController.cross().whileTrue(shooter.setShooterSpeedCommand(20));
+                operatorController.cross().whileTrue(shooter.setShooterSpeedCommand(30));
 
-                operatorController.circle().whileTrue(shooter.setShooterSpeedCommand(75));
+                operatorController.circle().whileTrue(shooter.setShooterSpeedCommand(80));
 
                 operatorController.L1().whileTrue(turret.setIntakePosition(0.0));
 

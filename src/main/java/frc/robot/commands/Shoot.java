@@ -28,7 +28,7 @@ public class Shoot extends Command {
 
     @Override
     public boolean isFinished() {
-        if (Math.abs(Shooter.getCurrentMotorSpeed() - Speed) < 0.5) {
+        if (Math.abs(Shooter.getMotor1Speed() - Speed) < 0.5) {
             return true;
         }
         return false;

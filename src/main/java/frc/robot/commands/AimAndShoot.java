@@ -36,13 +36,12 @@ public class AimAndShoot extends Command {
         turretSubsystem.aimAtHub(drivetrainSubsystem);
         shooterSubsystem
                 .setShooterSpeed(Utils.shooterSpeedFromDistance(target, Utils.pose3dForShooter(drivetrainSubsystem)));
-        
 
     }
 
     @Override
     public boolean isFinished() {
-        if (Math.abs(shooterSubsystem.getCurrentMotorSpeed()) < 0.5) {
+        if (Math.abs(shooterSubsystem.getMotor1Speed()) < 0.5) {
             return true;
         }
         return false;
