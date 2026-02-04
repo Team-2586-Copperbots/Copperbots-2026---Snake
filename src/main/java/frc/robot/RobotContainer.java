@@ -8,6 +8,7 @@ import frc.robot.Constants.OPERATOR_CONSTANTS;
 import frc.robot.Constants.PLACES;
 import frc.robot.commands.AimAndShoot;
 import frc.robot.commands.AimAt;
+import frc.robot.commands.AimAtHub;
 import frc.robot.commands.ZeroTurret;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CANDle;
@@ -182,6 +183,8 @@ public class RobotContainer {
                 operatorController.L1().whileTrue(new AimAt(turret,0));
                 
                 operatorController.L2().whileTrue(new AimAt(turret, .5));
+
+                operatorController.povUp().whileTrue(new AimAtHub(turret, drivetrain));
 
                 operatorController.share().onTrue(new ZeroTurret(turret));
 
