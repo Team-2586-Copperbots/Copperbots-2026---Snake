@@ -71,12 +71,15 @@ public final class Constants {
     public static final int INTAKE_SPINNER_MOTOR_ID = 5;
     // intake motor
     public static final int INDEXER_MOTOR = 9;
-    // turret motors
-    public static final int TURRET_TURN_MOTOR = 22;
-    public static final int TURRET_SPIN_MOTOR = 24;
-    public static final int TURRET_CANCODER_ID = 12;
+    // turret motor
+    public static final int TURRET_TURN_MOTOR = 23;
 
     public static final int CANDLE_ID = 31;
+  }
+
+  public static class DIO_IDS {
+
+    public static final int TURRET_LIMIT_SWITCH = 2;
   }
 
   public static class SHOOTER_CONSTANTS {
@@ -85,7 +88,9 @@ public final class Constants {
   }
 
   public static class TURRET_CONSTANTS {
-    public static final double MOTOR_TO_RING_RATIO = 11.2;
+    public static final double MOTOR_TO_RING_RATIO = (66/12) * 3 * 3 * 1.105598958;// weried mystery number from the ring of oditys
+    public static final double TURRET_ZERO_TO_ROBOT_ZERO_OFFSET = 0.044;
+    public static final double ROTATION_RANGE_IN_ROT = 0.85;
   }
 
   public static class CANDLE_CONSTANTS {

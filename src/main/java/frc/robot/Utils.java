@@ -30,6 +30,7 @@ public final class Utils {
 
     public static double shooterSpeedFromDistance(Pose3d taretPose3d, Pose3d shooterPose3d) {
         double speed = 0;
+        // double distance = taretPose3d.getTranslation().
         double distanceX = Math.abs(taretPose3d.getX() - shooterPose3d.getX());
         double distanceY = Math.abs(taretPose3d.getY() - shooterPose3d.getY());
         double distanceZ = Math.abs(taretPose3d.getZ() - shooterPose3d.getZ());
@@ -48,7 +49,7 @@ public final class Utils {
         return pose3d;
     }
 
-    // this returns the angle fron the center of the robot to the center of the hubs
+    // this returns the angle (in rot) fron the center of the robot to the center of the hubs
     // schoeing element by way of math and arcsin()
     public static double getAngleToHub(CommandSwerveDrivetrain drivetrain) {
         double angle = 0;

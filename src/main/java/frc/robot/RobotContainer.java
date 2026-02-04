@@ -7,6 +7,8 @@ package frc.robot;
 import frc.robot.Constants.OPERATOR_CONSTANTS;
 import frc.robot.Constants.PLACES;
 import frc.robot.commands.AimAndShoot;
+import frc.robot.commands.AimAt;
+import frc.robot.commands.ZeroTurret;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CANDle;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -17,6 +19,8 @@ import frc.robot.subsystems.CANDle.LEDState;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.time.Instant;
+
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -26,6 +30,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -174,16 +179,14 @@ public class RobotContainer {
 
                 operatorController.circle().whileTrue(shooter.setShooterSpeedCommand(80));
 
-                operatorController.L1().whileTrue(turret.setIntakePosition(0.0));
+                operatorController.L1().whileTrue(new AimAt(turret,0));
+                
+                operatorController.L2().whileTrue(new AimAt(turret, .5));
 
-                operatorController.L2().whileTrue(turret.setIntakePosition(0.75));
+                operatorController.share().onTrue(new ZeroTurret(turret));
 
-                operatorController.touchpad().onTrue(turret.setTurnMotorPosition(0));
-
-                operatorController.options().whileTrue(turret.setTurnMotorSpeed(0.1));
-                operatorController.share().whileTrue(turret.setTurnMotorSpeed(-0.1));
-
-                operatorController.povUp().whileTrue(candle.setLEDSTate(Constants.CANDLE_CONSTANTS.STRIPS.FIRST, LEDState.PINK));
+                operatorController.povUp()
+                                .whileTrue(candle.setLEDSTate(Constants.CANDLE_CONSTANTS.STRIPS.FIRST, LEDState.PINK));
 
         }
 
