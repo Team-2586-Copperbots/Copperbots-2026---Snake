@@ -6,8 +6,9 @@ package frc.robot;
 
 import frc.robot.Constants.OPERATOR_CONSTANTS;
 import frc.robot.Constants.PLACES;
+import frc.robot.Constants.CANDLE_CONSTANTS.STRIPS;
 import frc.robot.commands.AimAndShoot;
-import frc.robot.commands.AimAt;
+import frc.robot.commands.PIDTurret;
 import frc.robot.commands.AimAtHub;
 import frc.robot.commands.ZeroTurret;
 import frc.robot.generated.TunerConstants;
@@ -176,13 +177,9 @@ public class RobotContainer {
 
                 operatorController.square().whileTrue(shooter.setShooterSpeedCommand(10));
 
-                operatorController.cross().whileTrue(shooter.setShooterSpeedCommand(30));
+                operatorController.L1().whileTrue(new PIDTurret(turret, 0));
 
-                operatorController.circle().whileTrue(shooter.setShooterSpeedCommand(80));
-
-                operatorController.L1().whileTrue(new AimAt(turret,0));
-                
-                operatorController.L2().whileTrue(new AimAt(turret, .5));
+                operatorController.L2().whileTrue(new PIDTurret(turret, .5));
 
                 operatorController.povUp().whileTrue(new AimAtHub(turret, drivetrain));
 
@@ -191,6 +188,10 @@ public class RobotContainer {
                 operatorController.povUp()
                                 .whileTrue(candle.setLEDSTate(Constants.CANDLE_CONSTANTS.STRIPS.FIRST, LEDState.PINK));
 
+                operatorController.povLeft()
+                                .whileTrue(candle.setLEDSTate(Constants.CANDLE_CONSTANTS.STRIPS.FIRST, LEDState.COPPER));
+
+                operatorController.povRight().whileTrue(candle.fire(STRIPS.FIRST));
         }
 
         public Command resetGyro() {

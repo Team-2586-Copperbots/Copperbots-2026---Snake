@@ -70,7 +70,8 @@ public final class Constants {
     public static final int INTAKE_MOVEMENT_MOTOR_ID = 4;
     public static final int INTAKE_SPINNER_MOTOR_ID = 5;
     // intake motor
-    public static final int INDEXER_MOTOR = 9;
+    public static final int INDEXER_MOTOR = 24;
+    public static final int TOWER_MOTOR = 25;
     // turret motor
     public static final int TURRET_TURN_MOTOR = 23;
 

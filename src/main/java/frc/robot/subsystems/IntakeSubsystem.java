@@ -56,7 +56,7 @@ public class IntakeSubsystem extends SubsystemBase {
         spinnerMotor.getConfigurator().apply(spinnerMotorConfig);
     }
 
-    public void setintakePosition(IntakePosition position) {
+    public void setIntakePosition(IntakePosition position) {
         movementMotor.setControl(positionVoltage.withPosition(position.getValue()));
     }
 
