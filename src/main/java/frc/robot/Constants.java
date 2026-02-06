@@ -89,9 +89,14 @@ public final class Constants {
   }
 
   public static class TURRET_CONSTANTS {
-    public static final double MOTOR_TO_RING_RATIO = (66/12) * 3 * 3 * 1.105598958;// weried mystery number from the ring of oditys
+    public static final double MOTOR_TO_RING_RATIO = (66 / 12) * 3 * 3 * 1.105598958;// weried mystery number from the
+                                                                                     // ring of oditys
     public static final double TURRET_ZERO_TO_ROBOT_ZERO_OFFSET = 0.044;
     public static final double ROTATION_RANGE_IN_ROT = 0.85;
+    public static final Pose2d TURRET_OFFSET_FROM_ROBOT_CENTER = new Pose2d(Units.inchesToMeters(-7.375),
+        Units.inchesToMeters(-7.375), null);
+    public static final double TURRET_DISTANCE_FROM_ROBOT_CENTER = Units.inchesToMeters(Math.sqrt(
+        (Math.pow(TURRET_OFFSET_FROM_ROBOT_CENTER.getX(), 2) + Math.pow(TURRET_OFFSET_FROM_ROBOT_CENTER.getY(), 2))));
   }
 
   public static class CANDLE_CONSTANTS {
