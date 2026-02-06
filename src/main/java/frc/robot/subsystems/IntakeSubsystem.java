@@ -21,7 +21,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public IntakePosition targetPosition = IntakePosition.OUT;
 
     public enum IntakePosition {
-        IN(2),
+        IN(0),
         OUT(40),
         HALFWAY(12);
 
@@ -70,6 +70,12 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public double getMovementBarPosition() {
         return movementMotor.getPosition().getValueAsDouble();
+    }
+
+    public Command setMovementMotorSpeed(double speed) {
+        return runOnce(() -> {
+            setMovementBarSpeed(speed);
+        });
     }
 
     @Override

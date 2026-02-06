@@ -14,6 +14,8 @@ import frc.robot.commands.ZeroTurret;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CANDle;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.IndexerSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
@@ -79,6 +81,8 @@ public class RobotContainer {
 
         public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
         public final PhotonSubsystem vision = new PhotonSubsystem();
+        public final IntakeSubsystem intake = new IntakeSubsystem();
+        public final IndexerSubsystem indexer = new IndexerSubsystem();
         private final ShooterSubsystem shooter = new ShooterSubsystem();
         private final TurretSubsystem turret = new TurretSubsystem();
         private final CANDle candle = new CANDle();
@@ -192,6 +196,9 @@ public class RobotContainer {
                                 .whileTrue(candle.setLEDSTate(Constants.CANDLE_CONSTANTS.STRIPS.FIRST, LEDState.COPPER));
 
                 operatorController.povRight().whileTrue(candle.fire(STRIPS.FIRST));
+
+                operatorController.R1().whileTrue(intake.setMovementMotorSpeed(0.05));
+                operatorController.R2().whileTrue(intake.setMovementMotorSpeed(-0.05));
         }
 
         public Command resetGyro() {
