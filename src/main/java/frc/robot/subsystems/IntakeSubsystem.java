@@ -2,45 +2,38 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.CANIds;
+import frc.robot.Constants.IntakePosition;
 
 public class IntakeSubsystem extends SubsystemBase {
     private final TalonFX movementMotor;
     private final TalonFX spinnerMotor;
+    private final CANcoder cancoder;
     private final TalonFXConfiguration movementMotorConfig;
     private final TalonFXConfiguration spinnerMotorConfig;
     private final PositionVoltage positionVoltage = new PositionVoltage(0);
 
-    public IntakePosition currentPosition = IntakePosition.IN;
-    public IntakePosition targetPosition = IntakePosition.OUT;
-
-    public enum IntakePosition {
-        IN(0),
-        OUT(40),
-        HALFWAY(12);
-
-        private final int value;
-
-        private IntakePosition(int value) {
-            this.value = value;
-        }
-
-        public int getValue() {
-            return value;
-        }
-    }
-
+    
     public IntakeSubsystem() {
         movementMotor = new TalonFX(CANIds.INTAKE_MOVEMENT_MOTOR_ID);
         spinnerMotor = new TalonFX(CANIds.INTAKE_SPINNER_MOTOR_ID);
+        cancoder = new CANcoder(CANIds.INTAKE_CANCODER);
 
         movementMotorConfig = new TalonFXConfiguration();
+        movementMotorConfig.Feedback.FeedbackRemoteSensorID = cancoder.getDeviceID();
+        movementMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+        movementMotorConfig.Feedback.RotorToSensorRatio = 100;
+        movementMotorConfig.Feedback.SensorToMechanismRatio = 1;
+
         spinnerMotorConfig = new TalonFXConfiguration();
 
         var motorOutputConfigs = movementMotorConfig.MotorOutput;
@@ -56,6 +49,7 @@ public class IntakeSubsystem extends SubsystemBase {
         spinnerMotor.getConfigurator().apply(spinnerMotorConfig);
     }
 
+    // Constants.IntakePosition
     public void setIntakePosition(IntakePosition position) {
         movementMotor.setControl(positionVoltage.withPosition(position.getValue()));
     }
@@ -73,8 +67,18 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public Command setMovementMotorSpeed(double speed) {
-        return runOnce(() -> {
+        return runEnd(() -> {
             setMovementBarSpeed(speed);
+        }, () -> {
+            setMovementBarSpeed(0);
+        });
+    }
+
+    public Command setSpinMotorSpeed(double speed) {
+        return runEnd(() -> {
+            setSpinnerSpeed(speed);
+        }, () -> {
+            setSpinnerSpeed(0);
         });
     }
 

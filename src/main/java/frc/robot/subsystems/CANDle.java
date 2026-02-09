@@ -8,9 +8,8 @@ import com.ctre.phoenix6.signals.RGBWColor;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Constants.CANDLE_CONSTANTS;
 import frc.robot.Constants.CANIds;
-import frc.robot.Constants.CANDLE_CONSTANTS.STRIPS;
+import frc.robot.Constants.CANDLE_STRIPS;;
 
 public class CANDle extends SubsystemBase {
     private CANdle candle;
@@ -20,12 +19,12 @@ public class CANDle extends SubsystemBase {
 
     }
 
-    public Command setLEDSTate(STRIPS strip, LEDState state) {
+    public Command setLEDSTate(CANDLE_STRIPS strip, LEDState state) {
         return runOnce(() -> candle.setControl(
                 new SolidColor(strip.start, strip.end).withColor(new RGBWColor(state.r, state.g, state.b))));
     }
 
-    public Command fire(STRIPS strip) {
+    public Command fire(CANDLE_STRIPS strip) {
         return runOnce(
                 () -> candle.setControl(new FireAnimation(strip.start, strip.end).withBrightness(.5).withCooling(.3)));
     }

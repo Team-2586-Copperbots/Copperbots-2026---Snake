@@ -6,10 +6,11 @@ package frc.robot;
 
 import frc.robot.Constants.OPERATOR_CONSTANTS;
 import frc.robot.Constants.PLACES;
-import frc.robot.Constants.CANDLE_CONSTANTS.STRIPS;
+import frc.robot.Constants.CANDLE_STRIPS;
 import frc.robot.commands.AimAndShoot;
 import frc.robot.commands.PIDTurret;
 import frc.robot.commands.AimAtHub;
+import frc.robot.commands.IndexerSpin;
 import frc.robot.commands.ZeroTurret;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CANDle;
@@ -30,6 +31,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -79,10 +81,11 @@ public class RobotContainer {
         @SuppressWarnings("unused")
         private final Telemetry logger = new Telemetry(MaxSpeed);
 
-        public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+        
         public final PhotonSubsystem vision = new PhotonSubsystem();
-        public final IntakeSubsystem intake = new IntakeSubsystem();
-        public final IndexerSubsystem indexer = new IndexerSubsystem();
+        public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+        private final IntakeSubsystem intake = new IntakeSubsystem();
+        private final IndexerSubsystem indexer = new IndexerSubsystem();
         private final ShooterSubsystem shooter = new ShooterSubsystem();
         private final TurretSubsystem turret = new TurretSubsystem();
         private final CANDle candle = new CANDle();
@@ -177,34 +180,46 @@ public class RobotContainer {
 
                 // driveController.povDown().whileTrue(drivetrain.followPathCommandtoHUB());
 
+                // operatorController.L1().whileTrue(new PIDTurret(turret, 0));
+
+                // operatorController.L2().whileTrue(new PIDTurret(turret, .5));
+
+                // operatorController.povUp().whileTrue(new AimAtHub(turret, drivetrain));
+
+                // operatorController.share().onTrue(new ZeroTurret(turret));
+
+                // operatorController.povUp()
+                //                 .whileTrue(candle.setLEDSTate(CANDLE_STRIPS.FIRST,
+                //                                 LEDState.PINK));
+// DriverStation.getMatchTime();
+// DriverStation.getGameSpecificMessage().isEmpty()
+                // operatorController.povLeft()
+                // .whileTrue(candle.setLEDSTate(Constants.CANDLE_CONSTANTS.STRIPS.FIRST,
+                // LEDState.COPPER));
+
+                // operatorController.povRight().whileTrue(candle.fire(STRIPS.FIRST));
+
                 operatorController.triangle().whileTrue(shooter.setShooterSpeedCommand(0));
 
-                operatorController.square().whileTrue(shooter.setShooterSpeedCommand(10));
+                operatorController.square().whileTrue(shooter.setShooterSpeedCommand(30));
 
-                operatorController.L1().whileTrue(new PIDTurret(turret, 0));
+                operatorController.R1().whileTrue(new IndexerSpin(indexer));
 
-                operatorController.L2().whileTrue(new PIDTurret(turret, .5));
+                operatorController.share().whileTrue(intake.setSpinMotorSpeed(-0.50));
 
-                operatorController.povUp().whileTrue(new AimAtHub(turret, drivetrain));
-
-                operatorController.share().onTrue(new ZeroTurret(turret));
-
-                operatorController.povUp()
-                                .whileTrue(candle.setLEDSTate(Constants.CANDLE_CONSTANTS.STRIPS.FIRST, LEDState.PINK));
-
-                operatorController.povLeft()
-                                .whileTrue(candle.setLEDSTate(Constants.CANDLE_CONSTANTS.STRIPS.FIRST, LEDState.COPPER));
-
-                operatorController.povRight().whileTrue(candle.fire(STRIPS.FIRST));
-
-                operatorController.R1().whileTrue(intake.setMovementMotorSpeed(0.05));
-                operatorController.R2().whileTrue(intake.setMovementMotorSpeed(-0.05));
+                operatorController.povUp().whileTrue(intake.setMovementMotorSpeed(-0.075));
+                operatorController.povDown().whileTrue(intake.setMovementMotorSpeed(0.075));
+                operatorController.povLeft().whileTrue(intake.setSpinMotorSpeed(-0.60));
         }
 
         public Command resetGyro() {
                 return Commands.runOnce(() -> {
                         drivetrain.getPigeon2().reset();
                 });
+        }
+
+        public Command zeroTurret() {
+                return new ZeroTurret(turret);
         }
 
         /**

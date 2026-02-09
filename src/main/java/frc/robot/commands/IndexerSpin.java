@@ -1,24 +1,23 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.Constants.IntakePosition;
+import frc.robot.subsystems.IndexerSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 
-public class PIDIntake extends Command {
-    private IntakeSubsystem Intake;
-    private IntakePosition position;
+public class IndexerSpin extends Command {
+    private IndexerSubsystem Indexer;
 
-    public PIDIntake(IntakeSubsystem Intake, IntakePosition position) {
-        this.Intake = Intake;
-        this.position = position;
+    public IndexerSpin(IndexerSubsystem IndexerSubsystem) {
+        this.Indexer = IndexerSubsystem;
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(Intake);
+        addRequirements(IndexerSubsystem);
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        Intake.setIntakePosition(position);
+        Indexer.setIndexerSpeed(.30);
+        Indexer.setTowerSpeed(.80);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -29,16 +28,14 @@ public class PIDIntake extends Command {
 
     @Override
     public boolean isFinished() {
-        if (Math.abs(Intake.getMovementBarPosition() - position.getValue()) < 0.10) {
-            return true;
-        }
         return false;
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-
+        Indexer.setIndexerSpeed(0);
+        Indexer.setTowerSpeed(0);
     }
 
 }

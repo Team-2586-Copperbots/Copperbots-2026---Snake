@@ -14,6 +14,7 @@ import com.pathplanner.lib.commands.PathfindingCommand;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 
 /**
  * The methods in this class are called automatically corresponding to each
@@ -86,13 +87,15 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = robotContainer.getAutonomousCommand();
-
     // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
-      CommandScheduler.getInstance().schedule(m_autonomousCommand);
+    if (robotContainer.getAutonomousCommand() != null) {
+      m_autonomousCommand = Commands.sequence(robotContainer.zeroTurret(), robotContainer.getAutonomousCommand());
+
+    } else {
+      m_autonomousCommand = robotContainer.zeroTurret();
     }
-    
+    CommandScheduler.getInstance().schedule(m_autonomousCommand);
+
   }
 
   /** This function is called periodically during autonomous. */
@@ -109,7 +112,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    
+    CommandScheduler.getInstance().schedule(robotContainer.zeroTurret());
+
   }
 
   /** This function is called periodically during operator control. */

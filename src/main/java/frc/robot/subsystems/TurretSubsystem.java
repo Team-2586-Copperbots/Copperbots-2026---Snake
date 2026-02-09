@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Rotations;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -66,14 +68,30 @@ public class TurretSubsystem extends SubsystemBase {
 
     // this uses the CTRE motors built-in positionVoltage controler to set the angle
     // of the turret within the limits of 0-320 degreas (commented out)
-    public void setTurretRotation(Double roations) {
+    public void setTurretRotation(double roations) {
 
         // limits are typed in as degres
-        
-        if (roations >= (0 - TURRET_CONSTANTS.TURRET_ZERO_TO_ROBOT_ZERO_OFFSET) && (roations + TURRET_CONSTANTS.TURRET_ZERO_TO_ROBOT_ZERO_OFFSET) < TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT) {
-            turnMotor.setControl(positionVoltage.withPosition((roations + TURRET_CONSTANTS.TURRET_ZERO_TO_ROBOT_ZERO_OFFSET) * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO));
+
+        if (roations >= (0 - TURRET_CONSTANTS.TURRET_ZERO_TO_ROBOT_ZERO_OFFSET)
+                && roations < TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT) {
+            turnMotor.setControl(
+                    positionVoltage.withPosition((roations + TURRET_CONSTANTS.TURRET_ZERO_TO_ROBOT_ZERO_OFFSET)
+                            * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO));
         } else {
-            turnMotor.setControl(positionVoltage.withPosition((0 + TURRET_CONSTANTS.TURRET_ZERO_TO_ROBOT_ZERO_OFFSET) * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO));
+            double startOfEndZone = 0;
+            double endOfEndZone = TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT;
+
+            if (Math.abs((startOfEndZone - roations)) < Math.abs((endOfEndZone - roations))) {
+                turnMotor.setControl(positionVoltage.withPosition(
+                        0 * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO));
+            } else if (Math.abs((startOfEndZone - roations)) >= Math.abs((endOfEndZone - roations))) {
+                turnMotor.setControl(positionVoltage.withPosition(
+                        TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO));
+            } else {
+                turnMotor.setControl(positionVoltage.withPosition(
+                        0 * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO));
+            }
+
         }
     }
 

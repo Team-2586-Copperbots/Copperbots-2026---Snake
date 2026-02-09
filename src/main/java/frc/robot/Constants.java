@@ -67,8 +67,9 @@ public final class Constants {
     public static final int SHOOTER_MOTOR_1_ID = 21;
     public static final int SHOOTER_MOTOR_2_ID = 22;
     // 4 bar intake motors
-    public static final int INTAKE_MOVEMENT_MOTOR_ID = 4;
-    public static final int INTAKE_SPINNER_MOTOR_ID = 5;
+    public static final int INTAKE_MOVEMENT_MOTOR_ID = 26;
+    public static final int INTAKE_CANCODER = 28;
+    public static final int INTAKE_SPINNER_MOTOR_ID = 27;
     // intake motor
     public static final int INDEXER_MOTOR = 24;
     public static final int TOWER_MOTOR = 25;
@@ -92,29 +93,43 @@ public final class Constants {
     public static final double MOTOR_TO_RING_RATIO = (66 / 12) * 3 * 3 * 1.105598958;// weried mystery number from the
                                                                                      // ring of oditys
     public static final double TURRET_ZERO_TO_ROBOT_ZERO_OFFSET = 0.044;
-    public static final double ROTATION_RANGE_IN_ROT = 0.85;
+    public static final double ROTATION_RANGE_IN_ROT = 0.894;
     public static final Pose2d TURRET_OFFSET_FROM_ROBOT_CENTER = new Pose2d(Units.inchesToMeters(-7.375),
         Units.inchesToMeters(-7.375), null);
     public static final double TURRET_DISTANCE_FROM_ROBOT_CENTER = Units.inchesToMeters(Math.sqrt(
         (Math.pow(TURRET_OFFSET_FROM_ROBOT_CENTER.getX(), 2) + Math.pow(TURRET_OFFSET_FROM_ROBOT_CENTER.getY(), 2))));
   }
 
-  public static class CANDLE_CONSTANTS {
-    // added index traker for diffrent strips of the CANDle
-    public static enum STRIPS {
-      // TODO: fix indexe (plural?) when strips are made
-      BUILT_IN(0, 7),
-      FIRST(8, 8 + 21),
-      SECOND(78, 147),
-      THIRD(148, 217);
+  public static enum IntakePosition {
+    IN(0),
+    OUT(40),
+    HALFWAY(12);
 
-      public final int start;
-      public final int end;
+    private final int value;
 
-      private STRIPS(int start, int end) {
-        this.start = start;
-        this.end = end;
-      }
+    private IntakePosition(int value) {
+      this.value = value;
+    }
+
+    public int getValue() {
+      return value;
     }
   }
+
+  public static enum CANDLE_STRIPS {
+    // TODO: fix indexe (plural?) when strips are made
+    BUILT_IN(0, 7),
+    FIRST(8, 8 + 21),
+    SECOND(78, 147),
+    THIRD(148, 217);
+
+    public final int start;
+    public final int end;
+
+    private CANDLE_STRIPS(int start, int end) {
+      this.start = start;
+      this.end = end;
+    }
+  }
+
 }
