@@ -17,7 +17,7 @@ public class IndexerSpin extends Command {
     @Override
     public void initialize() {
         Indexer.setIndexerSpeed(.30);
-        Indexer.setTowerSpeed(.80);
+        Indexer.setTowerSpeed(.60);
     }
 
     // Called every time the scheduler runs while the command is scheduled.

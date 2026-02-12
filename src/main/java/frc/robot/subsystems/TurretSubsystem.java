@@ -73,10 +73,10 @@ public class TurretSubsystem extends SubsystemBase {
 
         // limits are typed in as degres
 
-        if (roations >= (0 - TURRET_CONSTANTS.TURRET_ZERO_TO_ROBOT_ZERO_OFFSET)
+        if (roations >= (0 - TURRET_CONSTANTS.TURRET_RING_ZERO_TO_ROBOT_FRONT_OFFSET)
                 && roations < TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT) {
             turnMotor.setControl(
-                    positionVoltage.withPosition((roations + TURRET_CONSTANTS.TURRET_ZERO_TO_ROBOT_ZERO_OFFSET)
+                    positionVoltage.withPosition((roations + TURRET_CONSTANTS.TURRET_RING_ZERO_TO_ROBOT_FRONT_OFFSET)
                             * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO));
         } else {
             double startOfEndZone = 0;

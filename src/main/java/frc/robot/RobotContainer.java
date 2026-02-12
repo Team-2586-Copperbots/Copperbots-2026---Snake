@@ -97,6 +97,8 @@ public class RobotContainer {
                         OPERATOR_CONSTANTS.DRIVER_CONTROLER_PORT);
         private final CommandPS4Controller operatorController = new CommandPS4Controller(
                         OPERATOR_CONSTANTS.OPERATOR_CONTROLER_PORT);
+        private final CommandPS4Controller testController = new CommandPS4Controller(
+                        OPERATOR_CONSTANTS.TEST_CONTROLER_PORT);
 
         private final SendableChooser<Command> autoChooser;
 
@@ -241,7 +243,7 @@ public class RobotContainer {
                 // Shooter Subsystem
                 operatorController.triangle().onTrue(new Shoot(shooter, 0));
 
-                operatorController.square().onTrue(new Shoot(shooter, 30));
+                operatorController.square().onTrue(new Shoot(shooter, 50));
 
                 operatorController.circle().onTrue(new Shoot(shooter, Utils.shooterSpeedFromDistance(
                                 Utils.distanceFromPose(Constants.PLACES.CENTER_OF_HUB, drivetrain))));
@@ -251,14 +253,29 @@ public class RobotContainer {
 
                 // Intake subsystem
                 // out
-                operatorController.povUp().whileTrue(new ManualIntake(intake, 0.05));
+                operatorController.povUp().whileTrue(new ManualIntake(intake, 0.075));
                 // in
-                operatorController.povDown().whileTrue(new ManualIntake(intake, -0.05));
+                operatorController.povDown().whileTrue(new ManualIntake(intake, -0.075));
                 // roller
                 operatorController.povLeft().whileTrue(new IntakeSpin(intake, -0.5));
 
                 // set aside for when the pid is tuned and constants are updated
                 // operatorController.povRight().whileTrue(new PIDIntake(intake, null));
+
+
+
+
+
+
+
+                testController.povDown().onTrue(new Shoot(shooter, 0));
+                testController.povLeft().onTrue(new Shoot(shooter, OPERATOR_CONSTANTS.setRPM));
+                testController.povUp().onTrue(new Shoot(shooter, OPERATOR_CONSTANTS.setRPM+1));
+                testController.povRight().onTrue(new Shoot(shooter, OPERATOR_CONSTANTS.setRPM+2));
+                testController.square().onTrue(new Shoot(shooter, OPERATOR_CONSTANTS.setRPM+3));
+                testController.triangle().onTrue(new Shoot(shooter, OPERATOR_CONSTANTS.setRPM+4));
+                testController.circle().onTrue(new Shoot(shooter, OPERATOR_CONSTANTS.setRPM+5));
+                testController.R2().whileTrue(new IndexerSpin(indexer));
         }
 
         public Command resetGyro() {
@@ -268,9 +285,10 @@ public class RobotContainer {
         }
 
         public Command zeroThings() {
-                return new ParallelCommandGroup(new ZeroTurret(turret), new Shoot(shooter, 0)) ;
+                return new ParallelCommandGroup(new ZeroTurret(turret), new Shoot(shooter, 0));
         }
-//ZeroTurret(turret)
+
+        // ZeroTurret(turret)
         /**
          *
          * @return the command to run in autonomous

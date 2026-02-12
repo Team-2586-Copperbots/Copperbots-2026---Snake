@@ -13,27 +13,29 @@ import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.DoubleArrayEntry;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class PhotonSubsystem extends SubsystemBase {
 
-    private final PhotonCamera aprilTag1 = new PhotonCamera("TempCamera");
+    private final PhotonCamera camera1 = new PhotonCamera("TempCamera");
     // private final PhotonCameraSim aprilTag1Sim = new PhotonCameraSim(aprilTag1);
 
-    public final Transform3d aprilTag1Pos = new Transform3d(0.3302, 0, 0.2714625, new Rotation3d());
+    public final Transform3d camera1Pos = new Transform3d(-0.3302, -0.14, .46514, new Rotation3d(new Rotation2d(Math.PI)));
 
     //private VisionSystemSim visonSim = new VisionSystemSim("Vision Sim");
     
     public final AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
 
     PhotonPoseEstimator poseEstimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-            aprilTag1Pos);
+            camera1Pos);
 
     public PhotonSubsystem() {
         poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
@@ -49,7 +51,7 @@ public class PhotonSubsystem extends SubsystemBase {
     public Optional<EstimatedRobotPose> getRobotPose() {
         Optional<EstimatedRobotPose> robotPose = Optional.empty();
 
-        for (PhotonPipelineResult change : aprilTag1.getAllUnreadResults()) {
+        for (PhotonPipelineResult change : camera1.getAllUnreadResults()) {
             robotPose = poseEstimator.update(change);
         }
 
@@ -61,7 +63,7 @@ public class PhotonSubsystem extends SubsystemBase {
         double yaw = Double.MAX_VALUE;
         // Camera processed a new frame since last
         // Get the last one in the list.
-        var result = aprilTag1.getLatestResult();
+        var result = camera1.getLatestResult();
         if (result.hasTargets()) {
             var target = result.getBestTarget();
             yaw = target.getYaw();

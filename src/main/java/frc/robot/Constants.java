@@ -51,11 +51,14 @@ public final class Constants {
   public static class OPERATOR_CONSTANTS {
     public static final int DRIVER_CONTROLER_PORT = 0;
     public static final int OPERATOR_CONTROLER_PORT = 1;
+    public static final int TEST_CONTROLER_PORT = 2;
     public static final double MAX_SPEED_LIMITER = 0.2;
+    public static final double setRPM = 45;
   }
 
   public static class PLACES {
     public static final Pose3d CENTER_OF_HUB = new Pose3d(4.62, 4.04, 1.8288, null);
+    public static final Pose2d FRONT_OF_HUB = new Pose2d(4.00, 4.08, null);
   }
 
   public static class DRIVEBASE_TARGET_POSES {
@@ -87,13 +90,13 @@ public final class Constants {
 
   public static class SHOOTER_CONSTANTS {
     public static final double SHOOTER_SPEED = 20.0; // RPM
-    public static final double HEIGHT_OF_WHEEL_OFF_GROUND = 0.66; // in meters
+    public static final double HEIGHT_OF_WHEEL_OFF_GROUND = 0.64135; // in meters
   }
 
   public static class TURRET_CONSTANTS {
     public static final double MOTOR_TO_RING_RATIO = (66 / 12) * 3 * 3 * 1.105598958;// weried mystery number from the
                                                                                      // ring of oditys
-    public static final double TURRET_ZERO_TO_ROBOT_ZERO_OFFSET = 0.044;
+    public static final double TURRET_RING_ZERO_TO_ROBOT_FRONT_OFFSET = 0.044;
     public static final double ROTATION_RANGE_IN_ROT = 0.894;
     public static final Pose2d TURRET_OFFSET_FROM_ROBOT_CENTER = new Pose2d(Units.inchesToMeters(-7.375),
         Units.inchesToMeters(-7.375), null);

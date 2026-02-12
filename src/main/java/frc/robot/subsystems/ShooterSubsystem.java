@@ -37,8 +37,8 @@ public class ShooterSubsystem extends SubsystemBase {
         motorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive;
 
         var pidConfig = shooterConfig.Slot0;
-        pidConfig.kP = 0.000;
-        pidConfig.kI = 0.000;
+        pidConfig.kP = 0.175;
+        pidConfig.kI = 0.030;
         pidConfig.kD = 0.000;
         pidConfig.kV = 0.110;
         pidConfig.kS = 0.050;
