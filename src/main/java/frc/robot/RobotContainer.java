@@ -9,8 +9,12 @@ import frc.robot.Constants.PLACES;
 import frc.robot.Constants.CANDLE_STRIPS;
 import frc.robot.commands.AimAndShoot;
 import frc.robot.commands.PIDTurret;
+import frc.robot.commands.Shoot;
 import frc.robot.commands.AimAtHub;
 import frc.robot.commands.IndexerSpin;
+import frc.robot.commands.IntakeSpin;
+import frc.robot.commands.ManualIntake;
+import frc.robot.commands.PIDIntake;
 import frc.robot.commands.ZeroTurret;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CANDle;
@@ -81,7 +85,6 @@ public class RobotContainer {
         @SuppressWarnings("unused")
         private final Telemetry logger = new Telemetry(MaxSpeed);
 
-        
         public final PhotonSubsystem vision = new PhotonSubsystem();
         public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
         private final IntakeSubsystem intake = new IntakeSubsystem();
@@ -174,42 +177,88 @@ public class RobotContainer {
                 // Idle while the robot is disabled. This ensures the configured
                 // neutral mode is applied to the drive motors while disabled.
 
+                // speed up or slow down drivtrain command that overrides the default command
+                driveController.povRight().whileTrue(drivetrain
+                                .applyRequest(() -> drive.withVelocityX(
+                                                -1 * driveController.getLeftY() * MaxSpeed) // Drive
+                                                                                            // forward
+                                                                                            // with
+                                                                                            // negative
+                                                                                            // Y
+                                                                                            // (forward)
+                                                .withVelocityY(-1
+                                                                * driveController.getLeftX()
+                                                                * MaxSpeed) // Drive left
+                                                                            // with negative
+                                                                            // X (left)
+                                                .withRotationalRate(-.7
+                                                                * driveController.getRightX() * MaxAngularRate) // Drive
+                                // counterclockwise
+                                // with
+                                // negative
+                                // X
+                                // (left)
+                                ));
+
+                driveController.R2().whileTrue(drivetrain.applyRequest(() -> rcDrive.withVelocityX(0.1 * MaxSpeed)));
+
+                driveController.L2().whileTrue(drivetrain.applyRequest(() -> rcDrive.withVelocityX(-0.1 * MaxSpeed)));
+
+                driveController.R1().whileTrue(drivetrain.applyRequest(() -> rcDrive.withVelocityY(-0.1 * MaxSpeed)));
+
+                driveController.L1().whileTrue(drivetrain.applyRequest(() -> rcDrive.withVelocityY(0.1 * MaxSpeed)));
+
                 driveController.triangle().onTrue(resetGyro());
 
                 driveController.options().whileTrue(drivetrain.followPathCommandtoTestPose());
 
                 // driveController.povDown().whileTrue(drivetrain.followPathCommandtoHUB());
 
-                // operatorController.L1().whileTrue(new PIDTurret(turret, 0));
-
-                // operatorController.L2().whileTrue(new PIDTurret(turret, .5));
-
                 // operatorController.povUp().whileTrue(new AimAtHub(turret, drivetrain));
 
                 // operatorController.share().onTrue(new ZeroTurret(turret));
 
+                // CANDle subsystem
                 // operatorController.povUp()
-                //                 .whileTrue(candle.setLEDSTate(CANDLE_STRIPS.FIRST,
-                //                                 LEDState.PINK));
-// DriverStation.getMatchTime();
-// DriverStation.getGameSpecificMessage().isEmpty()
+                // .whileTrue(candle.setLEDSTate(CANDLE_STRIPS.FIRST,
+                // LEDState.PINK));
+                // DriverStation.getMatchTime();
+                // DriverStation.getGameSpecificMessage().isEmpty()
                 // operatorController.povLeft()
                 // .whileTrue(candle.setLEDSTate(Constants.CANDLE_CONSTANTS.STRIPS.FIRST,
                 // LEDState.COPPER));
 
                 // operatorController.povRight().whileTrue(candle.fire(STRIPS.FIRST));
 
-                operatorController.triangle().whileTrue(shooter.setShooterSpeedCommand(0));
+                // Turret subsystem
+                // operatorController.L1().whileTrue(new PIDTurret(turret, 0));
 
-                operatorController.square().whileTrue(shooter.setShooterSpeedCommand(30));
+                // operatorController.L2().whileTrue(new PIDTurret(turret,
+                // Utils.getAngleToHub(drivetrain)));
 
+                // operatorController.cross().onTrue(new ZeroTurret(turret));
+
+                // Shooter Subsystem
+                operatorController.triangle().onTrue(new Shoot(shooter, 0));
+
+                operatorController.square().onTrue(new Shoot(shooter, 30));
+
+                operatorController.circle().onTrue(new Shoot(shooter, Utils.shooterSpeedFromDistance(
+                                Utils.distanceFromPose(Constants.PLACES.CENTER_OF_HUB, drivetrain))));
+
+                // Indexer subsystem
                 operatorController.R1().whileTrue(new IndexerSpin(indexer));
 
-                operatorController.share().whileTrue(intake.setSpinMotorSpeed(-0.50));
+                // Intake subsystem
+                // out
+                operatorController.povUp().whileTrue(new ManualIntake(intake, 0.05));
+                // in
+                operatorController.povDown().whileTrue(new ManualIntake(intake, -0.05));
+                // roller
+                operatorController.povLeft().whileTrue(new IntakeSpin(intake, -0.5));
 
-                operatorController.povUp().whileTrue(intake.setMovementMotorSpeed(-0.075));
-                operatorController.povDown().whileTrue(intake.setMovementMotorSpeed(0.075));
-                operatorController.povLeft().whileTrue(intake.setSpinMotorSpeed(-0.60));
+                // set aside for when the pid is tuned and constants are updated
+                // operatorController.povRight().whileTrue(new PIDIntake(intake, null));
         }
 
         public Command resetGyro() {
@@ -218,10 +267,10 @@ public class RobotContainer {
                 });
         }
 
-        public Command zeroTurret() {
-                return new ZeroTurret(turret);
+        public Command zeroThings() {
+                return new ParallelCommandGroup(new ZeroTurret(turret), new Shoot(shooter, 0)) ;
         }
-
+//ZeroTurret(turret)
         /**
          *
          * @return the command to run in autonomous

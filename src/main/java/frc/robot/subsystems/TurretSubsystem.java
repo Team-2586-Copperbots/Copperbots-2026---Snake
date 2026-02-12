@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Rotations;
+import static frc.robot.Constants.CANIds.Canivore;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -31,7 +32,7 @@ public class TurretSubsystem extends SubsystemBase {
     private final PositionVoltage positionVoltage = new PositionVoltage(0);
 
     public TurretSubsystem() {
-        turnMotor = new TalonFX(CANIds.TURRET_TURN_MOTOR);
+        turnMotor = new TalonFX(CANIds.TURRET_TURN_MOTOR, Canivore);
         limitSwitch = new DigitalInput(DIO_IDS.TURRET_LIMIT_SWITCH);
 
         turnMotorConfig = new TalonFXConfiguration();

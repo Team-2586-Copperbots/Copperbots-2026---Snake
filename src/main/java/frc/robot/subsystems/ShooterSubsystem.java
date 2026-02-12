@@ -11,8 +11,10 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import static frc.robot.Constants.CANIds.*;
-import static frc.robot.Constants.SHOOTER_CONSTANTS.*;
+import frc.robot.Constants;
+import frc.robot.Constants.CANIds;
+import frc.robot.Constants.SHOOTER_CONSTANTS;
+import static frc.robot.Constants.CANIds.Canivore;
 
 public class ShooterSubsystem extends SubsystemBase {
     // motors
@@ -25,8 +27,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public ShooterSubsystem() {
 
-        shooterMotor1 = new TalonFX(SHOOTER_MOTOR_1_ID);
-        shooterMotor2 = new TalonFX(SHOOTER_MOTOR_2_ID);
+        shooterMotor1 = new TalonFX(CANIds.SHOOTER_MOTOR_1_ID, Canivore);
+        shooterMotor2 = new TalonFX(CANIds.SHOOTER_MOTOR_2_ID, Canivore);
 
         shooterConfig = new TalonFXConfiguration();
 
@@ -74,7 +76,7 @@ public class ShooterSubsystem extends SubsystemBase {
         return runEnd(() -> {
             shooterMotor1.setControl(velocityVoltage.withVelocity(speed));
         }, () -> {
-            shooterMotor1.setControl(velocityVoltage.withVelocity(SHOOTER_SPEED));
+            shooterMotor1.setControl(velocityVoltage.withVelocity(SHOOTER_CONSTANTS.SHOOTER_SPEED));
         });
     }
 

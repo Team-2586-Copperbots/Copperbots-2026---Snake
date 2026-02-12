@@ -89,10 +89,10 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     // schedule the autonomous command (example)
     if (robotContainer.getAutonomousCommand() != null) {
-      m_autonomousCommand = Commands.sequence(robotContainer.zeroTurret(), robotContainer.getAutonomousCommand());
+      m_autonomousCommand = Commands.sequence(robotContainer.zeroThings(), robotContainer.getAutonomousCommand());
 
     } else {
-      m_autonomousCommand = robotContainer.zeroTurret();
+      m_autonomousCommand = robotContainer.zeroThings();
     }
     CommandScheduler.getInstance().schedule(m_autonomousCommand);
 
@@ -112,7 +112,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    CommandScheduler.getInstance().schedule(robotContainer.zeroTurret());
+    // CommandScheduler.getInstance().schedule(robotContainer.zeroTurret());
 
   }
 

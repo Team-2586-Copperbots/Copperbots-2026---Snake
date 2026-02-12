@@ -9,13 +9,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.CANIds;
-import frc.robot.Constants.CANDLE_STRIPS;;
+import frc.robot.Constants.CANDLE_STRIPS;
+import static frc.robot.Constants.CANIds.Canivore;
 
 public class CANDle extends SubsystemBase {
     private CANdle candle;
 
     public CANDle() {
-        candle = new CANdle(CANIds.CANDLE_ID);
+        candle = new CANdle(CANIds.CANDLE_ID, Canivore);
 
     }
 

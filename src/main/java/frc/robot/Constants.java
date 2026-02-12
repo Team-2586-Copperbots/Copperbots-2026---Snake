@@ -6,6 +6,7 @@ package frc.robot;
 
 import java.io.IOException;
 
+import com.ctre.phoenix6.CANBus;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathConstraints;
 
@@ -50,8 +51,7 @@ public final class Constants {
   public static class OPERATOR_CONSTANTS {
     public static final int DRIVER_CONTROLER_PORT = 0;
     public static final int OPERATOR_CONTROLER_PORT = 1;
-    public static final int TEST_CONTROLER_PORT = 2;
-    public static final double MAX_SPEED_LIMITER = .7;
+    public static final double MAX_SPEED_LIMITER = 0.2;
   }
 
   public static class PLACES {
@@ -63,6 +63,7 @@ public final class Constants {
   }
 
   public static class CANIds {
+    public static final CANBus Canivore = new CANBus("Subsystems");
     // shooter motors
     public static final int SHOOTER_MOTOR_1_ID = 21;
     public static final int SHOOTER_MOTOR_2_ID = 22;
