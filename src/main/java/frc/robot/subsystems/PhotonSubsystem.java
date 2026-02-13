@@ -1,14 +1,11 @@
 package frc.robot.subsystems;
 
-import java.lang.reflect.Array;
 import java.util.Optional;
 
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.simulation.PhotonCameraSim;
-import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -16,11 +13,7 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.networktables.DoubleArrayEntry;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class PhotonSubsystem extends SubsystemBase {
@@ -57,6 +50,38 @@ public class PhotonSubsystem extends SubsystemBase {
 
         return robotPose;
     }
+
+    // public double getAmbiguity() {
+    //     if (getRobotPose().isPresent()) {
+    //         EstimatedRobotPose result
+    //     }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    //     // Optional<EstimatedRobotPose> robotPose = Optional.empty();
+
+    //     // for (PhotonPipelineResult change : camera1.getAllUnreadResults()) {
+    //     //     robotPose = poseEstimator.update(change);
+    //     // }
+
+    //     // return robotPose;
+    // }
 
 
     public double getCamera1Yaw() {

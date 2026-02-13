@@ -6,15 +6,9 @@ package frc.robot;
 
 import frc.robot.Constants.OPERATOR_CONSTANTS;
 import frc.robot.Constants.PLACES;
-import frc.robot.Constants.CANDLE_STRIPS;
 import frc.robot.commands.AimAndShoot;
-import frc.robot.commands.PIDTurret;
-import frc.robot.commands.Shoot;
-import frc.robot.commands.AimAtHub;
+import frc.robot.commands.ShootSpeed;
 import frc.robot.commands.IndexerSpin;
-import frc.robot.commands.IntakeSpin;
-import frc.robot.commands.ManualIntake;
-import frc.robot.commands.PIDIntake;
 import frc.robot.commands.ZeroTurret;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CANDle;
@@ -24,27 +18,18 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
-import frc.robot.subsystems.CANDle.LEDState;
-
 import static edu.wpi.first.units.Units.*;
-
-import java.time.Instant;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -74,7 +59,7 @@ public class RobotContainer {
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive
                                                                                  // motors
         // used 2025 for side to side movement
-        // TODO: ask cole/evyln if they want robot centric drive this year?
+        //
         private final SwerveRequest.RobotCentric rcDrive = new SwerveRequest.RobotCentric().withDeadband(MaxSpeed * 0.1)
                         .withRotationalDeadband(MaxAngularRate * 0.1);
         @SuppressWarnings("unused")
@@ -82,15 +67,16 @@ public class RobotContainer {
         @SuppressWarnings("unused")
         private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
-        @SuppressWarnings("unused")
         private final Telemetry logger = new Telemetry(MaxSpeed);
 
         public final PhotonSubsystem vision = new PhotonSubsystem();
         public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+        @SuppressWarnings("unused")
         private final IntakeSubsystem intake = new IntakeSubsystem();
         private final IndexerSubsystem indexer = new IndexerSubsystem();
         private final ShooterSubsystem shooter = new ShooterSubsystem();
         private final TurretSubsystem turret = new TurretSubsystem();
+        @SuppressWarnings("unused")
         private final CANDle candle = new CANDle();
 
         private final CommandPS4Controller driveController = new CommandPS4Controller(
@@ -201,20 +187,28 @@ public class RobotContainer {
                                 // X
                                 // (left)
                                 ));
+                // robot centric drive
+                driveController.R2().whileTrue(drivetrain.applyRequest(
+                                () -> rcDrive.withVelocityX(0.1 * MaxSpeed).withVelocityY(0).withRotationalRate(0)));
 
-                driveController.R2().whileTrue(drivetrain.applyRequest(() -> rcDrive.withVelocityX(0.1 * MaxSpeed)));
+                driveController.L2().whileTrue(drivetrain.applyRequest(
+                                () -> rcDrive.withVelocityX(-0.1 * MaxSpeed).withVelocityY(0).withRotationalRate(0)));
 
-                driveController.L2().whileTrue(drivetrain.applyRequest(() -> rcDrive.withVelocityX(-0.1 * MaxSpeed)));
+                driveController.R1().whileTrue(drivetrain.applyRequest(
+                                () -> rcDrive.withVelocityY(-0.1 * MaxSpeed).withVelocityX(0).withRotationalRate(0)));
 
-                driveController.R1().whileTrue(drivetrain.applyRequest(() -> rcDrive.withVelocityY(-0.1 * MaxSpeed)));
-
-                driveController.L1().whileTrue(drivetrain.applyRequest(() -> rcDrive.withVelocityY(0.1 * MaxSpeed)));
+                driveController.L1().whileTrue(drivetrain.applyRequest(
+                                () -> rcDrive.withVelocityY(0.1 * MaxSpeed).withVelocityX(0).withRotationalRate(0)));
 
                 driveController.triangle().onTrue(resetGyro());
 
                 driveController.options().whileTrue(drivetrain.followPathCommandtoTestPose());
 
                 // driveController.povDown().whileTrue(drivetrain.followPathCommandtoHUB());
+
+
+//∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
+
 
                 // operatorController.povUp().whileTrue(new AimAtHub(turret, drivetrain));
 
@@ -241,41 +235,42 @@ public class RobotContainer {
                 // operatorController.cross().onTrue(new ZeroTurret(turret));
 
                 // Shooter Subsystem
-                operatorController.triangle().onTrue(new Shoot(shooter, 0));
+                // operatorController.triangle().onTrue(new Shoot(shooter, 0));
 
-                operatorController.square().onTrue(new Shoot(shooter, 50));
+                // operatorController.square().onTrue(new Shoot(shooter, 30));
 
-                operatorController.circle().onTrue(new Shoot(shooter, Utils.shooterSpeedFromDistance(
-                                Utils.distanceFromPose(Constants.PLACES.CENTER_OF_HUB, drivetrain))));
+                // operatorController.circle().onTrue(new Shoot(shooter,
+                // Utils.shooterSpeedFromDistance(
+                // Utils.distanceFromPose(Constants.PLACES.CENTER_OF_HUB, drivetrain))));
 
                 // Indexer subsystem
                 operatorController.R1().whileTrue(new IndexerSpin(indexer));
 
                 // Intake subsystem
                 // out
-                operatorController.povUp().whileTrue(new ManualIntake(intake, 0.075));
+                // operatorController.povUp().whileTrue(new ManualIntake(intake, 0.075));
                 // in
-                operatorController.povDown().whileTrue(new ManualIntake(intake, -0.075));
+                // operatorController.povDown().whileTrue(new ManualIntake(intake, -0.075));
                 // roller
-                operatorController.povLeft().whileTrue(new IntakeSpin(intake, -0.5));
+                // operatorController.povLeft().whileTrue(new IntakeSpin(intake, -0.5));
 
                 // set aside for when the pid is tuned and constants are updated
                 // operatorController.povRight().whileTrue(new PIDIntake(intake, null));
 
 
+//∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
 
 
+                testController.R1().whileTrue(new IndexerSpin(indexer));
 
+                testController.povDown().onTrue(new ShootSpeed(shooter, 0, false));
+                testController.povUp().onTrue(new ShootSpeed(shooter, 20, false));
 
+                testController.triangle().onTrue(new ShootSpeed(shooter, 1, true));
+                testController.square().onTrue(new ShootSpeed(shooter, -1, true));
 
-                testController.povDown().onTrue(new Shoot(shooter, 0));
-                testController.povLeft().onTrue(new Shoot(shooter, OPERATOR_CONSTANTS.setRPM));
-                testController.povUp().onTrue(new Shoot(shooter, OPERATOR_CONSTANTS.setRPM+1));
-                testController.povRight().onTrue(new Shoot(shooter, OPERATOR_CONSTANTS.setRPM+2));
-                testController.square().onTrue(new Shoot(shooter, OPERATOR_CONSTANTS.setRPM+3));
-                testController.triangle().onTrue(new Shoot(shooter, OPERATOR_CONSTANTS.setRPM+4));
-                testController.circle().onTrue(new Shoot(shooter, OPERATOR_CONSTANTS.setRPM+5));
-                testController.R2().whileTrue(new IndexerSpin(indexer));
+                testController.circle().onTrue(new ShootSpeed(shooter, 5, true));
+                testController.cross().onTrue(new ShootSpeed(shooter, -5, true));
         }
 
         public Command resetGyro() {
@@ -285,7 +280,7 @@ public class RobotContainer {
         }
 
         public Command zeroThings() {
-                return new ParallelCommandGroup(new ZeroTurret(turret), new Shoot(shooter, 0));
+                return new ParallelCommandGroup(new ZeroTurret(turret), new ShootSpeed(shooter, 0, false));
         }
 
         // ZeroTurret(turret)

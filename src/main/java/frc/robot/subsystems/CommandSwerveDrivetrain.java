@@ -14,8 +14,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.path.PathConstraints;
-
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -23,7 +21,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -33,9 +30,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Constants;
 import frc.robot.Constants.DRIVEBASE_TARGET_POSES;
-import frc.robot.Constants.PLACES;
 import frc.robot.Constants.ROBOT_PROPERTIES;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
@@ -355,8 +350,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SmartDashboard.putData("field", elasticField);
         SmartDashboard.putNumber("robot Pose X", getState().Pose.getX());
         SmartDashboard.putNumber("robot Pose Y", getState().Pose.getY());
-        SmartDashboard.putNumber("robot Pose R in degrees", getState().Pose.getRotation().getDegrees());
-        SmartDashboard.putNumber("turret X distance to hub", ((11.92 - getState().Pose.getX()) - 0.187325));
+        SmartDashboard.putNumber("robot Pose R in degrees", getPigeon2().getYaw().getValueAsDouble());
+        SmartDashboard.putNumber("turret X distance to hub", ((11.92 - getState().Pose.getX()) + 0.187325));
     }
 
     private void startSimThread() {

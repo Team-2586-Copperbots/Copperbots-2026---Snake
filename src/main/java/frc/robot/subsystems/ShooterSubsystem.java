@@ -9,17 +9,15 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Constants.CANIds;
-import frc.robot.Constants.SHOOTER_CONSTANTS;
 import static frc.robot.Constants.CANIds.Canivore;
 
 public class ShooterSubsystem extends SubsystemBase {
     // motors
     private final TalonFX shooterMotor1;
     private final TalonFX shooterMotor2;
+    private double speedForPeriodicShooter = 10;
 
     // config vars
     private final TalonFXConfiguration shooterConfig;
@@ -37,8 +35,8 @@ public class ShooterSubsystem extends SubsystemBase {
         motorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive;
 
         var pidConfig = shooterConfig.Slot0;
-        pidConfig.kP = 0.175;
-        pidConfig.kI = 0.030;
+        pidConfig.kP = 0.500;
+        pidConfig.kI = 0.000;
         pidConfig.kD = 0.000;
         pidConfig.kV = 0.110;
         pidConfig.kS = 0.050;
@@ -48,37 +46,21 @@ public class ShooterSubsystem extends SubsystemBase {
         shooterMotor2.setControl(new Follower(shooterMotor1.getDeviceID(), MotorAlignmentValue.Opposed));
     }
 
-    /** Set and forget command to change the shooter's speed */
-    public Command setShooterSpeedCommand(double wheelSpeed) {
-        return runOnce(() -> {
-            shooterMotor1.setControl(velocityVoltage.withVelocity(wheelSpeed));
-        });
+    
+
+    // negative to decrese
+    public void setShooterSpeedAjust(double amount) {
+        speedForPeriodicShooter += amount;
     }
 
-    public void setShooterSpeed(double speed) {
-        shooterMotor1.setControl(velocityVoltage.withVelocity(speed));
-    }
+    // sets the absolute speed
+    public void setShooterSpeedSet(double setPoint) {
+        speedForPeriodicShooter = setPoint;
+    }    
 
-    /** run end command to run the shooter at a speed and set to zero upon ending */
-    public Command runEndShooterSpeed(double speed) {
-        return runEnd(() -> {
-            shooterMotor1.setControl(velocityVoltage.withVelocity(speed));
-        }, () -> {
-            shooterMotor1.setControl(velocityVoltage.withVelocity(0.0));
-        });
-    }
+    
 
-    /**
-     * run end command to run the shooter at a speed and set to default speed upon
-     * ending
-     */
-    public Command increaseShooterSpeedTemp(double speed) {
-        return runEnd(() -> {
-            shooterMotor1.setControl(velocityVoltage.withVelocity(speed));
-        }, () -> {
-            shooterMotor1.setControl(velocityVoltage.withVelocity(SHOOTER_CONSTANTS.SHOOTER_SPEED));
-        });
-    }
+    
 
     public double getMotor1Speed() {
         return shooterMotor1.getVelocity().getValueAsDouble();
@@ -88,9 +70,19 @@ public class ShooterSubsystem extends SubsystemBase {
         return shooterMotor2.getVelocity().getValueAsDouble();
     }
 
+    
     @Override
     public void periodic() {
+        // TODO: posibly use diffrent periodic:
+        // if (oldValue != newValue) {
+        //   oldValue = newValue;
+        //   setcontrol(newValue)
+        // }
+        // intent: reduce CAN lode if not needed
+        shooterMotor1.setControl(velocityVoltage.withVelocity(speedForPeriodicShooter));
+
         SmartDashboard.putNumber("Shooter setpoint", velocityVoltage.Velocity);
+        SmartDashboard.putNumber("dynamic speed", speedForPeriodicShooter);
         SmartDashboard.putNumber("ShooterSpeed", getMotor1Speed());
         SmartDashboard.putNumber("ahooter motor 2", getMotor2Speed());
         SmartDashboard.putNumber("shotter current", shooterMotor1.getStatorCurrent().getValueAsDouble());
