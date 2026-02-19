@@ -79,6 +79,8 @@ public class ShooterSubsystem extends SubsystemBase {
         //   setcontrol(newValue)
         // }
         // intent: reduce CAN lode if not needed
+
+        // TODO: look at CAN load
         shooterMotor1.setControl(velocityVoltage.withVelocity(speedForPeriodicShooter));
 
         SmartDashboard.putNumber("Shooter setpoint", velocityVoltage.Velocity);

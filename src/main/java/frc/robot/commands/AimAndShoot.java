@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Utils;
@@ -11,10 +12,10 @@ public class AimAndShoot extends Command {
     private ShooterSubsystem shooterSubsystem;
     private TurretSubsystem turretSubsystem;
     private CommandSwerveDrivetrain drivetrainSubsystem;
-    private Pose3d target;
+    private Pose2d target;
 
     public AimAndShoot(ShooterSubsystem ShooterSubsystem, TurretSubsystem TurretSubsystem,
-            CommandSwerveDrivetrain DrivetraineSubsystem, Pose3d Target) {
+            CommandSwerveDrivetrain DrivetraineSubsystem, Pose2d Target) {
         this.shooterSubsystem = ShooterSubsystem;
         this.turretSubsystem = TurretSubsystem;
         this.drivetrainSubsystem = DrivetraineSubsystem;

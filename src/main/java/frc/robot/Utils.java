@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.PLACES;
 import frc.robot.Constants.SHOOTER_CONSTANTS;
 import frc.robot.Constants.TURRET_CONSTANTS;
@@ -32,8 +33,19 @@ public final class Utils {
 
     public static double shooterSpeedFromDistance(double distance) {
         // regresion equation for shooter
-        // TODO: update for mounted turret
-        double speed = ((5.45 * distance) + 34.5);
+        SmartDashboard.putNumber("shooterspeedfromdistance distance", distance);
+        double speed = ((4.86 * distance) + 35.7);
+        SmartDashboard.putNumber("shooterspeedfromdistance", speed);
+
+        return speed;
+    }
+
+    public static double shooterSpeedFromDistanceex(CommandSwerveDrivetrain drivetrain) {
+        // regresion equation for shooter
+        double distance = distanceFromPose(Constants.PLACES.CENTER_OF_HUB, drivetrain);
+        SmartDashboard.putNumber("shooterspeedfromdistance distance", distance);
+        double speed = ((4.86 * distance) + 35.7);
+        SmartDashboard.putNumber("shooterspeedfromdistance", speed);
 
         return speed;
     }
@@ -44,21 +56,24 @@ public final class Utils {
         return time;
     }
 
-    public static double distanceFromPose(Pose3d taretPose3d, CommandSwerveDrivetrain drivetrain) {
+    public static double distanceFromPose(Pose2d taretPose2d, CommandSwerveDrivetrain drivetrain) {
 
         // double distance = taretPose3d.getTranslation().
-        Pose3d shooterPose3d = pose3dForShooter(drivetrain);
+        Pose2d shooterPose2d = pose2dForShooter(drivetrain);
 
-        double distanceX = Math.abs(taretPose3d.getX() - shooterPose3d.getX());
-        double distanceY = Math.abs(taretPose3d.getY() - shooterPose3d.getY());
-        double distanceZ = Math.abs(taretPose3d.getZ() - shooterPose3d.getZ());
-        double distanceXY = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
-        double distanceXYZ = Math.sqrt(Math.pow(distanceXY, 2) + Math.pow(distanceZ, 2));
-
-        return distanceXYZ;
+        double distanceX = Math.abs(taretPose2d.getX() - shooterPose2d.getX());
+        SmartDashboard.putNumber("targetpose2d.get()", taretPose2d.getX());
+        SmartDashboard.putNumber("shooterPose2d.getX()", shooterPose2d.getX());
+        
+        SmartDashboard.putNumber("distanceX", distanceX);
+        double distanceY = Math.abs(taretPose2d.getY() - shooterPose2d.getY());
+        SmartDashboard.putNumber("distanceY", distanceY);
+        double distanceXY = Math.sqrt((Math.pow(distanceX, 2) + Math.pow(distanceY, 2)));
+        SmartDashboard.putNumber("distanceFromPose", distanceXY);
+        return distanceXY;
     }
 
-    public static Pose3d pose3dForShooter(CommandSwerveDrivetrain drivetrain) {
+    public static Pose2d pose2dForShooter(CommandSwerveDrivetrain drivetrain) {
         // done: update with math for the pose of the shooter from the cad modle do
         // using (unit circle and angle (in radians)) or wario
 
@@ -71,27 +86,30 @@ public final class Utils {
         double shooterYOffset = (Math.sin(robotPose2d.getRotation().getRadians())
                 * TURRET_CONSTANTS.TURRET_OFFSET_FROM_ROBOT_CENTER.getY());
 
-        Pose3d shooterPose3d = new Pose3d(robotPose2d.getX() + shooterXOffset, robotPose2d.getY() + shooterYOffset,
-                SHOOTER_CONSTANTS.HEIGHT_OF_WHEEL_OFF_GROUND, new Rotation3d(robotPose2d.getRotation()));
+        Pose2d shooterPose2d = new Pose2d(robotPose2d.getX() + shooterXOffset, robotPose2d.getY() + shooterYOffset,
+                robotPose2d.getRotation());
 
-        return shooterPose3d;
+        return shooterPose2d;
     }
 
     // this returns the angle (in rot) fron the center of the robot to the center of
     // the hubs
     // schoeing element by way of math and arcsin()
     public static double getAngleToHub(CommandSwerveDrivetrain drivetrain) {
-        double angle = 0;
-        Pose3d shooterPose3d = pose3dForShooter(drivetrain);
+        Pose2d shooterPose2d = pose2dForShooter(drivetrain);
 
-        double x = shooterPose3d.getX() - PLACES.CENTER_OF_HUB.getX();
-        double y = shooterPose3d.getY() - PLACES.CENTER_OF_HUB.getY();
-        
+        double x = Math.abs(shooterPose2d.getX() - PLACES.CENTER_OF_HUB.getX());
+        double y = Math.abs(shooterPose2d.getY() - PLACES.CENTER_OF_HUB.getY());
+
         // in rotations
-        angle = Units.radiansToRotations(Math.atan(y / x));
+        double baseTurretAngle = Units.radiansToRotations(Math.atan(y / x));
+
+        if (shooterPose2d.getY() > PLACES.CENTER_OF_HUB.getY()) {
+            baseTurretAngle = -baseTurretAngle;
+        }
 
         // factor in drivetrain rotation
-        angle = -angle + -Units.radiansToRotations(shooterPose3d.getRotation().getAngle());
+        double angle = (baseTurretAngle + drivetrain.getState().Pose.getRotation().getRotations() + 0.5) % 1;
 
         return angle;
     }
