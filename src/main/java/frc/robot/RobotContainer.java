@@ -286,10 +286,7 @@ public class RobotContainer {
 
                 testController2.R1().whileTrue(new IndexerSpin(indexer));
                 testController2.square().whileTrue(new AimAtHub(turret, drivetrain));
-                testController2.triangle().whileTrue(new AutoSpeed(shooter, drivetrain));\[
-                        \[]
-                ]
-
+                testController2.triangle().whileTrue(new AutoSpeed(shooter, drivetrain));
         }
 
         public Command resetGyro() {
