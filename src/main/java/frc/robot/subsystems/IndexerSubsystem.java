@@ -32,5 +32,28 @@ public class IndexerSubsystem extends SubsystemBase {
     public void setTowerSpeed(double speed) {
         towerMotor.set(speed);
     }
+
+    public static enum IndexerStates {
+        UP(0.2,0.4),
+        TOWER(0,0.4),
+        DOWN(-0.3,-0.4),
+        OFF(0,0);
+
+        private final double spindexer;
+        private final double tower;
+
+        private IndexerStates(double spindexer, double tower) {
+            this.spindexer = spindexer;
+            this.tower = tower;
+        }
+
+        public double getSpindexer() {
+            return spindexer;
+        }
+        
+        public double getTower() {
+            return tower;
+        }
+    }
     
 }

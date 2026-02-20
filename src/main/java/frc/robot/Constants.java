@@ -78,9 +78,12 @@ public final class Constants {
     // intake motor
     public static final int INDEXER_MOTOR = 24;
     public static final int TOWER_MOTOR = 25;
+    // climb motor
+    public static final int CLIMB_MOTOR_1 = 29;
+    public static final int CLIMB_MOTOR_2 = 30;
     // turret motor
     public static final int TURRET_TURN_MOTOR = 23;
-
+    // candle
     public static final int CANDLE_ID = 31;
   }
 

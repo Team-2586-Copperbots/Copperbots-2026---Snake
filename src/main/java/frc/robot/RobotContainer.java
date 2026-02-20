@@ -4,8 +4,10 @@
 
 package frc.robot;
 
+import frc.robot.Constants;
 import frc.robot.Constants.OPERATOR_CONSTANTS;
 import frc.robot.Constants.PLACES;
+import frc.robot.Constants.SHOOTER_CONSTANTS;
 import frc.robot.commands.AimAndShoot;
 import frc.robot.commands.AimAtHub;
 import frc.robot.commands.AutoSpeed;
@@ -14,6 +16,7 @@ import frc.robot.commands.IndexerSpin;
 import frc.robot.commands.IntakeSpin;
 import frc.robot.commands.ManualIntake;
 import frc.robot.commands.ManualTurret;
+import frc.robot.commands.PIDIntake;
 import frc.robot.commands.ZeroTurret;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CANDle;
@@ -23,6 +26,8 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
+import frc.robot.subsystems.IndexerSubsystem.IndexerStates;
+
 import static edu.wpi.first.units.Units.*;
 
 import java.util.jar.Attributes.Name;
@@ -37,6 +42,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -127,17 +133,14 @@ public class RobotContainer {
                                 new AimAndShoot(shooter, turret, drivetrain, PLACES.CENTER_OF_HUB));
                 NamedCommands.registerCommand("shoot", new ShootSpeed(shooter, 20, false));
                 NamedCommands.registerCommand("intake spin", new IntakeSpin(intake));
-                NamedCommands.registerCommand("indexer", new IndexerSpin(indexer));
+                NamedCommands.registerCommand("indexer", new IndexerSpin(indexer, IndexerStates.UP));
                 NamedCommands.registerCommand("aim forward", new ManualTurret(turret, 0));
-
-                // NamedCommands.registerCommand("Home", new SequentialCommandGroup(
-                // new StopShooterWheel(shooter),
-                // new RunCommand(() -> wristSubsystem
-                // .setCurrentPosition(WristPosition.HOME),
-                // wristSubsystem).withTimeout(0.1),
-                // new PIDElevator(ElevatorPosition.Home, elevatorSubsystem),
-                // new RunCommand(() -> elevatorSubsystem.setMotorSpeed(0),
-                // elevatorSubsystem).withTimeout(0.1)));
+                NamedCommands.registerCommand("AimAtHub", new AimAtHub(turret, drivetrain));
+                NamedCommands.registerCommand("homeAll",
+                                new SequentialCommandGroup(new ManualTurret(turret, 0),
+                                                new PIDIntake(intake, Constants.IntakePosition.IN),
+                                                new ShootSpeed(shooter, SHOOTER_CONSTANTS.SHOOTER_IDLE_SPEED, false),
+                                                new IndexerSpin(indexer, IndexerStates.OFF)));
 
         }
 
@@ -256,7 +259,7 @@ public class RobotContainer {
                 // Utils.distanceFromPose(Constants.PLACES.CENTER_OF_HUB, drivetrain))));
 
                 // Indexer subsystem
-                operatorController.R1().whileTrue(new IndexerSpin(indexer));
+                operatorController.R1().whileTrue(new IndexerSpin(indexer, IndexerStates.UP));
 
                 // Intake subsystem
                 // out
@@ -272,7 +275,7 @@ public class RobotContainer {
 
                 // ∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
 
-                testController1.R1().whileTrue(new IndexerSpin(indexer));
+                testController1.R1().whileTrue(new IndexerSpin(indexer, IndexerStates.UP));
 
                 testController1.povDown().onTrue(new ShootSpeed(shooter, 0, false));
                 testController1.povUp().onTrue(new ShootSpeed(shooter, 20, false));
@@ -284,13 +287,11 @@ public class RobotContainer {
                 testController1.circle().onTrue(new ShootSpeed(shooter, 5, true));
                 testController1.cross().onTrue(new ShootSpeed(shooter, -5, true));
 
-
-
                 testController2.povUp().onTrue(new ManualTurret(turret, 0));
                 testController2.povDown().onTrue(new ManualTurret(turret, 0.25));
                 testController2.povRight().whileTrue(new AimAtHub(turret, drivetrain));
 
-                testController2.R1().whileTrue(new IndexerSpin(indexer));
+                testController2.R1().whileTrue(new IndexerSpin(indexer, IndexerStates.UP));
                 testController2.square().whileTrue(new AimAtHub(turret, drivetrain));
                 testController2.triangle().whileTrue(new AutoSpeed(shooter, drivetrain));
                 testController2.circle().toggleOnTrue(new AimAndShoot(shooter, turret, drivetrain, null));
