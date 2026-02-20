@@ -32,22 +32,5 @@ public class IndexerSubsystem extends SubsystemBase {
     public void setTowerSpeed(double speed) {
         towerMotor.set(speed);
     }
-
-    public Command setIndexerSpeedCommand(double speed) {
-        return runEnd(() -> {
-            setIndexerSpeed(speed);
-        }, () -> {
-            setIndexerSpeed(0);
-        });
-    }
-
-    public Command setTowerSpeedCommand(double speed) {
-        return runEnd(() -> {
-            setTowerSpeed(speed);
-        }, () -> {
-            setTowerSpeed(0);
-        });
-    }
-
-
+    
 }

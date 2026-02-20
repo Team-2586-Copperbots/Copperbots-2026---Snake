@@ -90,7 +90,7 @@ public final class Constants {
   }
 
   public static class SHOOTER_CONSTANTS {
-    public static final double SHOOTER_SPEED = 20.0; // RPM
+    public static final double SHOOTER_IDLE_SPEED = 0.0; // RPM
     public static final double HEIGHT_OF_WHEEL_OFF_GROUND = 0.64135; // in meters
   }
 

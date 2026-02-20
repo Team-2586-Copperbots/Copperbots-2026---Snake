@@ -61,25 +61,10 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public double getMovementBarPosition() {
-        return movementMotor.getPosition().getValueAsDouble();
+        return cancoder.getAbsolutePosition().getValueAsDouble();
     }
 
-    public Command setMovementMotorSpeedCommand(double speed) {
-        return runEnd(() -> {
-            setMovementBarSpeed(speed);
-        }, () -> {
-            setMovementBarSpeed(0);
-        });
-    }
-
-    public Command setSpinMotorSpeedCommand(double speed) {
-        return runEnd(() -> {
-            setSpinnerSpeed(speed);
-        }, () -> {
-            setSpinnerSpeed(0);
-        });
-    }
-
+    
     @Override
     public void periodic() {
         SmartDashboard.putNumber("intake position in rotations", getMovementBarPosition());

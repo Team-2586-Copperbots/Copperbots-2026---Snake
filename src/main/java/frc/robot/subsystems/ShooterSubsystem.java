@@ -82,11 +82,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
         // TODO: look at CAN load
         shooterMotor1.setControl(velocityVoltage.withVelocity(speedForPeriodicShooter));
-
-        SmartDashboard.putNumber("Shooter setpoint", velocityVoltage.Velocity);
+        
+        SmartDashboard.putNumber("Shooter velocityVoltage.Velocity", velocityVoltage.Velocity);
         SmartDashboard.putNumber("dynamic speed", speedForPeriodicShooter);
         SmartDashboard.putNumber("ShooterSpeed", getMotor1Speed());
-        SmartDashboard.putNumber("ahooter motor 2", getMotor2Speed());
         SmartDashboard.putNumber("shotter current", shooterMotor1.getStatorCurrent().getValueAsDouble());
     }
 }

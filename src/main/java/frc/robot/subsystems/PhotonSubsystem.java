@@ -101,8 +101,6 @@ public class PhotonSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("AprilTag_1 yaw ", getCamera1Yaw());
-        // SmartDashboard.putNumber("AprilTag_3 yaw ", getCamera3Yaw());
         // getRobotPose().get().estimatedPose
     }
 

@@ -92,15 +92,8 @@ public class TurretSubsystem extends SubsystemBase {
         }
     }
 
-    // command to aim at the hub
-    // drivetrain is passed to the calculating method
-    public void aimAtHub(CommandSwerveDrivetrain drivetrain) {
-        // aims at hub
-        setTurretRotation(Utils.getAngleToHub(drivetrain));
-    }
-
     public double getRingRotation() {
-        return turnMotor.getPosition().getValueAsDouble() / TURRET_CONSTANTS.MOTOR_TO_RING_RATIO;
+        return (turnMotor.getPosition().getValueAsDouble() / TURRET_CONSTANTS.MOTOR_TO_RING_RATIO);
     }
 
     public boolean getLimitSwitch() {
@@ -109,7 +102,7 @@ public class TurretSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("ring rotation", getRingRotation());
+        SmartDashboard.putNumber("turret rotation", getRingRotation());
         SmartDashboard.putString("positionVoltage", positionVoltage.getPositionMeasure().toLongString());
         SmartDashboard.putBoolean("limit switch", getLimitSwitch());
 

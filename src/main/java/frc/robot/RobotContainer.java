@@ -13,7 +13,7 @@ import frc.robot.commands.ShootSpeed;
 import frc.robot.commands.IndexerSpin;
 import frc.robot.commands.IntakeSpin;
 import frc.robot.commands.ManualIntake;
-import frc.robot.commands.PIDTurret;
+import frc.robot.commands.ManualTurret;
 import frc.robot.commands.ZeroTurret;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CANDle;
@@ -24,6 +24,8 @@ import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
 import static edu.wpi.first.units.Units.*;
+
+import java.util.jar.Attributes.Name;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -107,7 +109,7 @@ public class RobotContainer {
                 configureAutoCommands();
 
                 // For convenience a programmer could change this when going to competition.
-                boolean isCompetition = true;
+                boolean isCompetition = false;
                 // Build an auto chooser. This will use Commands.none() as the default option.
                 // As an example, this will only show autos that start with "comp" while at
                 // competition as defined by the programmer
@@ -123,6 +125,10 @@ public class RobotContainer {
 
                 NamedCommands.registerCommand("aim'n'Shoot",
                                 new AimAndShoot(shooter, turret, drivetrain, PLACES.CENTER_OF_HUB));
+                NamedCommands.registerCommand("shoot", new ShootSpeed(shooter, 20, false));
+                NamedCommands.registerCommand("intake spin", new IntakeSpin(intake));
+                NamedCommands.registerCommand("indexer", new IndexerSpin(indexer));
+                NamedCommands.registerCommand("aim forward", new ManualTurret(turret, 0));
 
                 // NamedCommands.registerCommand("Home", new SequentialCommandGroup(
                 // new StopShooterWheel(shooter),
@@ -259,7 +265,7 @@ public class RobotContainer {
                 operatorController.povDown().whileTrue(new ManualIntake(intake, -0.075));
 
                 // roller
-                operatorController.povLeft().whileTrue(new IntakeSpin(intake, -0.5));
+                operatorController.povLeft().whileTrue(new IntakeSpin(intake));
 
                 // set aside for when the pid is tuned and constants are updated
                 // operatorController.povRight().whileTrue(new PIDIntake(intake, null));
@@ -280,13 +286,15 @@ public class RobotContainer {
 
 
 
-                testController2.povUp().onTrue(new PIDTurret(turret, 0));
-                testController2.povDown().onTrue(new PIDTurret(turret, 0.25));
+                testController2.povUp().onTrue(new ManualTurret(turret, 0));
+                testController2.povDown().onTrue(new ManualTurret(turret, 0.25));
                 testController2.povRight().whileTrue(new AimAtHub(turret, drivetrain));
 
                 testController2.R1().whileTrue(new IndexerSpin(indexer));
                 testController2.square().whileTrue(new AimAtHub(turret, drivetrain));
                 testController2.triangle().whileTrue(new AutoSpeed(shooter, drivetrain));
+                testController2.circle().toggleOnTrue(new AimAndShoot(shooter, turret, drivetrain, null));
+                testController2.cross().whileTrue(new ShootSpeed(shooter, 0, false));
         }
 
         public Command resetGyro() {

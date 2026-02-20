@@ -33,19 +33,7 @@ public final class Utils {
 
     public static double shooterSpeedFromDistance(double distance) {
         // regresion equation for shooter
-        SmartDashboard.putNumber("shooterspeedfromdistance distance", distance);
         double speed = ((4.86 * distance) + 35.7);
-        SmartDashboard.putNumber("shooterspeedfromdistance", speed);
-
-        return speed;
-    }
-
-    public static double shooterSpeedFromDistanceex(CommandSwerveDrivetrain drivetrain) {
-        // regresion equation for shooter
-        double distance = distanceFromPose(Constants.PLACES.CENTER_OF_HUB, drivetrain);
-        SmartDashboard.putNumber("shooterspeedfromdistance distance", distance);
-        double speed = ((4.86 * distance) + 35.7);
-        SmartDashboard.putNumber("shooterspeedfromdistance", speed);
 
         return speed;
     }
@@ -62,14 +50,8 @@ public final class Utils {
         Pose2d shooterPose2d = pose2dForShooter(drivetrain);
 
         double distanceX = Math.abs(taretPose2d.getX() - shooterPose2d.getX());
-        SmartDashboard.putNumber("targetpose2d.get()", taretPose2d.getX());
-        SmartDashboard.putNumber("shooterPose2d.getX()", shooterPose2d.getX());
-        
-        SmartDashboard.putNumber("distanceX", distanceX);
         double distanceY = Math.abs(taretPose2d.getY() - shooterPose2d.getY());
-        SmartDashboard.putNumber("distanceY", distanceY);
         double distanceXY = Math.sqrt((Math.pow(distanceX, 2) + Math.pow(distanceY, 2)));
-        SmartDashboard.putNumber("distanceFromPose", distanceXY);
         return distanceXY;
     }
 

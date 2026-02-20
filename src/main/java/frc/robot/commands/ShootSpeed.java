@@ -2,16 +2,17 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.ShooterSubsystem;
 
 public class ShootSpeed extends Command {
-    private ShooterSubsystem ShooterSubsystem;
+    private ShooterSubsystem Shooter;
     private Double Speed;
     // true of false to use the setShooterSpeedAjust() command
     private boolean TFAjust;
 
     public ShootSpeed(ShooterSubsystem shooterSubsystem, double speed, boolean ajust) {
-        this.ShooterSubsystem = shooterSubsystem;
+        this.Shooter = shooterSubsystem;
         this.Speed = speed;
         this.TFAjust = ajust;
         // Use addRequirements() here to declare subsystem dependencies.
@@ -22,12 +23,10 @@ public class ShootSpeed extends Command {
     @Override
     public void initialize() {
         if (TFAjust == true) {
-            ShooterSubsystem.setShooterSpeedAjust(Speed);
+            Shooter.setShooterSpeedAjust(Speed);
         } else if (TFAjust == false) {
-            ShooterSubsystem.setShooterSpeedSet(Speed);
+            Shooter.setShooterSpeedSet(Speed);
         }
-        SmartDashboard.putNumber("shooter distance it thinkey", Speed);
-        
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -38,15 +37,13 @@ public class ShootSpeed extends Command {
 
     @Override
     public boolean isFinished() {
-        // if (Math.abs(Shooter.getMotor1Speed() - Speed) < 0.5) {
-        // return true;
-        // }
         return true;
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
+        Shooter.setShooterSpeedSet(Constants.SHOOTER_CONSTANTS.SHOOTER_IDLE_SPEED);
     }
 
 }

@@ -30,16 +30,13 @@ public class AimAtHub extends Command {
 
     @Override
     public boolean isFinished() {
-        // if (Math.abs(Turret.getRingRotation() - angle) < 0.05) {
-        // return true;
-        // }
         return false;
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-
+        Turret.setTurretRotation(0);
     }
 
 }

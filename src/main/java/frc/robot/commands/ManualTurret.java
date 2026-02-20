@@ -3,11 +3,11 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.TurretSubsystem;
 
-public class PIDTurret extends Command {
+public class ManualTurret extends Command {
     private TurretSubsystem Turret;
     private Double angle;
 
-    public PIDTurret(TurretSubsystem TurretSubsystem, double angle) {
+    public ManualTurret(TurretSubsystem TurretSubsystem, double angle) {
         this.Turret = TurretSubsystem;
         this.angle = angle;
         // Use addRequirements() here to declare subsystem dependencies.
@@ -37,7 +37,7 @@ public class PIDTurret extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-
+        Turret.setTurretRotation(0);
     }
 
 }
