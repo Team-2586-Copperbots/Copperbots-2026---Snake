@@ -1,0 +1,34 @@
+{
+  "path_elements": [
+    {
+      "type": "translation",
+      "x_meters": 2.0,
+      "y_meters": 2.0,
+      "intermediate_handoff_radius_meters": 0.2
+    },
+    {
+      "type": "translation",
+      "x_meters": 1.5225307830170962,
+      "y_meters": 3.6270036421128964,
+      "intermediate_handoff_radius_meters": 0.2
+    },
+    {
+      "type": "translation",
+      "x_meters": 2.6182414471693014,
+      "y_meters": 3.209577243621573,
+      "intermediate_handoff_radius_meters": 0.2
+    },
+    {
+      "type": "translation",
+      "x_meters": 3.2404986344216824,
+      "y_meters": 3.9228350030229464,
+      "intermediate_handoff_radius_meters": 0.2
+    },
+    {
+      "type": "translation",
+      "x_meters": 2.863621726118387,
+      "y_meters": 5.656280442648007,
+      "intermediate_handoff_radius_meters": 1.0
+    }
+  ]
+}

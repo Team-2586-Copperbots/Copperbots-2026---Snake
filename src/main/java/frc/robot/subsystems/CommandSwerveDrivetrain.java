@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -257,7 +258,17 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return m_sysIdRoutineToApply.dynamic(direction);
     }
 
+    public Command startLoger() {
+        return runOnce(() -> SignalLogger.start());
+    }
 
+    public Command stopLoger() {
+        return runOnce(() -> SignalLogger.stop());
+    }
+
+    public Command seedField() {
+        return runOnce(() -> this.seedFieldCentric());
+    }
 
     public Command followPathCommandtoTestPose() {
         Pose2d target = DRIVEBASE_TARGET_POSES.TEST_POSE2D;
@@ -266,16 +277,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     private void configurePathPlanner() {
         // TODO: what are the next 5 lines for?
-        double driveBaseRadius = 0;
-        Translation2d[] mod_locations = getModuleLocations();
-        for (var moduleLocation : mod_locations) {
-            driveBaseRadius = Math.max(driveBaseRadius, moduleLocation.getNorm());
-        }
+        // double driveBaseRadius = 0;
+        // Translation2d[] mod_locations = getModuleLocations();
+        // for (var moduleLocation : mod_locations) {
+        // driveBaseRadius = Math.max(driveBaseRadius, moduleLocation.getNorm());
+        // }
 
         RobotConfig config = ROBOT_PROPERTIES.getROBOT_CONFIG();
         // Load the RobotConfig from the GUI settings. You should probably
         // store this in your Constants file
-        
 
         try {
             // config = RobotConfig.fromGUISettings();
@@ -350,6 +360,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         elasticField.setRobotPose(getState().Pose);
         SmartDashboard.putNumber("angle to hub", frc.robot.Utils.getAngleToHub(this));
         SmartDashboard.putData("field", elasticField);
+        SmartDashboard.putNumber("max speed mesured", this.getPigeon2().getAccelerationX().getValueAsDouble());
     }
 
     private void startSimThread() {

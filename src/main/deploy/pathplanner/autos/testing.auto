@@ -29,26 +29,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 4.0
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.5
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "indexer"
-                      }
-                    }
-                  ]
+                  "waitTime": 2.0
                 }
               },
               {
@@ -69,7 +50,7 @@
       ]
     }
   },
-  "resetOdom": true,
+  "resetOdom": false,
   "folder": null,
   "choreoAuto": false
 }

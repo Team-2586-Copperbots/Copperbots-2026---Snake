@@ -88,12 +88,12 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     // schedule the autonomous command (example)
-    if (robotContainer.getAutonomousCommand() != null) {
+    // if (robotContainer.getAutonomousCommand() != null) {
       m_autonomousCommand = Commands.sequence(robotContainer.zeroThings(), robotContainer.getAutonomousCommand());
 
-    } else {
-      m_autonomousCommand = robotContainer.zeroThings();
-    }
+    // } else {
+    //   m_autonomousCommand = robotContainer.zeroThings();
+    // }
     CommandScheduler.getInstance().schedule(m_autonomousCommand);
 
   }
@@ -101,6 +101,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
+    
   }
 
   @Override

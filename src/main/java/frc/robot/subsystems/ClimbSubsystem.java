@@ -22,21 +22,29 @@ public class ClimbSubsystem extends SubsystemBase {
         climbMotor1 = new TalonFX(CANIds.CLIMB_MOTOR_1, Canivore);
         climbMotor2 = new TalonFX(CANIds.CLIMB_MOTOR_2, Canivore);
 
-        climbMotor1Config = new TalonFXConfiguration();
-        climbMotor2Config = new TalonFXConfiguration();
+        climbMotorConfig = new TalonFXConfiguration();
 
-        var motorOutputConfigs = shooterConfig.MotorOutput;
+        var motorOutputConfigs = climbMotorConfig.MotorOutput;
         motorOutputConfigs.NeutralMode = NeutralModeValue.Brake;
         motorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive;
 
-        climbMotor1.getConfigurator().apply(climbMotor1Config);
-        climbMotor2.getConfigurator().apply(climbMotor2Config);
+        var pidConfig = climbMotorConfig.Slot0;
+        pidConfig.kP = 0.500;
+        pidConfig.kI = 0.000;
+        pidConfig.kD = 0.000;
+
+        climbMotor1.getConfigurator().apply(climbMotorConfig);
+        climbMotor2.getConfigurator().apply(climbMotorConfig);
 
         climbMotor2.setControl(new Follower(climbMotor1.getDeviceID(), MotorAlignmentValue.Aligned));
     }
 
     public void setClimbSpeed(double speed) {
         climbMotor1.set(speed);
+    }
+
+    public void setClimbPosition(double position) {
+        climbMotor1.setControl(positionVoltage.withPosition(position));
     }
 
 }

@@ -32,20 +32,24 @@ import static edu.wpi.first.units.Units.*;
 
 import java.util.jar.Attributes.Name;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -120,6 +124,7 @@ public class RobotContainer {
                 // As an example, this will only show autos that start with "comp" while at
                 // competition as defined by the programmer
                 autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier(
+                                "testing",
                                 (stream) -> isCompetition
                                                 ? stream.filter(auto -> auto.getName().startsWith("comp"))
                                                 : stream);
@@ -204,21 +209,41 @@ public class RobotContainer {
                                 // (left)
                                 ));
                 // robot centric drive
-                driveController.R2().whileTrue(drivetrain.applyRequest(
-                                () -> rcDrive.withVelocityX(0.1 * MaxSpeed).withVelocityY(0).withRotationalRate(0)));
+                // driveController.R2().whileTrue(drivetrain.applyRequest(
+                // () -> rcDrive.withVelocityX(0.1 *
+                // MaxSpeed).withVelocityY(0).withRotationalRate(0)));
 
-                driveController.L2().whileTrue(drivetrain.applyRequest(
-                                () -> rcDrive.withVelocityX(-0.1 * MaxSpeed).withVelocityY(0).withRotationalRate(0)));
+                // driveController.L2().whileTrue(drivetrain.applyRequest(
+                // () -> rcDrive.withVelocityX(-0.1 *
+                // MaxSpeed).withVelocityY(0).withRotationalRate(0)));
 
-                driveController.R1().whileTrue(drivetrain.applyRequest(
-                                () -> rcDrive.withVelocityY(-0.1 * MaxSpeed).withVelocityX(0).withRotationalRate(0)));
+                // driveController.R1().whileTrue(drivetrain.applyRequest(
+                // () -> rcDrive.withVelocityY(-0.1 *
+                // MaxSpeed).withVelocityX(0).withRotationalRate(0)));
 
-                driveController.L1().whileTrue(drivetrain.applyRequest(
-                                () -> rcDrive.withVelocityY(0.1 * MaxSpeed).withVelocityX(0).withRotationalRate(0)));
+                // driveController.L1().whileTrue(drivetrain.applyRequest(
+                // () -> rcDrive.withVelocityY(0.1 *
+                // MaxSpeed).withVelocityX(0).withRotationalRate(0)));
 
+                driveController.L1().onTrue(drivetrain.startLoger());
+                driveController.L2().onTrue(drivetrain.stopLoger());
                 driveController.triangle().onTrue(resetGyro());
 
                 driveController.options().whileTrue(drivetrain.followPathCommandtoTestPose());
+
+                driveController.share()
+                                .onTrue(drivetrain.applyRequest(() -> point.withModuleDirection(new Rotation2d(0))));
+
+                driveController.touchpad().onTrue(drivetrain.seedField());
+
+                driveController.povUp().whileTrue(drivetrain
+                                .applyRequest(() -> (rcDrive.withVelocityY(0).withVelocityX(1 * MaxSpeed).withRotationalRate(0))));
+                driveController.povDown().whileTrue(drivetrain
+                                .applyRequest(() -> (rcDrive.withVelocityY(0).withVelocityX(-1 * MaxSpeed).withRotationalRate(0))));
+                driveController.povLeft().whileTrue(drivetrain
+                                .applyRequest(() -> (rcDrive.withVelocityY(-1 * MaxSpeed).withVelocityX(0).withRotationalRate(0))));
+                driveController.povRight().whileTrue(drivetrain
+                                .applyRequest(() -> (rcDrive.withVelocityY(1 * MaxSpeed).withVelocityX(0).withRotationalRate(0))));
 
                 // driveController.povDown().whileTrue(drivetrain.followPathCommandtoHUB());
 

@@ -53,7 +53,7 @@ public final class Constants {
     public static final int OPERATOR_CONTROLER_PORT = 1;
     public static final int TEST_CONTROLER1_PORT = 2;
     public static final int TEST_CONTROLER2_PORT = 3;
-    public static final double MAX_SPEED_LIMITER = 0.2;
+    public static final double MAX_SPEED_LIMITER = 1;
     public static final double setRPM = 45;
   }
 
