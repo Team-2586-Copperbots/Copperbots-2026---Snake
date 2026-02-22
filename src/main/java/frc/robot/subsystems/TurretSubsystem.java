@@ -75,13 +75,13 @@ public class TurretSubsystem extends SubsystemBase {
                     positionVoltage.withPosition((roations + TURRET_CONSTANTS.TURRET_RING_ZERO_TO_ROBOT_FRONT_OFFSET)
                             * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO));
         } else {
-            double startOfEndZone = 0;
-            double endOfEndZone = TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT;
+            double startOfDeadZone = 0;
+            double endOfDeadZone = TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT;
 
-            if (Math.abs((startOfEndZone - roations)) < Math.abs((endOfEndZone - roations))) {
+            if (Math.abs((startOfDeadZone - roations)) < Math.abs((endOfDeadZone - roations))) {
                 turnMotor.setControl(positionVoltage.withPosition(
                         0 * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO));
-            } else if (Math.abs((startOfEndZone - roations)) >= Math.abs((endOfEndZone - roations))) {
+            } else if (Math.abs((startOfDeadZone - roations)) >= Math.abs((endOfDeadZone - roations))) {
                 turnMotor.setControl(positionVoltage.withPosition(
                         TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO));
             } else {
