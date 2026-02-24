@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
@@ -63,6 +64,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final Field2d elasticField;
     public AutoBuilder autoBuilder;
     private final SwerveRequest.ApplyRobotSpeeds AutoRequest = new SwerveRequest.ApplyRobotSpeeds();
+    public FollowPath.Builder pathBuilder;
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -333,36 +335,29 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 4.5, 12.0, 540, 860, 0.03, 2.0, 0.2));
 
         // 2. Create a FollowPath builder
-        FollowPath.Builder pathBuilder = new FollowPath.Builder(
+        pathBuilder = new FollowPath.Builder(
                 this,
                 this::getPose,
                 this::getRobotRelativeSpeeds,
-                this::consumerForRequests,
-                new PIDController(5.0, 0.0, 0.0),
+                (speeds) -> setControl(AutoRequest.withSpeeds(speeds)),
+                new PIDController(5.0, 1.0, 0.0),
                 new PIDController(3.0, 0.0, 0.0),
                 new PIDController(2.0, 0.0, 0.0)).withDefaultShouldFlip()
-                .withPoseReset(this::resetPose);
+                .withPoseReset(this::resetPose).withDefaultShouldFlip();
 
     }
 
-    public void consumerForRequests(ChassisSpeeds speeds) {
-        ChassisSpeeds desiredRobotRelativeSpeeds = speeds;
+    
+    public Command example_c() {
+        return pathBuilder.build(new Path("example_c"));
+    }
 
-        this.applyRequest(
-                () -> new SwerveRequest.RobotCentric().withVelocityX(desiredRobotRelativeSpeeds.vxMetersPerSecond)
-                        .withVelocityY(desiredRobotRelativeSpeeds.vyMetersPerSecond)
-                        .withRotationalRate(desiredRobotRelativeSpeeds.omegaRadiansPerSecond));
+    public Command pathFindToHubShot() {
+        return pathBuilder.build(new Path(robotElement(),new Path.Waypoint(Constants.DRIVEBASE_TARGET_POSES.TEST_POSE2D)));
+    }
 
-        // Limit acceleration to prevent sudden changes in speed
-        // obtainableFieldRelativeSpeeds = ChassisRateLimiter.limit(
-        // desiredFieldRelativeSpeeds,
-        // obtainableFieldRelativeSpeeds,
-        // dt,
-        // drivetrainConfig.maxTranslationalAccelerationMetersPerSecSec,
-        // drivetrainConfig.maxAngularAccelerationRadiansPerSecSec,
-        // drivetrainConfig.maxTranslationalVelocityMetersPerSec,
-        // drivetrainConfig.maxAngularVelocityRadiansPerSec
-        // );
+    public Path.Waypoint robotElement() {
+        return new Path.Waypoint(this.getState().Pose);
     }
 
     public Pose2d getPose() {

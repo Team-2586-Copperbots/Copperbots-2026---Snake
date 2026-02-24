@@ -64,11 +64,11 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
-    Optional<EstimatedRobotPose> pose = robotContainer.vision.getRobotPose();
+    // Optional<EstimatedRobotPose> pose = robotContainer.vision.getRobotPose();
 
-    if (pose.isPresent()) {
-      robotContainer.drivetrain.addVisionMeasurement(pose.get().estimatedPose.toPose2d(), pose.get().timestampSeconds);
-    }
+    // if (pose.isPresent()) {
+    //   robotContainer.drivetrain.addVisionMeasurement(pose.get().estimatedPose.toPose2d(), pose.get().timestampSeconds);
+    // }
 
   }
 
@@ -88,12 +88,9 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     // schedule the autonomous command (example)
-    // if (robotContainer.getAutonomousCommand() != null) {
-      m_autonomousCommand = Commands.sequence(robotContainer.zeroThings(), robotContainer.getAutonomousCommand());
-
-    // } else {
-    //   m_autonomousCommand = robotContainer.zeroThings();
-    // }
+    if (robotContainer.getAutonomousCommand() != null) {
+      m_autonomousCommand = Commands.sequence(/*robotContainer.zeroThings(),*/ robotContainer.getAutonomousCommand());
+    }
     CommandScheduler.getInstance().schedule(m_autonomousCommand);
 
   }
@@ -113,7 +110,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    CommandScheduler.getInstance().schedule(robotContainer.zeroThings());
+    // CommandScheduler.getInstance().schedule(robotContainer.zeroThings());
 
   }
 

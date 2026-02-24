@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.robot.Constants;
 import frc.robot.Constants.OPERATOR_CONSTANTS;
+import static frc.robot.Constants.OPERATOR_CONSTANTS.SLOW_SPEED_LIMITER;
 import frc.robot.Constants.PLACES;
 import frc.robot.Constants.SHOOTER_CONSTANTS;
 import frc.robot.commands.AimAndShoot;
@@ -42,6 +43,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -106,6 +108,7 @@ public class RobotContainer {
                         OPERATOR_CONSTANTS.TEST_CONTROLER2_PORT);
 
         private final SendableChooser<Command> autoChooser;
+        // private final SendableChooser<Command> bLineChouser;
 
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -128,6 +131,7 @@ public class RobotContainer {
                                 (stream) -> isCompetition
                                                 ? stream.filter(auto -> auto.getName().startsWith("comp"))
                                                 : stream);
+                // bLineChouser = drivetrain.example_c();
                 SmartDashboard.putData("Auto Mode", autoChooser);
 
         }
@@ -187,21 +191,20 @@ public class RobotContainer {
                 // neutral mode is applied to the drive motors while disabled.
 
                 // speed up or slow down drivtrain command that overrides the default command
-                driveController.povRight().whileTrue(drivetrain
+                driveController.R1().toggleOnTrue(drivetrain
                                 .applyRequest(() -> drive.withVelocityX(
-                                                -1 * driveController.getLeftY() * MaxSpeed) // Drive
-                                                                                            // forward
-                                                                                            // with
-                                                                                            // negative
-                                                                                            // Y
-                                                                                            // (forward)
-                                                .withVelocityY(-1
-                                                                * driveController.getLeftX()
+                                                SLOW_SPEED_LIMITER * -driveController.getLeftY() * MaxSpeed) // Drive
+                                                // forward
+                                                // with
+                                                // negative
+                                                // Y
+                                                // (forward)
+                                                .withVelocityY(SLOW_SPEED_LIMITER * -driveController.getLeftX()
                                                                 * MaxSpeed) // Drive left
                                                                             // with negative
                                                                             // X (left)
-                                                .withRotationalRate(-.7
-                                                                * driveController.getRightX() * MaxAngularRate) // Drive
+                                                .withRotationalRate(0.7 * SLOW_SPEED_LIMITER
+                                                                * -driveController.getRightX() * MaxAngularRate) // Drive
                                 // counterclockwise
                                 // with
                                 // negative
@@ -237,13 +240,20 @@ public class RobotContainer {
                 driveController.touchpad().onTrue(drivetrain.seedField());
 
                 driveController.povUp().whileTrue(drivetrain
-                                .applyRequest(() -> (rcDrive.withVelocityY(0).withVelocityX(1 * MaxSpeed).withRotationalRate(0))));
+                                .applyRequest(() -> (rcDrive.withVelocityY(0).withVelocityX(1 * MaxSpeed)
+                                                .withRotationalRate(0))));
                 driveController.povDown().whileTrue(drivetrain
-                                .applyRequest(() -> (rcDrive.withVelocityY(0).withVelocityX(-1 * MaxSpeed).withRotationalRate(0))));
+                                .applyRequest(() -> (rcDrive.withVelocityY(0).withVelocityX(-1 * MaxSpeed)
+                                                .withRotationalRate(0))));
                 driveController.povLeft().whileTrue(drivetrain
-                                .applyRequest(() -> (rcDrive.withVelocityY(-1 * MaxSpeed).withVelocityX(0).withRotationalRate(0))));
+                                .applyRequest(() -> (rcDrive.withVelocityY(-1 * MaxSpeed).withVelocityX(0)
+                                                .withRotationalRate(0))));
                 driveController.povRight().whileTrue(drivetrain
-                                .applyRequest(() -> (rcDrive.withVelocityY(1 * MaxSpeed).withVelocityX(0).withRotationalRate(0))));
+                                .applyRequest(() -> (rcDrive.withVelocityY(1 * MaxSpeed).withVelocityX(0)
+                                                .withRotationalRate(0))));
+
+                driveController.R1().onTrue(drivetrain.pathFindToHubShot());
+                driveController.R2().onTrue(drivetrain.followPathCommandtoTestPose());
 
                 // driveController.povDown().whileTrue(drivetrain.followPathCommandtoHUB());
 
@@ -339,7 +349,8 @@ public class RobotContainer {
          * @return the command to run in autonomous
          */
         public Command getAutonomousCommand() {
-                return autoChooser.getSelected();
+                // return autoChooser.getSelected();
+                return drivetrain.example_c();
         }
 
 }
