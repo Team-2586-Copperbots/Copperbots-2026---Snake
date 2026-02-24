@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.*;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -16,10 +17,13 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -28,6 +32,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -35,6 +41,10 @@ import frc.robot.Constants;
 import frc.robot.Constants.DRIVEBASE_TARGET_POSES;
 import frc.robot.Constants.ROBOT_PROPERTIES;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.lib.BLine.ChassisRateLimiter;
+import frc.robot.lib.BLine.FollowPath;
+import frc.robot.lib.BLine.Path;
+
 import static frc.robot.Utils.distanceFromPose;
 
 /**
@@ -151,7 +161,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
         elasticField = new Field2d();
         autoBuilder = new AutoBuilder();
-        configurePathPlanner();
+        configurePathPlanners();
     }
 
     /**
@@ -179,7 +189,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
         elasticField = new Field2d();
         autoBuilder = new AutoBuilder();
-        configurePathPlanner();
+        configurePathPlanners();
     }
 
     /**
@@ -222,7 +232,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
         elasticField = new Field2d();
         autoBuilder = new AutoBuilder();
-        configurePathPlanner();
+        configurePathPlanners();
     }
 
     /**
@@ -275,14 +285,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return AutoBuilder.pathfindToPose(target, ROBOT_PROPERTIES.PATH_CONSTRAINTS, 0);
     }
 
-    private void configurePathPlanner() {
-        // TODO: what are the next 5 lines for?
-        // double driveBaseRadius = 0;
-        // Translation2d[] mod_locations = getModuleLocations();
-        // for (var moduleLocation : mod_locations) {
-        // driveBaseRadius = Math.max(driveBaseRadius, moduleLocation.getNorm());
-        // }
-
+    private void configurePathPlanners() {
+        // pathplaner:
         RobotConfig config = ROBOT_PROPERTIES.getROBOT_CONFIG();
         // Load the RobotConfig from the GUI settings. You should probably
         // store this in your Constants file
@@ -321,7 +325,44 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                     ex.getStackTrace());
 
         }
+        // pathplaner ends
 
+        // BLine:
+        // 1. Set global constraints (once, at robot init)
+        Path.setDefaultGlobalConstraints(new Path.DefaultGlobalConstraints(
+                4.5, 12.0, 540, 860, 0.03, 2.0, 0.2));
+
+        // 2. Create a FollowPath builder
+        FollowPath.Builder pathBuilder = new FollowPath.Builder(
+                this,
+                this::getPose,
+                this::getRobotRelativeSpeeds,
+                this::consumerForRequests,
+                new PIDController(5.0, 0.0, 0.0),
+                new PIDController(3.0, 0.0, 0.0),
+                new PIDController(2.0, 0.0, 0.0)).withDefaultShouldFlip()
+                .withPoseReset(this::resetPose);
+
+    }
+
+    public void consumerForRequests(ChassisSpeeds speeds) {
+        ChassisSpeeds desiredRobotRelativeSpeeds = speeds;
+
+        this.applyRequest(
+                () -> new SwerveRequest.RobotCentric().withVelocityX(desiredRobotRelativeSpeeds.vxMetersPerSecond)
+                        .withVelocityY(desiredRobotRelativeSpeeds.vyMetersPerSecond)
+                        .withRotationalRate(desiredRobotRelativeSpeeds.omegaRadiansPerSecond));
+
+        // Limit acceleration to prevent sudden changes in speed
+        // obtainableFieldRelativeSpeeds = ChassisRateLimiter.limit(
+        // desiredFieldRelativeSpeeds,
+        // obtainableFieldRelativeSpeeds,
+        // dt,
+        // drivetrainConfig.maxTranslationalAccelerationMetersPerSecSec,
+        // drivetrainConfig.maxAngularAccelerationRadiansPerSecSec,
+        // drivetrainConfig.maxTranslationalVelocityMetersPerSec,
+        // drivetrainConfig.maxAngularVelocityRadiansPerSec
+        // );
     }
 
     public Pose2d getPose() {
