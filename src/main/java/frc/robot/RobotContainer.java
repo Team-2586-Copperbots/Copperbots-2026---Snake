@@ -108,7 +108,7 @@ public class RobotContainer {
                         OPERATOR_CONSTANTS.TEST_CONTROLER2_PORT);
 
         private final SendableChooser<Command> autoChooser;
-        // private final SendableChooser<Command> bLineChouser;
+        private final SendableChooser<Command> bLineChouser;
 
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -120,6 +120,9 @@ public class RobotContainer {
                 configureBindings();
                 // make commands for autos
                 configureAutoCommands();
+                // make bline autos
+                buildBLineAutos();
+
 
                 // For convenience a programmer could change this when going to competition.
                 boolean isCompetition = false;
@@ -131,11 +134,16 @@ public class RobotContainer {
                                 (stream) -> isCompetition
                                                 ? stream.filter(auto -> auto.getName().startsWith("comp"))
                                                 : stream);
-                // bLineChouser = drivetrain.example_c();
+                bLineChouser = new SendableChooser<Command>();
+                bLineChouser.setDefaultOption("none", null);
                 SmartDashboard.putData("Auto Mode", autoChooser);
 
         }
 
+        private void buildBLineAutos() {
+                bLineChouser.addOption("test", new SequentialCommandGroup(drivetrain.pathFromString("example_c"),new AimAtHub(turret, drivetrain)));
+
+        }
         private void configureAutoCommands() {
 
                 NamedCommands.registerCommand("aim'n'Shoot",
@@ -150,8 +158,8 @@ public class RobotContainer {
                                                 new PIDIntake(intake, Constants.IntakePosition.IN),
                                                 new ShootSpeed(shooter, SHOOTER_CONSTANTS.SHOOTER_IDLE_SPEED, false),
                                                 new IndexerSpin(indexer, IndexerStates.OFF)));
-
         }
+        
 
         /**
          * Use this method to define your trigger->command mappings. Triggers can be
@@ -350,7 +358,7 @@ public class RobotContainer {
          */
         public Command getAutonomousCommand() {
                 // return autoChooser.getSelected();
-                return drivetrain.example_c();
+                return bLineChouser.getSelected();
         }
 
 }

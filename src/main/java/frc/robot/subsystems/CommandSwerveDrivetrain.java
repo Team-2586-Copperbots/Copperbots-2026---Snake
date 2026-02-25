@@ -331,8 +331,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
         // BLine:
         // 1. Set global constraints (once, at robot init)
-        Path.setDefaultGlobalConstraints(new Path.DefaultGlobalConstraints(
-                4.5, 12.0, 540, 860, 0.03, 2.0, 0.2));
+        // Path.DefaultGlobalConstraints = new Path.DefaultGlobalConstraints(kNumConfigAttempts, kNumConfigAttempts, kNumConfigAttempts, m_lastSimTime, kSimLoopPeriod, m_drivetrainId, kNumConfigAttempts);
 
         // 2. Create a FollowPath builder
         pathBuilder = new FollowPath.Builder(
@@ -340,7 +339,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 this::getPose,
                 this::getRobotRelativeSpeeds,
                 (speeds) -> setControl(AutoRequest.withSpeeds(speeds)),
-                new PIDController(5.0, 1.0, 0.0),
+                new PIDController(10.0, 0.0, 0.0),
                 new PIDController(3.0, 0.0, 0.0),
                 new PIDController(2.0, 0.0, 0.0)).withDefaultShouldFlip()
                 .withPoseReset(this::resetPose).withDefaultShouldFlip();
@@ -348,16 +347,18 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     
-    public Command example_c() {
-        return pathBuilder.build(new Path("example_c"));
+    public Command pathFromString(String name) {
+        return pathBuilder.build(new Path(name));
     }
+
+
 
     public Command pathFindToHubShot() {
         return pathBuilder.build(new Path(robotElement(),new Path.Waypoint(Constants.DRIVEBASE_TARGET_POSES.TEST_POSE2D)));
     }
 
     public Path.Waypoint robotElement() {
-        return new Path.Waypoint(this.getState().Pose);
+        return new Path.Waypoint(this.getPose());
     }
 
     public Pose2d getPose() {
