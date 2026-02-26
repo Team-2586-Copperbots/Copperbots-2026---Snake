@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotBase;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -28,6 +29,20 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public static final Mode simMode = Mode.SIM;
+  public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
+
+  public static enum Mode {
+    /** Running on a real robot. */
+    REAL,
+
+    /** Running a physics simulator. */
+    SIM,
+
+    /** Replaying from a log file. */
+    REPLAY
+  }
+
   public static class ROBOT_PROPERTIES {
     private static RobotConfig ROBOT_CONFIG;
 
@@ -114,14 +129,10 @@ public final class Constants {
     OUT(40),
     HALFWAY(12);
 
-    private final int value;
+    public final int value;
 
     private IntakePosition(int value) {
       this.value = value;
-    }
-
-    public int getValue() {
-      return value;
     }
   }
 

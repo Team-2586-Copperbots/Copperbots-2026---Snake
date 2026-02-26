@@ -4,12 +4,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Utils;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.TurretSubsystem;
+import frc.robot.subsystems.drive.Drive;
 
 public class AimAtHub extends Command {
     private TurretSubsystem Turret;
-    private CommandSwerveDrivetrain Drivetrain;
+    private Drive Drivetrain;
 
-    public AimAtHub(TurretSubsystem TurretSubsystem, CommandSwerveDrivetrain Drivetrain) {
+    public AimAtHub(TurretSubsystem TurretSubsystem, Drive Drivetrain) {
         this.Turret = TurretSubsystem;
         this.Drivetrain = Drivetrain;
         // Use addRequirements() here to declare subsystem dependencies.

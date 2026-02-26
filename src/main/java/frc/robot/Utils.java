@@ -10,6 +10,7 @@ import frc.robot.Constants.PLACES;
 import frc.robot.Constants.SHOOTER_CONSTANTS;
 import frc.robot.Constants.TURRET_CONSTANTS;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.drive.Drive;
 
 public final class Utils {
 
@@ -44,7 +45,7 @@ public final class Utils {
         return time;
     }
 
-    public static double distanceFromPose(Pose2d taretPose2d, CommandSwerveDrivetrain drivetrain) {
+    public static double distanceFromPose(Pose2d taretPose2d, Drive drivetrain) {
 
         // double distance = taretPose3d.getTranslation().
         Pose2d shooterPose2d = pose2dForShooter(drivetrain);
@@ -55,12 +56,11 @@ public final class Utils {
         return distanceXY;
     }
 
-    public static Pose2d pose2dForShooter(CommandSwerveDrivetrain drivetrain) {
+    public static Pose2d pose2dForShooter(Drive drivetrain) {
         // done: update with math for the pose of the shooter from the cad modle do
         // using (unit circle and angle (in radians)) or wario
 
-        Pose2d robotPose2d = new Pose2d(drivetrain.getState().Pose.getX(), drivetrain.getState().Pose.getY(),
-                drivetrain.getState().Pose.getRotation());
+        Pose2d robotPose2d = drivetrain.getPose();
 
         double shooterXOffset = (Math.cos(robotPose2d.getRotation().getRadians())
                 * TURRET_CONSTANTS.TURRET_OFFSET_FROM_ROBOT_CENTER.getX());
@@ -77,7 +77,7 @@ public final class Utils {
     // this returns the angle (in rot) fron the center of the robot to the center of
     // the hubs
     // schoeing element by way of math and arcsin()
-    public static double getAngleToHub(CommandSwerveDrivetrain drivetrain) {
+    public static double getAngleToHub(Drive drivetrain) {
         Pose2d shooterPose2d = pose2dForShooter(drivetrain);
 
         double x = Math.abs(shooterPose2d.getX() - PLACES.CENTER_OF_HUB.getX());
@@ -91,19 +91,19 @@ public final class Utils {
         }
 
         // factor in drivetrain rotation
-        double angle = (baseTurretAngle + drivetrain.getState().Pose.getRotation().getRotations() + 0.5) % 1;
+        double angle = (baseTurretAngle + drivetrain.getPose().getRotation().getRotations() + 0.5) % 1;
 
         return angle;
     }
 
-    public static double getAngleToHubWithVelocity(CommandSwerveDrivetrain drivetrain) {
+    public static double getAngleToHubWithVelocity(Drive drivetrain) {
         double angle = 0;
 
-        double robotX = drivetrain.getState().Pose.getX();
-        double robotY = drivetrain.getState().Pose.getY();
+        double robotX = drivetrain.getPose().getX();
+        double robotY = drivetrain.getPose().getY();
 
-        double velocityX = drivetrain.getState().Speeds.vxMetersPerSecond;
-        double velocityY = drivetrain.getState().Speeds.vyMetersPerSecond;
+        double velocityX = drivetrain.getChassisSpeeds().vxMetersPerSecond;
+        double velocityY = drivetrain.getChassisSpeeds().vyMetersPerSecond;
 
         double seconds = timeFromDistance(distanceFromPose(PLACES.CENTER_OF_HUB, drivetrain));
 
@@ -118,7 +118,7 @@ public final class Utils {
         angle = Units.radiansToRotations(Math.atan(yAim / xAim));
 
         // factor in drivetrain rotation
-        angle = -angle + -drivetrain.getState().Pose.getRotation().getRotations();
+        angle = -angle + -drivetrain.getPose().getRotation().getRotations();
 
         return angle;
     }

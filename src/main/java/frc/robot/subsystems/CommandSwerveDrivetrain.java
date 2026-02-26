@@ -255,8 +255,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * @param direction Direction of the SysId Quasistatic test
      * @return Command to run
      */
-    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return m_sysIdRoutineToApply.quasistatic(direction);
+    public Command translationSysIdQuasistatic(SysIdRoutine.Direction direction) {
+        return m_sysIdRoutineTranslation.quasistatic(direction);
     }
 
     /**
@@ -266,8 +266,52 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * @param direction Direction of the SysId Dynamic test
      * @return Command to run
      */
-    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return m_sysIdRoutineToApply.dynamic(direction);
+    public Command translationSysIdDynamic(SysIdRoutine.Direction direction) {
+        return m_sysIdRoutineTranslation.dynamic(direction);
+    }
+
+    /**
+     * Runs the SysId Quasistatic test in the given direction for the routine
+     * specified by {@link #m_sysIdRoutineToApply}.
+     *
+     * @param direction Direction of the SysId Quasistatic test
+     * @return Command to run
+     */
+    public Command steerSysIdQuasistatic(SysIdRoutine.Direction direction) {
+        return m_sysIdRoutineSteer.quasistatic(direction);
+    }
+
+    /**
+     * Runs the SysId Dynamic test in the given direction for the routine
+     * specified by {@link #m_sysIdRoutineToApply}.
+     *
+     * @param direction Direction of the SysId Dynamic test
+     * @return Command to run
+     */
+    public Command steerSysIdDynamic(SysIdRoutine.Direction direction) {
+        return m_sysIdRoutineSteer.dynamic(direction);
+    }
+
+    /**
+     * Runs the SysId Quasistatic test in the given direction for the routine
+     * specified by {@link #m_sysIdRoutineToApply}.
+     *
+     * @param direction Direction of the SysId Quasistatic test
+     * @return Command to run
+     */
+    public Command rotationSysIdQuasistatic(SysIdRoutine.Direction direction) {
+        return m_sysIdRoutineRotation.quasistatic(direction);
+    }
+
+    /**
+     * Runs the SysId Dynamic test in the given direction for the routine
+     * specified by {@link #m_sysIdRoutineToApply}.
+     *
+     * @param direction Direction of the SysId Dynamic test
+     * @return Command to run
+     */
+    public Command rotationSysIdDynamic(SysIdRoutine.Direction direction) {
+        return m_sysIdRoutineRotation.dynamic(direction);
     }
 
     public Command startLoger() {
@@ -331,7 +375,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
         // BLine:
         // 1. Set global constraints (once, at robot init)
-        // Path.DefaultGlobalConstraints = new Path.DefaultGlobalConstraints(kNumConfigAttempts, kNumConfigAttempts, kNumConfigAttempts, m_lastSimTime, kSimLoopPeriod, m_drivetrainId, kNumConfigAttempts);
+        // Path.DefaultGlobalConstraints = new
+        // Path.DefaultGlobalConstraints(kNumConfigAttempts, kNumConfigAttempts,
+        // kNumConfigAttempts, m_lastSimTime, kSimLoopPeriod, m_drivetrainId,
+        // kNumConfigAttempts);
 
         // 2. Create a FollowPath builder
         pathBuilder = new FollowPath.Builder(
@@ -346,15 +393,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     }
 
-    
     public Command pathFromString(String name) {
         return pathBuilder.build(new Path(name));
     }
 
-
-
     public Command pathFindToHubShot() {
-        return pathBuilder.build(new Path(robotElement(),new Path.Waypoint(Constants.DRIVEBASE_TARGET_POSES.TEST_POSE2D)));
+        return pathBuilder
+                .build(new Path(robotElement(), new Path.Waypoint(Constants.DRIVEBASE_TARGET_POSES.TEST_POSE2D)));
     }
 
     public Path.Waypoint robotElement() {
@@ -395,7 +440,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
         // update the elasticField
         elasticField.setRobotPose(getState().Pose);
-        SmartDashboard.putNumber("angle to hub", frc.robot.Utils.getAngleToHub(this));
         SmartDashboard.putData("field", elasticField);
         SmartDashboard.putNumber("max speed mesured", this.getPigeon2().getAccelerationX().getValueAsDouble());
     }

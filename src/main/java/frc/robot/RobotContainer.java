@@ -12,6 +12,7 @@ import frc.robot.Constants.SHOOTER_CONSTANTS;
 import frc.robot.commands.AimAndShoot;
 import frc.robot.commands.AimAtHub;
 import frc.robot.commands.AutoSpeed;
+import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ShootSpeed;
 import frc.robot.commands.IndexerSpin;
 import frc.robot.commands.IntakeSpin;
@@ -21,13 +22,18 @@ import frc.robot.commands.PIDIntake;
 import frc.robot.commands.ZeroTurret;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CANDle;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
+// import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.IndexerSubsystem.IndexerStates;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.GyroIO;
+import frc.robot.subsystems.drive.GyroIOPigeon2;
+import frc.robot.subsystems.drive.ModuleIOSim;
+import frc.robot.subsystems.drive.ModuleIOTalonFX;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -39,6 +45,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -72,24 +79,33 @@ public class RobotContainer {
                                                                                           // second
                                                                                           // max
                                                                                           // angular velocity
-        /* Setting up bindings for necessary control of the swerve drive platform */
-        private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-                        .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-                        .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive
-                                                                                 // motors
-        // used 2025 for side to side movement
-        //
-        private final SwerveRequest.RobotCentric rcDrive = new SwerveRequest.RobotCentric().withDeadband(MaxSpeed * 0.1)
-                        .withRotationalDeadband(MaxAngularRate * 0.1);
-        @SuppressWarnings("unused")
-        private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-        @SuppressWarnings("unused")
-        private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+        // /* Setting up bindings for necessary control of the swerve drive platform */
+        // private final SwerveRequest.FieldCentric drive = new
+        // SwerveRequest.FieldCentric()
+        // .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) //
+        // Add a 10% deadband
+        // .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop
+        // control for drive
+        // // motors
+        // // used 2025 for side to side movement
+        // //
+        // private final SwerveRequest.RobotCentric rcDrive = new
+        // SwerveRequest.RobotCentric().withDeadband(MaxSpeed * 0.1)
+        // .withRotationalDeadband(MaxAngularRate * 0.1);
+        // @SuppressWarnings("unused")
+        // private final SwerveRequest.SwerveDriveBrake brake = new
+        // SwerveRequest.SwerveDriveBrake();
+        // @SuppressWarnings("unused")
+        // private final SwerveRequest.PointWheelsAt point = new
+        // SwerveRequest.PointWheelsAt();
 
-        private final Telemetry logger = new Telemetry(MaxSpeed);
+        // private final Telemetry logger = new Telemetry(MaxSpeed);
 
         public final PhotonSubsystem vision = new PhotonSubsystem();
-        public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+        // public final CommandSwerveDrivetrain drivetrain =
+        // TunerConstants.createDrivetrain();
+        public final Drive drive;
+
         @SuppressWarnings("unused")
         private final IntakeSubsystem intake = new IntakeSubsystem();
         private final IndexerSubsystem indexer = new IndexerSubsystem();
@@ -114,15 +130,50 @@ public class RobotContainer {
          * The container for the robot. Contains subsystems, OI devices, and commands.
          */
         public RobotContainer() {
+                switch (Constants.currentMode) {
+                        default:
+                                // Real robot, instantiate hardware IO implementations
+                                // ModuleIOTalonFX is intended for modules with TalonFX drive, TalonFX turn, and
+                                // a CANcoder
+                                drive = new Drive(
+                                                new GyroIOPigeon2(),
+                                                new ModuleIOTalonFX(TunerConstants.FrontLeft),
+                                                new ModuleIOTalonFX(TunerConstants.FrontRight),
+                                                new ModuleIOTalonFX(TunerConstants.BackLeft),
+                                                new ModuleIOTalonFX(TunerConstants.BackRight));
+
+                                break;
+
+                        case SIM:
+                                // Sim robot, instantiate physics sim IO implementations
+                                drive = new Drive(
+                                                new GyroIO() {
+                                                },
+                                                new ModuleIOSim(TunerConstants.FrontLeft),
+                                                new ModuleIOSim(TunerConstants.FrontRight),
+                                                new ModuleIOSim(TunerConstants.BackLeft),
+                                                new ModuleIOSim(TunerConstants.BackRight));
+                                break;
+
+                        // default:
+                        // // Replayed robot, disable IO implementations
+                        // drive =
+                        // new Drive(
+                        // new GyroIO() {},
+                        // new ModuleIO(),
+                        // new ModuleIO(),
+                        // new ModuleIO(),
+                        // new ModuleIO());
+                        // break;
+                }
                 // add telemetry
-                drivetrain.registerTelemetry(logger::telemeterize);
+                // drivetrain.registerTelemetry(logger::telemeterize);
                 // Configure the trigger bindings
                 configureBindings();
                 // make commands for autos
                 configureAutoCommands();
                 // make bline autos
                 buildBLineAutos();
-
 
                 // For convenience a programmer could change this when going to competition.
                 boolean isCompetition = false;
@@ -141,25 +192,26 @@ public class RobotContainer {
         }
 
         private void buildBLineAutos() {
-                bLineChouser.addOption("test", new SequentialCommandGroup(drivetrain.pathFromString("example_c"),new AimAtHub(turret, drivetrain)));
+                bLineChouser.addOption("test", new SequentialCommandGroup(drive.pathFromString("example_c"),
+                                new AimAtHub(turret, drive)));
 
         }
+
         private void configureAutoCommands() {
 
                 NamedCommands.registerCommand("aim'n'Shoot",
-                                new AimAndShoot(shooter, turret, drivetrain, PLACES.CENTER_OF_HUB));
+                                new AimAndShoot(shooter, turret, drive, PLACES.CENTER_OF_HUB));
                 NamedCommands.registerCommand("shoot", new ShootSpeed(shooter, 20, false));
                 NamedCommands.registerCommand("intake spin", new IntakeSpin(intake));
                 NamedCommands.registerCommand("indexer", new IndexerSpin(indexer, IndexerStates.UP));
                 NamedCommands.registerCommand("aim forward", new ManualTurret(turret, 0));
-                NamedCommands.registerCommand("AimAtHub", new AimAtHub(turret, drivetrain));
+                NamedCommands.registerCommand("AimAtHub", new AimAtHub(turret, drive));
                 NamedCommands.registerCommand("homeAll",
                                 new SequentialCommandGroup(new ManualTurret(turret, 0),
                                                 new PIDIntake(intake, Constants.IntakePosition.IN),
                                                 new ShootSpeed(shooter, SHOOTER_CONSTANTS.SHOOTER_IDLE_SPEED, false),
                                                 new IndexerSpin(indexer, IndexerStates.OFF)));
         }
-        
 
         /**
          * Use this method to define your trigger->command mappings. Triggers can be
@@ -176,49 +228,36 @@ public class RobotContainer {
          * joysticks}.
          */
         private void configureBindings() {
+                // // CTRE drive
+                // drivetrain.setDefaultCommand(
+                // // Drivetrain will execute this command periodically
+                // drivetrain.applyRequest(() -> drive
+                // .withVelocityX(-driveController.getLeftY() * MaxSpeed) // Drive
+                // // forward
+                // // with
+                // // negative Y
+                // // (forward)
+                // .withVelocityY(-driveController.getLeftX() * MaxSpeed) // Drive left
+                // // with
+                // // negative X
+                // // (left)
+                // .withRotationalRate(-driveController.getRightX() * MaxAngularRate) // Drive
+                // // counterclockwise
+                // // with
+                // // negative X (left)
+                // ));
 
-                drivetrain.setDefaultCommand(
-                                // Drivetrain will execute this command periodically
-                                drivetrain.applyRequest(() -> drive
-                                                .withVelocityX(-driveController.getLeftY() * MaxSpeed) // Drive
-                                                                                                       // forward
-                                                                                                       // with
-                                                // negative Y
-                                                // (forward)
-                                                .withVelocityY(-driveController.getLeftX() * MaxSpeed) // Drive left
-                                                                                                       // with
-                                                                                                       // negative X
-                                                                                                       // (left)
-                                                .withRotationalRate(-driveController.getRightX() * MaxAngularRate) // Drive
-                                                                                                                   // counterclockwise
-                                                                                                                   // with
-                                // negative X (left)
-                                ));
-
-                // Idle while the robot is disabled. This ensures the configured
-                // neutral mode is applied to the drive motors while disabled.
+                drive.setDefaultCommand(
+                                DriveCommands.fieldOrientedDrive(
+                                                drive,
+                                                () -> -driveController.getLeftY(),
+                                                () -> -driveController.getLeftX(),
+                                                () -> -driveController.getRightX()));
 
                 // speed up or slow down drivtrain command that overrides the default command
-                driveController.R1().toggleOnTrue(drivetrain
-                                .applyRequest(() -> drive.withVelocityX(
-                                                SLOW_SPEED_LIMITER * -driveController.getLeftY() * MaxSpeed) // Drive
-                                                // forward
-                                                // with
-                                                // negative
-                                                // Y
-                                                // (forward)
-                                                .withVelocityY(SLOW_SPEED_LIMITER * -driveController.getLeftX()
-                                                                * MaxSpeed) // Drive left
-                                                                            // with negative
-                                                                            // X (left)
-                                                .withRotationalRate(0.7 * SLOW_SPEED_LIMITER
-                                                                * -driveController.getRightX() * MaxAngularRate) // Drive
-                                // counterclockwise
-                                // with
-                                // negative
-                                // X
-                                // (left)
-                                ));
+                driveController.R1()
+                                .toggleOnTrue(DriveCommands.robotOrientedDrive(drive, () -> -driveController.getLeftY(),
+                                                () -> -driveController.getLeftX(), () -> -driveController.getRightX()));
                 // robot centric drive
                 // driveController.R2().whileTrue(drivetrain.applyRequest(
                 // () -> rcDrive.withVelocityX(0.1 *
@@ -236,32 +275,24 @@ public class RobotContainer {
                 // () -> rcDrive.withVelocityY(0.1 *
                 // MaxSpeed).withVelocityX(0).withRotationalRate(0)));
 
-                driveController.L1().onTrue(drivetrain.startLoger());
-                driveController.L2().onTrue(drivetrain.stopLoger());
                 driveController.triangle().onTrue(resetGyro());
 
-                driveController.options().whileTrue(drivetrain.followPathCommandtoTestPose());
+                driveController.options().whileTrue(drive.followPathCommandtoTestPose());
 
                 driveController.share()
-                                .onTrue(drivetrain.applyRequest(() -> point.withModuleDirection(new Rotation2d(0))));
+                                .onTrue(DriveCommands.stopWithX(drive));
 
-                driveController.touchpad().onTrue(drivetrain.seedField());
+                driveController.povUp()
+                                .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> 1, () -> 0, () -> 0));
+                driveController.povDown()
+                                .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> -1, () -> 0, () -> 0));
+                driveController.povLeft()
+                                .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> 0, () -> 1, () -> 0));
+                driveController.povRight()
+                                .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> 0, () -> -1, () -> 0));
 
-                driveController.povUp().whileTrue(drivetrain
-                                .applyRequest(() -> (rcDrive.withVelocityY(0).withVelocityX(1 * MaxSpeed)
-                                                .withRotationalRate(0))));
-                driveController.povDown().whileTrue(drivetrain
-                                .applyRequest(() -> (rcDrive.withVelocityY(0).withVelocityX(-1 * MaxSpeed)
-                                                .withRotationalRate(0))));
-                driveController.povLeft().whileTrue(drivetrain
-                                .applyRequest(() -> (rcDrive.withVelocityY(-1 * MaxSpeed).withVelocityX(0)
-                                                .withRotationalRate(0))));
-                driveController.povRight().whileTrue(drivetrain
-                                .applyRequest(() -> (rcDrive.withVelocityY(1 * MaxSpeed).withVelocityX(0)
-                                                .withRotationalRate(0))));
-
-                driveController.R1().onTrue(drivetrain.pathFindToHubShot());
-                driveController.R2().onTrue(drivetrain.followPathCommandtoTestPose());
+                driveController.R1().onTrue(drive.pathFindToHubShot());
+                driveController.R2().onTrue(drive.followPathCommandtoTestPose());
 
                 // driveController.povDown().whileTrue(drivetrain.followPathCommandtoHUB());
 
@@ -322,7 +353,7 @@ public class RobotContainer {
 
                 testController1.povDown().onTrue(new ShootSpeed(shooter, 0, false));
                 testController1.povUp().onTrue(new ShootSpeed(shooter, 20, false));
-                testController1.povRight().whileTrue(new AutoSpeed(shooter, drivetrain));
+                testController1.povRight().whileTrue(new AutoSpeed(shooter, drive));
 
                 testController1.triangle().onTrue(new ShootSpeed(shooter, 1, true));
                 testController1.square().onTrue(new ShootSpeed(shooter, -1, true));
@@ -332,18 +363,18 @@ public class RobotContainer {
 
                 testController2.povUp().onTrue(new ManualTurret(turret, 0));
                 testController2.povDown().onTrue(new ManualTurret(turret, 0.25));
-                testController2.povRight().whileTrue(new AimAtHub(turret, drivetrain));
+                testController2.povRight().whileTrue(new AimAtHub(turret, drive));
 
                 testController2.R1().whileTrue(new IndexerSpin(indexer, IndexerStates.UP));
-                testController2.square().whileTrue(new AimAtHub(turret, drivetrain));
-                testController2.triangle().whileTrue(new AutoSpeed(shooter, drivetrain));
-                testController2.circle().toggleOnTrue(new AimAndShoot(shooter, turret, drivetrain, null));
+                testController2.square().whileTrue(new AimAtHub(turret, drive));
+                testController2.triangle().whileTrue(new AutoSpeed(shooter, drive));
+                testController2.circle().toggleOnTrue(new AimAndShoot(shooter, turret, drive, null));
                 testController2.cross().whileTrue(new ShootSpeed(shooter, 0, false));
         }
 
         public Command resetGyro() {
                 return Commands.runOnce(() -> {
-                        drivetrain.getPigeon2().reset();
+                        drive.setPose(new Pose2d());
                 });
         }
 

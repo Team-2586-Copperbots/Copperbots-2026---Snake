@@ -8,15 +8,16 @@ import frc.robot.Utils;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
+import frc.robot.subsystems.drive.Drive;
 
 public class AimAndShoot extends Command {
     private ShooterSubsystem Shooter;
     private TurretSubsystem Turret;
-    private CommandSwerveDrivetrain Drivetrain;
+    private Drive Drivetrain;
     private Pose2d target;
 
     public AimAndShoot(ShooterSubsystem ShooterSubsystem, TurretSubsystem TurretSubsystem,
-            CommandSwerveDrivetrain DrivetrainSubsystem, Pose2d Target) {
+            Drive DrivetrainSubsystem, Pose2d Target) {
         this.Shooter = ShooterSubsystem;
         this.Turret = TurretSubsystem;
         this.Drivetrain = DrivetrainSubsystem;

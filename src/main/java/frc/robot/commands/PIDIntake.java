@@ -29,7 +29,7 @@ public class PIDIntake extends Command {
 
     @Override
     public boolean isFinished() {
-        if (Math.abs(Intake.getMovementBarPosition() - position.getValue()) < 0.10) {
+        if (Math.abs(Intake.getMovementBarPosition() - position.value) < 0.10) {
             return true;
         }
         return false;

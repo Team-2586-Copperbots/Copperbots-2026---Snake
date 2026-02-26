@@ -48,7 +48,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     // Constants.IntakePosition
     public void setIntakePosition(IntakePosition position) {
-        movementMotor.setControl(positionVoltage.withPosition(position.getValue()));
+        movementMotor.setControl(positionVoltage.withPosition(position.value));
     }
 
     // positive is out
