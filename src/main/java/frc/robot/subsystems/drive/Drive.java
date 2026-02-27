@@ -51,6 +51,11 @@ import frc.robot.lib.BLine.Path;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
+
+import org.ironmaple.simulation.drivesims.COTS;
+import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
+import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -66,9 +71,9 @@ public class Drive extends SubsystemBase {
           Math.hypot(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)));
 
   // PathPlanner config constants
-  // private static final double ROBOT_MASS_KG = 74.088;
+  private static final double ROBOT_MASS_KG = 74.088;
   // private static final double ROBOT_MOI = 6.883;
-  // private static final double WHEEL_COF = 1.2;
+  private static final double WHEEL_COF = 1.2;
   private static final RobotConfig PP_CONFIG = Constants.ROBOT_PROPERTIES.getROBOT_CONFIG();
   // new RobotConfig(
   // ROBOT_MASS_KG,
@@ -82,6 +87,27 @@ public class Drive extends SubsystemBase {
   // TunerConstants.FrontLeft.SlipCurrent,
   // 1),
   // getModuleTranslations());
+  private static DriveTrainSimulationConfig mapleSimConfig = null;
+
+  public static DriveTrainSimulationConfig getMapleSimConfig() {
+    if (mapleSimConfig != null)
+      return mapleSimConfig;
+
+    return mapleSimConfig = DriveTrainSimulationConfig.Default()
+        .withRobotMass(Kilograms.of(ROBOT_MASS_KG))
+        .withCustomModuleTranslations(getModuleTranslations())
+        .withGyro(COTS.ofPigeon2())
+        .withSwerveModule(new SwerveModuleSimulationConfig(
+            DCMotor.getKrakenX60Foc(1),
+            DCMotor.getKrakenX60(1),
+            TunerConstants.FrontLeft.DriveMotorGearRatio,
+            TunerConstants.FrontLeft.SteerMotorGearRatio,
+            Volts.of(TunerConstants.FrontLeft.DriveFrictionVoltage),
+            Volts.of(TunerConstants.FrontLeft.SteerFrictionVoltage),
+            Inches.of(2),
+            KilogramSquareMeters.of(TunerConstants.FrontLeft.SteerInertia),
+            WHEEL_COF));
+  }
 
   static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
@@ -104,13 +130,17 @@ public class Drive extends SubsystemBase {
   private SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation,
       lastModulePositions, Pose2d.kZero);
 
+  private final Consumer<Pose2d> resetSimulationPoseCallBack;
+
   public Drive(
       GyroIO gyroIO,
       ModuleIO flModuleIO,
       ModuleIO frModuleIO,
       ModuleIO blModuleIO,
-      ModuleIO brModuleIO) {
+      ModuleIO brModuleIO,
+      Consumer<Pose2d> resetSimulationPoseCallBack) {
     this.gyroIO = gyroIO;
+    this.resetSimulationPoseCallBack = resetSimulationPoseCallBack;
     modules[0] = new Module(flModuleIO, 0, TunerConstants.FrontLeft);
     modules[1] = new Module(frModuleIO, 1, TunerConstants.FrontRight);
     modules[2] = new Module(blModuleIO, 2, TunerConstants.BackLeft);
@@ -125,7 +155,7 @@ public class Drive extends SubsystemBase {
     // Configure AutoBuilder for PathPlanner
     AutoBuilder.configure(
         this::getPose,
-        this::setPose,
+        this::resetOdometry,
         this::getChassisSpeeds,
         this::runVelocity,
         new PPHolonomicDriveController(
@@ -160,17 +190,13 @@ public class Drive extends SubsystemBase {
         new PIDController(10.0, 0.0, 0.0),
         new PIDController(3.0, 0.0, 0.0),
         new PIDController(2.0, 0.0, 0.0)).withDefaultShouldFlip()
-        .withPoseReset(this::setPose).withDefaultShouldFlip();
+        .withPoseReset(this::resetOdometry).withDefaultShouldFlip();
 
     // Configure SysId
     sysId = new SysIdRoutine(
         new SysIdRoutine.Config(
-            null,
-            null,
-            null,
-            (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
-        new SysIdRoutine.Mechanism(
-            (voltage) -> runCharacterization(voltage.in(Volts)), null, this));
+            null, null, null, (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
+        new SysIdRoutine.Mechanism((voltage) -> runCharacterization(voltage.in(Volts)), null, this));
   }
 
   @Override
@@ -396,7 +422,7 @@ public class Drive extends SubsystemBase {
   }
 
   /** Resets the current odometry pose. */
-  public void setPose(Pose2d pose) {
+  public void resetOdometry(Pose2d pose) {
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
   }
 

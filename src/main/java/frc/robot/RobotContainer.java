@@ -29,15 +29,23 @@ import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.IndexerSubsystem.IndexerStates;
-import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.GyroIOPigeon2;
-import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.drive.ModuleIOTalonFX;
 
 import static edu.wpi.first.units.Units.*;
 
 import java.util.jar.Attributes.Name;
+
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.drivesims.GyroSimulation;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
+import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
+import frc.robot.subsystems.drive.*;
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.drivesims.GyroSimulation;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
+import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
+import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -46,7 +54,9 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -105,6 +115,7 @@ public class RobotContainer {
         // public final CommandSwerveDrivetrain drivetrain =
         // TunerConstants.createDrivetrain();
         public final Drive drive;
+        private SwerveDriveSimulation driveSimulation = null;
 
         @SuppressWarnings("unused")
         private final IntakeSubsystem intake = new IntakeSubsystem();
@@ -140,19 +151,23 @@ public class RobotContainer {
                                                 new ModuleIOTalonFX(TunerConstants.FrontLeft),
                                                 new ModuleIOTalonFX(TunerConstants.FrontRight),
                                                 new ModuleIOTalonFX(TunerConstants.BackLeft),
-                                                new ModuleIOTalonFX(TunerConstants.BackRight));
+                                                new ModuleIOTalonFX(TunerConstants.BackRight),
+                                                (robotPose) -> {} );
 
                                 break;
 
                         case SIM:
                                 // Sim robot, instantiate physics sim IO implementations
+                                driveSimulation = new SwerveDriveSimulation(Drive.getMapleSimConfig(),
+                                                new Pose2d(3, 3, new Rotation2d()));
+                                SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
                                 drive = new Drive(
-                                                new GyroIO() {
-                                                },
-                                                new ModuleIOSim(TunerConstants.FrontLeft),
-                                                new ModuleIOSim(TunerConstants.FrontRight),
-                                                new ModuleIOSim(TunerConstants.BackLeft),
-                                                new ModuleIOSim(TunerConstants.BackRight));
+                                                new GyroIOSim(driveSimulation.getGyroSimulation()),
+                                                new ModuleIOSim(driveSimulation.getModules()[0]),
+                                                new ModuleIOSim(driveSimulation.getModules()[1]),
+                                                new ModuleIOSim(driveSimulation.getModules()[2]),
+                                                new ModuleIOSim(driveSimulation.getModules()[3]),
+                                                driveSimulation::setSimulationWorldPose);
                                 break;
 
                         // default:
@@ -169,6 +184,7 @@ public class RobotContainer {
                 // add telemetry
                 // drivetrain.registerTelemetry(logger::telemeterize);
                 // Configure the trigger bindings
+                bLineChouser = new SendableChooser<Command>();
                 configureBindings();
                 // make commands for autos
                 configureAutoCommands();
@@ -185,9 +201,8 @@ public class RobotContainer {
                                 (stream) -> isCompetition
                                                 ? stream.filter(auto -> auto.getName().startsWith("comp"))
                                                 : stream);
-                bLineChouser = new SendableChooser<Command>();
                 bLineChouser.setDefaultOption("none", null);
-                SmartDashboard.putData("Auto Mode", autoChooser);
+                // SmartDashboard.putData("Auto Mode", autoChooser);
 
         }
 
@@ -275,8 +290,6 @@ public class RobotContainer {
                 // () -> rcDrive.withVelocityY(0.1 *
                 // MaxSpeed).withVelocityX(0).withRotationalRate(0)));
 
-                driveController.triangle().onTrue(resetGyro());
-
                 driveController.options().whileTrue(drive.followPathCommandtoTestPose());
 
                 driveController.share()
@@ -295,6 +308,11 @@ public class RobotContainer {
                 driveController.R2().onTrue(drive.followPathCommandtoTestPose());
 
                 // driveController.povDown().whileTrue(drivetrain.followPathCommandtoHUB());
+                final Runnable resetOdometry = Constants.currentMode == Constants.Mode.SIM
+                                ? () -> drive.resetOdometry(driveSimulation.getSimulatedDriveTrainPose())
+                                : () -> drive.resetOdometry(
+                                                new Pose2d(drive.getPose().getTranslation(), new Rotation2d()));
+                driveController.triangle().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
 
                 // ∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
 
@@ -374,7 +392,7 @@ public class RobotContainer {
 
         public Command resetGyro() {
                 return Commands.runOnce(() -> {
-                        drive.setPose(new Pose2d());
+                        drive.resetOdometry(new Pose2d());
                 });
         }
 
@@ -390,6 +408,24 @@ public class RobotContainer {
         public Command getAutonomousCommand() {
                 // return autoChooser.getSelected();
                 return bLineChouser.getSelected();
+        }
+
+        public void resetSimulation() {
+                if (Constants.currentMode != Constants.Mode.SIM)
+                        return;
+
+                driveSimulation.setSimulationWorldPose(new Pose2d(3, 3, new Rotation2d()));
+                SimulatedArena.getInstance().resetFieldForAuto();
+        }
+
+        public void displaySimFieldToAdvantageScope() {
+                if (Constants.currentMode != Constants.Mode.SIM)
+                        return;
+
+                Logger.recordOutput("FieldSimulation/RobotPosition", driveSimulation.getSimulatedDriveTrainPose());
+                Logger.recordOutput(
+                                "FieldSimulation/Notes",
+                                SimulatedArena.getInstance().getGamePiecesByType("Note").toArray(new Pose3d[0]));
         }
 
 }

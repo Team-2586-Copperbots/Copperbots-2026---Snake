@@ -45,18 +45,41 @@ public class Robot extends LoggedRobot {
    * initialization code.
    */
   public Robot() {
-    Logger.recordMetadata("ProjectName", "MyProject"); // Set a metadata value
+    // Record metadata
+    Logger.recordMetadata("ProjectName", "BuildConstants.MAVEN_NAME");
+    Logger.recordMetadata("BuildDate", "BuildConstants.BUILD_DATE");
+    Logger.recordMetadata("GitSHA", "BuildConstants.GIT_SHA");
+    Logger.recordMetadata("GitDate", "BuildConstants.GIT_DATE");
+    Logger.recordMetadata("GitBranch", "BuildConstants.GIT_BRANCH");
+    Logger.recordMetadata(
+        "GitDirty",
+        switch (2) {
+          case 0 -> "All changes committed";
+          case 1 -> "Uncommitted changes";
+          case 2 -> "temporary workarond in robot.java";
+          default -> "Unknown";
+        });
 
-    
+    // Set up data receivers & replay source
+    switch (Constants.currentMode) {
+      case REAL:
+        // Running on a real robot, log to a USB stick ("/U/logs")
+        Logger.addDataReceiver(new WPILOGWriter());
+        Logger.addDataReceiver(new NT4Publisher());
+        break;
 
-    if (isReal()) {
-        Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
-        Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-    } else {
+      case SIM:
+        // Running a physics simulator, log to NT
+        Logger.addDataReceiver(new NT4Publisher());
+        break;
+
+      case REPLAY:
+        // Replaying a log, set up replay source
         setUseTiming(false); // Run as fast as possible
-        String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
-        Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
-        Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
+        String logPath = LogFileUtil.findReplayLog();
+        Logger.setReplaySource(new WPILOGReader(logPath));
+        Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
+        break;
     }
 
     
@@ -105,6 +128,7 @@ public class Robot extends LoggedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
+    robotContainer.resetSimulation();
   }
 
   @Override
