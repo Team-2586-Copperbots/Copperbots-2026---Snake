@@ -85,12 +85,12 @@ public final class Constants {
   public static class CANIds {
     public static final CANBus Canivore = new CANBus("Subsystems");
     // shooter motors
-    public static final int SHOOTER_MOTOR_1_ID = 21;
-    public static final int SHOOTER_MOTOR_2_ID = 22;
+    public static final int SHOOTER_MOTOR_1 = 21;
+    public static final int SHOOTER_MOTOR_2 = 22;
     // 4 bar intake motors
-    public static final int INTAKE_MOVEMENT_MOTOR_ID = 26;
+    public static final int INTAKE_MOVEMENT_MOTOR = 26;
     public static final int INTAKE_CANCODER = 28;
-    public static final int INTAKE_SPINNER_MOTOR_ID = 27;
+    public static final int INTAKE_SPINNER_MOTOR = 27;
     // intake motor
     public static final int INDEXER_MOTOR = 24;
     public static final int TOWER_MOTOR = 25;
@@ -100,12 +100,11 @@ public final class Constants {
     // turret motor
     public static final int TURRET_TURN_MOTOR = 23;
     // candle
-    public static final int CANDLE_ID = 31;
+    public static final int CANDLE = 31;
   }
 
   // public static class CONFIGS {
-    
-    
+
   // }
 
   public static class DIO_IDS {

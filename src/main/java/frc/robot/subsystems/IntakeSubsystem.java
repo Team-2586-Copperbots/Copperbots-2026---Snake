@@ -21,13 +21,14 @@ public class IntakeSubsystem extends SubsystemBase {
     private final PositionVoltage positionVoltage = new PositionVoltage(0);
 
     public IntakeSubsystem() {
-        movementMotor = new TalonFX(CANIds.INTAKE_MOVEMENT_MOTOR_ID, Canivore);
-        spinnerMotor = new TalonFX(CANIds.INTAKE_SPINNER_MOTOR_ID, Canivore);
+        movementMotor = new TalonFX(CANIds.INTAKE_MOVEMENT_MOTOR, Canivore);
+        spinnerMotor = new TalonFX(CANIds.INTAKE_SPINNER_MOTOR, Canivore);
         cancoder = new CANcoder(CANIds.INTAKE_CANCODER, Canivore);
 
         movementMotorConfig = new TalonFXConfiguration();
         // movementMotorConfig.Feedback.FeedbackRemoteSensorID = cancoder.getDeviceID();
-        // movementMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+        // movementMotorConfig.Feedback.FeedbackSensorSource =
+        // FeedbackSensorSourceValue.RemoteCANcoder;
         // movementMotorConfig.Feedback.RotorToSensorRatio = 100;
         // movementMotorConfig.Feedback.SensorToMechanismRatio = 1;
 
@@ -64,7 +65,6 @@ public class IntakeSubsystem extends SubsystemBase {
         return cancoder.getAbsolutePosition().getValueAsDouble();
     }
 
-    
     @Override
     public void periodic() {
         SmartDashboard.putNumber("intake position in rotations", getMovementBarPosition());

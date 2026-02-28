@@ -15,7 +15,7 @@ public class CANDle extends SubsystemBase {
     private CANdle candle;
 
     public CANDle() {
-        candle = new CANdle(CANIds.CANDLE_ID, Canivore);
+        candle = new CANdle(CANIds.CANDLE, Canivore);
 
     }
 

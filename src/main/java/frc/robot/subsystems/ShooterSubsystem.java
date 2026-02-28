@@ -25,8 +25,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public ShooterSubsystem() {
 
-        shooterMotor1 = new TalonFX(CANIds.SHOOTER_MOTOR_1_ID, Canivore);
-        shooterMotor2 = new TalonFX(CANIds.SHOOTER_MOTOR_2_ID, Canivore);
+        shooterMotor1 = new TalonFX(CANIds.SHOOTER_MOTOR_1, Canivore);
+        shooterMotor2 = new TalonFX(CANIds.SHOOTER_MOTOR_2, Canivore);
 
         shooterConfig = new TalonFXConfiguration();
 
@@ -46,8 +46,6 @@ public class ShooterSubsystem extends SubsystemBase {
         shooterMotor2.setControl(new Follower(shooterMotor1.getDeviceID(), MotorAlignmentValue.Opposed));
     }
 
-    
-
     // negative to decrese
     public void setShooterSpeedAjust(double amount) {
         speedForPeriodicShooter += amount;
@@ -56,11 +54,7 @@ public class ShooterSubsystem extends SubsystemBase {
     // sets the absolute speed
     public void setShooterSpeedSet(double setPoint) {
         speedForPeriodicShooter = setPoint;
-    }    
-
-    
-
-    
+    }
 
     public double getMotor1Speed() {
         return shooterMotor1.getVelocity().getValueAsDouble();
@@ -70,19 +64,18 @@ public class ShooterSubsystem extends SubsystemBase {
         return shooterMotor2.getVelocity().getValueAsDouble();
     }
 
-    
     @Override
     public void periodic() {
         // TODO: posibly use diffrent periodic:
         // if (oldValue != newValue) {
-        //   oldValue = newValue;
-        //   setcontrol(newValue)
+        // oldValue = newValue;
+        // setcontrol(newValue)
         // }
         // intent: reduce CAN lode if not needed
 
         // TODO: look at CAN load
         shooterMotor1.setControl(velocityVoltage.withVelocity(speedForPeriodicShooter));
-        
+
         SmartDashboard.putNumber("Shooter velocityVoltage.Velocity", velocityVoltage.Velocity);
         SmartDashboard.putNumber("dynamic speed", speedForPeriodicShooter);
         SmartDashboard.putNumber("ShooterSpeed", getMotor1Speed());
