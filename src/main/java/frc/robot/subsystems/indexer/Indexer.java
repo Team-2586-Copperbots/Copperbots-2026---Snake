@@ -20,7 +20,6 @@ public class Indexer extends SubsystemBase {
     @Override
     public void periodic() {
         io.updateInputs(inputs);
-        Logger.recordOutput("indexer", "log thing");
         Logger.processInputs("indexer inputs", inputs);
     }
 

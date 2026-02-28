@@ -12,8 +12,8 @@ import frc.robot.subsystems.drive.ModuleIO.ModuleIOInputs;
 import frc.robot.subsystems.indexer.IndexerIO.IndexerIOInputs;
 
 public class IndexerIOSim implements IndexerIO {
-    public double towerSpeed = 0;
-    public double spindexerSpeed = 0;
+    private double towerSpeed = 0;
+    private double spindexerSpeed = 0;
 
     public SimulatedMotorController.GenericMotorController towerMotor = new GenericMotorController(DCMotor.getFalcon500(1));
 
