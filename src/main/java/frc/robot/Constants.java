@@ -103,6 +103,11 @@ public final class Constants {
     public static final int CANDLE_ID = 31;
   }
 
+  // public static class CONFIGS {
+    
+    
+  // }
+
   public static class DIO_IDS {
 
     public static final int TURRET_LIMIT_SWITCH = 0;

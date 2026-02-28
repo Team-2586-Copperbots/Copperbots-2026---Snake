@@ -204,7 +204,7 @@ public class Drive extends SubsystemBase {
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
     Logger.processInputs("Drive/Gyro", gyroInputs);
-    Logger.recordOutput("hub anble", Utils.getAngleToHub(this));
+    Logger.recordOutput("hub angle", Utils.getAngleToHub(this));
     for (var module : modules) {
       module.periodic();
     }
@@ -414,6 +414,10 @@ public class Drive extends SubsystemBase {
   @AutoLogOutput(key = "Odometry/Robot")
   public Pose2d getPose() {
     return poseEstimator.getEstimatedPosition();
+  }
+
+  public Command setPose() {
+    return runOnce(() -> poseEstimator.resetPose(new Pose2d(2, 3, new Rotation2d())));
   }
 
   /** Returns the current odometry rotation. */

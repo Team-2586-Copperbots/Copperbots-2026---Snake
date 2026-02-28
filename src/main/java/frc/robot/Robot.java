@@ -82,10 +82,8 @@ public class Robot extends LoggedRobot {
         break;
     }
 
-    
-
-
-    Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.
+    Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may
+                    // be added.
 
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our
@@ -120,7 +118,8 @@ public class Robot extends LoggedRobot {
     // Optional<EstimatedRobotPose> pose = robotContainer.vision.getRobotPose();
 
     // if (pose.isPresent()) {
-    //   robotContainer.drivetrain.addVisionMeasurement(pose.get().estimatedPose.toPose2d(), pose.get().timestampSeconds);
+    // robotContainer.drivetrain.addVisionMeasurement(pose.get().estimatedPose.toPose2d(),
+    // pose.get().timestampSeconds);
     // }
 
   }
@@ -143,7 +142,7 @@ public class Robot extends LoggedRobot {
   public void autonomousInit() {
     // schedule the autonomous command (example)
     if (robotContainer.getAutonomousCommand() != null) {
-      m_autonomousCommand = Commands.sequence(/*robotContainer.zeroThings(),*/ robotContainer.getAutonomousCommand());
+      m_autonomousCommand = Commands.sequence(/* robotContainer.zeroThings(), */ robotContainer.getAutonomousCommand());
     }
     CommandScheduler.getInstance().schedule(m_autonomousCommand);
 
@@ -152,7 +151,7 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    
+
   }
 
   @Override
@@ -196,9 +195,10 @@ public class Robot extends LoggedRobot {
   public void simulationPeriodic() {
     SimulatedArena.getInstance().simulationPeriodic();
     // Get the positions of the fuel (both on the field and in the air)
-      Pose3d[] fuelPoses = SimulatedArena.getInstance()
-            .getGamePiecesArrayByType("Fuel");
-      // Publish to telemetry using AdvantageKit
-      Logger.recordOutput("FieldSimulation/FuelPositions", fuelPoses);
+    Pose3d[] fuelPoses = SimulatedArena.getInstance()
+        .getGamePiecesArrayByType("Fuel");
+    // Publish to telemetry using AdvantageKit
+    Logger.recordOutput("FieldSimulation/FuelPositions", fuelPoses);
+    Logger.recordOutput("FieldSimulation/RobotPosition", robotContainer.driveSimulation.getSimulatedDriveTrainPose());
   }
 }
