@@ -19,7 +19,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class Climb extends SubsystemBase {
     private ClimbIO io;
-    private ClimbIOInputsAutoLogged inputs;
+    private ClimbIOInputsAutoLogged inputs = new ClimbIOInputsAutoLogged();
 
     public Climb(ClimbIO io) {
         this.io = io;
@@ -28,7 +28,7 @@ public class Climb extends SubsystemBase {
     @Override
     public void periodic() {
         io.updateInputs(inputs);
-        Logger.processInputs("Climb inputs", inputs);
+        Logger.processInputs("Climb", inputs);
     }
 
     public void setClimbSpeed(double speed) {

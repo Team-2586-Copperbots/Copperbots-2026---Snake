@@ -49,7 +49,7 @@ public class TurretIOReal implements TurretIO {
         inputs.isClosedLoop = isClosedLoop;
         inputs.currentRingPose = getRingRotation();
         inputs.currentRingSpeed = turnMotor.getVelocity().getValueAsDouble();
-        inputs.limitSwitch = limitSwitch.get();
+        inputs.limitSwitch = !limitSwitch.get();
         inputs.rotationRelitiveToRobotZero = getRobotRelitiveRotation();
     }
 

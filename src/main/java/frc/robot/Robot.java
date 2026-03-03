@@ -115,12 +115,12 @@ public class Robot extends LoggedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
-    // Optional<EstimatedRobotPose> pose = robotContainer.vision.getRobotPose();
+    Optional<EstimatedRobotPose> pose = robotContainer.vision.getRobotPose();
 
-    // if (pose.isPresent()) {
-    // robotContainer.drivetrain.addVisionMeasurement(pose.get().estimatedPose.toPose2d(),
-    // pose.get().timestampSeconds);
-    // }
+    if (pose.isPresent()) {
+      // robotContainer.drive.addVisionMeasurement(pose.get().estimatedPose.toPose2d(),
+      // pose.get().timestampSeconds, );
+    }
 
   }
 
@@ -163,7 +163,7 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    // CommandScheduler.getInstance().schedule(robotContainer.zeroThings());
+    CommandScheduler.getInstance().schedule(robotContainer.zeroThings());
 
   }
 

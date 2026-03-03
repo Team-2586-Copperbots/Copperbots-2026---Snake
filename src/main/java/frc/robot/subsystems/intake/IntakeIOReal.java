@@ -23,6 +23,7 @@ public class IntakeIOReal implements IntakeIO {
 
     private final PositionVoltage positionVoltage = new PositionVoltage(0);
     private IntakePosition targetPosition = IntakePosition.IN;
+    private boolean isClosedLoop;
 
     public IntakeIOReal() {
         wristMotor = new TalonFX(Constants.CANIds.INTAKE_WRIST_MOTOR, Canivore);
@@ -32,10 +33,10 @@ public class IntakeIOReal implements IntakeIO {
         wristMotorConfig = new TalonFXConfiguration();
         rollerMotorConfig = new TalonFXConfiguration();
 
-        wristMotorConfig.Feedback.FeedbackRemoteSensorID = cancoder.getDeviceID();
-        wristMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-        wristMotorConfig.Feedback.RotorToSensorRatio = 100;
-        wristMotorConfig.Feedback.SensorToMechanismRatio = 1;
+        // wristMotorConfig.Feedback.FeedbackRemoteSensorID = cancoder.getDeviceID();
+        // wristMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+        // wristMotorConfig.Feedback.RotorToSensorRatio = 100;
+        // wristMotorConfig.Feedback.SensorToMechanismRatio = 1;
 
         var motorOutputConfigs = wristMotorConfig.MotorOutput;
         motorOutputConfigs.NeutralMode = NeutralModeValue.Brake;
@@ -55,6 +56,7 @@ public class IntakeIOReal implements IntakeIO {
         inputs.currentRollerSpeed = rollerMotor.getVelocity().getValueAsDouble();
         inputs.currentWristPosition = wristMotor.getPosition().getValueAsDouble();
         inputs.wristSetpoint = targetPosition;
+        inputs.isClosedLoop = isClosedLoop;
     }
 
     @Override
@@ -64,12 +66,14 @@ public class IntakeIOReal implements IntakeIO {
 
     @Override
     public void setWristPosition(IntakePosition position) {
+        isClosedLoop = true;
         targetPosition = position;
         wristMotor.setControl(positionVoltage.withPosition(position.value));
     }
 
     @Override
     public void setWristSpeed(double speed) {
+        isClosedLoop = false;
         wristMotor.set(speed);
     }
 }

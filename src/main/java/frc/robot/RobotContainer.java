@@ -206,16 +206,21 @@ public class RobotContainer {
                                                 },
                                                 (robotPose) -> {
                                                 });
-                                intake = new Intake(new IntakeIO() {});
-                                indexer = new Indexer(new IndexerIO() {});
-                                climb = new Climb(new ClimbIO() {});
+                                intake = new Intake(new IntakeIO() {
+                                });
+                                indexer = new Indexer(new IndexerIO() {
+                                });
+                                climb = new Climb(new ClimbIO() {
+                                });
                                 vision = new PhotonSubsystem();
-                                shooter = new Shooter(new ShooterIO() {});
-                                turret = new Turret(new TurretIO() {});
+                                shooter = new Shooter(new ShooterIO() {
+                                });
+                                turret = new Turret(new TurretIO() {
+                                });
 
                                 break;
                 }
-                
+
                 // Configure the trigger bindings
                 bLineChouser = new SendableChooser<Command>();
                 configureBindings();
@@ -339,26 +344,22 @@ public class RobotContainer {
 
                 // Turret subsystem
                 operatorController.L1().whileTrue(new ManualTurret(turret, 0));
+                operatorController.L2().whileTrue(new ManualTurret(turret,
+                                Utils.getAngleToHub(drive)));
 
                 operatorController.options().whileTrue(
                                 turret.runEnd(() -> turret.setTurretSpeed(0.05), () -> turret.setTurretSpeed(0)));
-                operatorController.share().whileTrue(turret.runEnd(() -> turret.setTurretSpeed(-0.05),
-                                () -> turret.setTurretSpeed(0)));
-
-                operatorController.L2().whileTrue(new ManualTurret(turret,
-                                Utils.getAngleToHub(drive)));
+                operatorController.share().whileTrue(
+                                turret.runEnd(() -> turret.setTurretSpeed(-0.05), () -> turret.setTurretSpeed(0)));
 
                 operatorController.touchpad().onTrue(new ZeroTurret(turret));
 
                 // Shooter Subsystem
                 operatorController.triangle().onTrue(new ShootSpeed(shooter, 0, false));
 
-                operatorController.square().onTrue(new ShootSpeed(shooter, 30, false));
+                operatorController.square().onTrue(new ShootSpeed(shooter, 10, false));
 
-                operatorController.cross().onTrue(new ShootSpeed(shooter,
-                                Utils.shooterSpeedFromDistance(
-                                                Utils.distanceFromPose(Constants.PLACES.CENTER_OF_HUB, drive)),
-                                false));
+                // operatorController.cross().onTrue(new );
 
                 // Indexer subsystem
                 operatorController.R1().whileTrue(new IndexerSpin(indexer,
@@ -410,12 +411,10 @@ public class RobotContainer {
                 });
         }
 
-        // public Command zeroThings() {
-        // return new ParallelCommandGroup(new ZeroTurret(turret), new
-        // ShootSpeed(shooter, 0, false));
-        // }
+        public Command zeroThings() {
+                return new ParallelCommandGroup(new ZeroTurret(turret), new ShootSpeed(shooter, 0, false));
+        }
 
-        // ZeroTurret(turret)
         /**
          *
          * @return the command to run in autonomous

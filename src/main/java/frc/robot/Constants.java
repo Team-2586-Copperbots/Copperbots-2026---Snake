@@ -109,7 +109,7 @@ public final class Constants {
 
   public static class DIO_IDS {
 
-    public static final int TURRET_LIMIT_SWITCH = 0;
+    public static final int TURRET_LIMIT_SWITCH = 9;
   }
 
   public static class SHOOTER_CONSTANTS {

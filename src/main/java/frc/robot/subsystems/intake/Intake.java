@@ -2,6 +2,8 @@ package frc.robot.subsystems.intake;
 
 import static frc.robot.Constants.CANIds.Canivore;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -15,7 +17,7 @@ import frc.robot.subsystems.shooter.ShooterIOInputsAutoLogged;
 
 public class Intake extends SubsystemBase {
     private IntakeIO io;
-    private IntakeIOInputsAutoLogged inputs;
+    private IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
     public Intake(IntakeIO io) {
         this.io = io;
@@ -23,18 +25,16 @@ public class Intake extends SubsystemBase {
 
     // Constants.IntakePosition
     public void setIntakePosition(IntakePosition position) {
-        inputs.isClosedLoop = true;
-        inputs.wristSetpoint = position;
+        io.setWristPosition(position);
     }
 
     // positive is out
     public void setMovementBarSpeed(double speed) {
-        inputs.isClosedLoop = false;
-        inputs.percentageWristSpeed = speed;
+        io.setWristSpeed(speed);
     }
 
     public void setRollerSpeed(double speed) {
-        inputs.rollerSetpoint = speed;
+        io.setRollerSpeed(speed);;
     }
 
     public double getMovementBarPosition() {
@@ -55,6 +55,8 @@ public class Intake extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("intake position in rotations", getMovementBarPosition());
+        io.updateInputs(inputs);
+        Logger.processInputs("Intake", inputs);
     }
 
     public static enum IntakePosition {

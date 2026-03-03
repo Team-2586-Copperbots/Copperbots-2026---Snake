@@ -2,6 +2,8 @@ package frc.robot.subsystems.turret;
 
 import static frc.robot.Constants.CANIds.Canivore;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -33,6 +35,7 @@ public class Turret extends SubsystemBase {
     @Override
     public void periodic() {
         io.updateInputs(inputs);
+        Logger.processInputs("Turret", inputs);
     }
 
     public void setTurretRotationTarget(double roations) {
@@ -52,6 +55,7 @@ public class Turret extends SubsystemBase {
     }
 
     public void setTurretZero() {
+        io.setTurretSpeed(0);
         io.setTurretZero();
     }
 

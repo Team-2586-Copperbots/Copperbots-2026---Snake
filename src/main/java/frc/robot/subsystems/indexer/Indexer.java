@@ -20,7 +20,7 @@ public class Indexer extends SubsystemBase {
     @Override
     public void periodic() {
         io.updateInputs(inputs);
-        Logger.processInputs("indexer inputs", inputs);
+        Logger.processInputs("Indexer", inputs);
     }
 
     public Command setSpindexerSpeedCommand(double speed) {
@@ -36,9 +36,9 @@ public class Indexer extends SubsystemBase {
     }
 
     public static enum IndexerStates {
-        UP(0.2, 0.4),
+        UP(-0.3, 0.4),
         TOWER(0, 0.4),
-        DOWN(-0.3, -0.4),
+        DOWN(0.3, -0.4),
         OFF(0, 0);
 
         private final double spindexer;
