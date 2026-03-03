@@ -27,7 +27,7 @@ public class ZeroTurret extends Command {
     @Override
     public boolean isFinished() {
         if (Turret.getLimitSwitch()) {
-            Turret.setTurretZero();
+            Turret.setTurretToZero();
             return true;
         }
         return false;

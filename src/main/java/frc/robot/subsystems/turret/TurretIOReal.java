@@ -65,11 +65,11 @@ public class TurretIOReal implements TurretIO {
         isClosedLoop = true;
 
         // limits are typed in as degres
-        if (roations >= (0 - TURRET_CONSTANTS.TURRET_RING_ZERO_TO_ROBOT_BACK_OFFSET)
+        if (roations >= (0 - TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET)
                 && roations < TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT) {
             isAtPosition = true;
             turnMotor.setControl(
-                    positionVoltage.withPosition((roations + TURRET_CONSTANTS.TURRET_RING_ZERO_TO_ROBOT_BACK_OFFSET)
+                    positionVoltage.withPosition((roations + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET)
                             * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO));
         } else {
             // says that it did not make it to the desired position
@@ -107,7 +107,7 @@ public class TurretIOReal implements TurretIO {
     @Override
     public double getRobotRelitiveRotation() {
         return -0.5 + (turnMotor.getPosition().getValueAsDouble() / TURRET_CONSTANTS.MOTOR_TO_RING_RATIO)
-                + TURRET_CONSTANTS.TURRET_RING_ZERO_TO_ROBOT_BACK_OFFSET;
+                + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET;
     }
 
 }

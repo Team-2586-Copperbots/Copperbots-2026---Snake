@@ -54,9 +54,10 @@ public class Turret extends SubsystemBase {
         return inputs.rotationRelitiveToRobotZero;
     }
 
-    public void setTurretZero() {
+    public void setTurretToZero() {
         io.setTurretSpeed(0);
         io.setTurretZero();
+        io.setTurretSetpoint(0);
     }
 
 }

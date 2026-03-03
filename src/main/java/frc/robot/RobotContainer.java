@@ -12,6 +12,7 @@ import frc.robot.Constants.SHOOTER_CONSTANTS;
 import frc.robot.commands.AimAndShoot;
 import frc.robot.commands.AimAtHub;
 import frc.robot.commands.AutoSpeed;
+import frc.robot.commands.ClimbSpeed;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ShootSpeed;
 import frc.robot.commands.IndexerSpin;
@@ -357,9 +358,11 @@ public class RobotContainer {
                 // Shooter Subsystem
                 operatorController.triangle().onTrue(new ShootSpeed(shooter, 0, false));
 
-                operatorController.square().onTrue(new ShootSpeed(shooter, 10, false));
+                operatorController.square().onTrue(new ShootSpeed(shooter, 25, false));
 
-                // operatorController.cross().onTrue(new );
+                operatorController.circle().whileTrue(new ClimbSpeed(climb, 0.05));
+
+                operatorController.cross().whileTrue(new ClimbSpeed(climb, -0.05));
 
                 // Indexer subsystem
                 operatorController.R1().whileTrue(new IndexerSpin(indexer,
