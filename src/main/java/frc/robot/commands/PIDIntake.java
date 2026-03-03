@@ -1,14 +1,14 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.IntakePosition;
-import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.intake.Intake.IntakePosition;
+import frc.robot.subsystems.intake.Intake;
 
 public class PIDIntake extends Command {
-    private IntakeSubsystem Intake;
+    private Intake Intake;
     private IntakePosition position;
 
-    public PIDIntake(IntakeSubsystem Intake, IntakePosition position) {
+    public PIDIntake(Intake Intake, IntakePosition position) {
         this.Intake = Intake;
         this.position = position;
         // Use addRequirements() here to declare subsystem dependencies.

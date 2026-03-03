@@ -23,14 +23,18 @@ import frc.robot.commands.ZeroTurret;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CANDle;
 import frc.robot.subsystems.PhotonSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.TurretSubsystem;
+import frc.robot.subsystems.climb.Climb;
+import frc.robot.subsystems.climb.ClimbIO;
+import frc.robot.subsystems.climb.ClimbIOReal;
+import frc.robot.subsystems.climb.ClimbIOSim;
 
 import static edu.wpi.first.units.Units.*;
 
 import java.util.jar.Attributes.Name;
 
+import org.ironmaple.simulation.IntakeSimulation;
 import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
 import org.ironmaple.simulation.drivesims.GyroSimulation;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
@@ -38,8 +42,22 @@ import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.indexer.IndexerIOSim;
 import frc.robot.subsystems.indexer.Indexer;
+import frc.robot.subsystems.indexer.IndexerIO;
+import frc.robot.subsystems.indexer.IndexerIOReal;
 import frc.robot.subsystems.indexer.Indexer.IndexerStates;
-import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.Intake.IntakePosition;
+import frc.robot.subsystems.intake.IntakeIOReal;
+import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterIO;
+import frc.robot.subsystems.shooter.ShooterIOReal;
+import frc.robot.subsystems.shooter.ShooterIOSim;
+import frc.robot.subsystems.turret.Turret;
+import frc.robot.subsystems.turret.TurretIO;
+import frc.robot.subsystems.turret.TurretIOReal;
+import frc.robot.subsystems.turret.TurretIOSim;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.GyroSimulation;
@@ -90,40 +108,30 @@ public class RobotContainer {
                                                                                           // second
                                                                                           // max
                                                                                           // angular velocity
-        // /* Setting up bindings for necessary control of the swerve drive platform */
-        // private final SwerveRequest.FieldCentric drive = new
-        // SwerveRequest.FieldCentric()
-        // .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) //
-        // Add a 10% deadband
-        // .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop
-        // control for drive
-        // // motors
-        // // used 2025 for side to side movement
-        // //
-        // private final SwerveRequest.RobotCentric rcDrive = new
-        // SwerveRequest.RobotCentric().withDeadband(MaxSpeed * 0.1)
-        // .withRotationalDeadband(MaxAngularRate * 0.1);
-        // @SuppressWarnings("unused")
-        // private final SwerveRequest.SwerveDriveBrake brake = new
-        // SwerveRequest.SwerveDriveBrake();
-        // @SuppressWarnings("unused")
-        // private final SwerveRequest.PointWheelsAt point = new
-        // SwerveRequest.PointWheelsAt();
+        /* Setting up bindings for necessary control of the swerve drive platform */
 
-        // private final Telemetry logger = new Telemetry(MaxSpeed);
+        // used 2025 for side to side movement
+        //
+        private final SwerveRequest.RobotCentric rcDrive = new SwerveRequest.RobotCentric().withDeadband(MaxSpeed * 0.1)
+                        .withRotationalDeadband(MaxAngularRate * 0.1);
+        @SuppressWarnings("unused")
+        private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+        @SuppressWarnings("unused")
+        private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
-        // public final PhotonSubsystem vision = new PhotonSubsystem();
-        // public final CommandSwerveDrivetrain drivetrain =
-        // TunerConstants.createDrivetrain();
-        public final Drive drive;
+        // simulated objects
         public SwerveDriveSimulation driveSimulation = null;
+        public IntakeSimulation.IntakeSide intakeSimulation = null;
 
-        // private final IntakeSubsystem intake = new IntakeSubsystem();
-        private final Indexer indexer = new Indexer(new IndexerIOSim());
-        // private final ShooterSubsystem shooter = new ShooterSubsystem();
-        // private final TurretSubsystem turret = new TurretSubsystem();
-        // @SuppressWarnings("unused")
-        // private final CANDle candle = new CANDle();
+        public Climb climb;
+        public final PhotonSubsystem vision;
+        public final Drive drive;
+        private final Intake intake;
+        private final Indexer indexer;
+        private final Shooter shooter;
+        private final Turret turret;
+        @SuppressWarnings("unused")
+        private final CANDle candle = new CANDle();
 
         private final CommandPS4Controller driveController = new CommandPS4Controller(
                         OPERATOR_CONSTANTS.DRIVER_CONTROLER_PORT);
@@ -144,8 +152,7 @@ public class RobotContainer {
                 switch (Constants.currentMode) {
                         case REAL:
                                 // Real robot, instantiate hardware IO implementations
-                                // ModuleIOTalonFX is intended for modules with TalonFX drive, TalonFX turn, and
-                                // a CANcoder
+                                climb = new Climb(new ClimbIOReal());
                                 drive = new Drive(
                                                 new GyroIOPigeon2(),
                                                 new ModuleIOTalonFX(TunerConstants.FrontLeft),
@@ -154,12 +161,16 @@ public class RobotContainer {
                                                 new ModuleIOTalonFX(TunerConstants.BackRight),
                                                 (robotPose) -> {
                                                 });
+                                indexer = new Indexer(new IndexerIOReal());
+                                intake = new Intake(new IntakeIOReal());
+                                shooter = new Shooter(new ShooterIOReal());
+                                vision = new PhotonSubsystem();
+                                turret = new Turret(new TurretIOReal());
 
                                 break;
 
                         case SIM:
                                 // Sim robot, instantiate physics sim IO implementations
-                                System.out.println("SIM DriveTrain was initilised from robotContainer");
                                 driveSimulation = new SwerveDriveSimulation(Drive.getMapleSimConfig(),
                                                 new Pose2d(-3, -3, new Rotation2d()));
                                 SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
@@ -170,6 +181,14 @@ public class RobotContainer {
                                                 new ModuleIOSim(driveSimulation.getModules()[2]),
                                                 new ModuleIOSim(driveSimulation.getModules()[3]),
                                                 driveSimulation::setSimulationWorldPose);
+
+                                intake = new Intake(new IntakeIOSim(driveSimulation));
+                                indexer = new Indexer(new IndexerIOSim());
+                                climb = new Climb(new ClimbIOSim());
+                                vision = new PhotonSubsystem();
+                                shooter = new Shooter(new ShooterIOSim());
+                                turret = new Turret(new TurretIOSim());
+
                                 break;
 
                         default:
@@ -177,15 +196,26 @@ public class RobotContainer {
                                 drive = new Drive(
                                                 new GyroIO() {
                                                 },
-                                                new ModuleIO() {},
-                                                new ModuleIO() {},
-                                                new ModuleIO() {},
-                                                new ModuleIO() {},
-                                                (robotPose) -> {});
+                                                new ModuleIO() {
+                                                },
+                                                new ModuleIO() {
+                                                },
+                                                new ModuleIO() {
+                                                },
+                                                new ModuleIO() {
+                                                },
+                                                (robotPose) -> {
+                                                });
+                                intake = new Intake(new IntakeIO() {});
+                                indexer = new Indexer(new IndexerIO() {});
+                                climb = new Climb(new ClimbIO() {});
+                                vision = new PhotonSubsystem();
+                                shooter = new Shooter(new ShooterIO() {});
+                                turret = new Turret(new TurretIO() {});
+
                                 break;
                 }
-                // add telemetry
-                // drivetrain.registerTelemetry(logger::telemeterize);
+                
                 // Configure the trigger bindings
                 bLineChouser = new SendableChooser<Command>();
                 configureBindings();
@@ -210,29 +240,34 @@ public class RobotContainer {
         }
 
         private void buildBLineAutos() {
-                bLineChouser.addOption("test", new SequentialCommandGroup(drive.pathFromString("example_c")/*,
-                                 new AimAtHub(turret, drive)*/));
+                bLineChouser.addOption("test", new SequentialCommandGroup(drive.pathFromString("example_c")/*
+                                                                                                            * ,
+                                                                                                            * new
+                                                                                                            * AimAtHub(
+                                                                                                            * turret,
+                                                                                                            * drive)
+                                                                                                            */));
 
         }
 
         private void configureAutoCommands() {
 
-                // NamedCommands.registerCommand("aim'n'Shoot",
-                //                 new AimAndShoot(shooter, turret, drive, PLACES.CENTER_OF_HUB));
-                // NamedCommands.registerCommand("shoot", new ShootSpeed(shooter, 20, false));
-                // NamedCommands.registerCommand("intake spin", new IntakeSpin(intake));
-                // // NamedCommands.registerCommand("indexer", new IndexerSpin(indexer,
-                // // IndexerStates.UP));
-                // NamedCommands.registerCommand("aim forward", new ManualTurret(turret, 0));
-                // NamedCommands.registerCommand("AimAtHub", new AimAtHub(turret, drive));
-                // NamedCommands.registerCommand("homeAll",
-                //                 new SequentialCommandGroup(new ManualTurret(turret, 0),
-                //                                 new PIDIntake(intake, Constants.IntakePosition.IN),
-                //                                 new ShootSpeed(shooter, SHOOTER_CONSTANTS.SHOOTER_IDLE_SPEED,
-                //                                                 false)/*
-                //                                                        * ,
-                //                                                        * new IndexerSpin(indexer, IndexerStates.OFF)
-                //                                                        */));
+                NamedCommands.registerCommand("aim'n'Shoot",
+                                new AimAndShoot(shooter, turret, drive, PLACES.CENTER_OF_HUB));
+                NamedCommands.registerCommand("shoot", new ShootSpeed(shooter, 20, false));
+                NamedCommands.registerCommand("intake spin", new IntakeSpin(intake));
+                // NamedCommands.registerCommand("indexer", new IndexerSpin(indexer,
+                // IndexerStates.UP));
+                NamedCommands.registerCommand("aim forward", new ManualTurret(turret, 0));
+                NamedCommands.registerCommand("AimAtHub", new AimAtHub(turret, drive));
+                NamedCommands.registerCommand("homeAll",
+                                new SequentialCommandGroup(new ManualTurret(turret, 0),
+                                                new PIDIntake(intake, IntakePosition.IN),
+                                                new ShootSpeed(shooter, SHOOTER_CONSTANTS.SHOOTER_IDLE_SPEED,
+                                                                false)/*
+                                                                       * ,
+                                                                       * new IndexerSpin(indexer, IndexerStates.OFF)
+                                                                       */));
         }
 
         /**
@@ -250,24 +285,6 @@ public class RobotContainer {
          * joysticks}.
          */
         private void configureBindings() {
-                // // CTRE drive
-                // drivetrain.setDefaultCommand(
-                // // Drivetrain will execute this command periodically
-                // drivetrain.applyRequest(() -> drive
-                // .withVelocityX(-driveController.getLeftY() * MaxSpeed) // Drive
-                // // forward
-                // // with
-                // // negative Y
-                // // (forward)
-                // .withVelocityY(-driveController.getLeftX() * MaxSpeed) // Drive left
-                // // with
-                // // negative X
-                // // (left)
-                // .withRotationalRate(-driveController.getRightX() * MaxAngularRate) // Drive
-                // // counterclockwise
-                // // with
-                // // negative X (left)
-                // ));
 
                 drive.setDefaultCommand(
                                 DriveCommands.fieldOrientedDrive(
@@ -281,27 +298,6 @@ public class RobotContainer {
                                 .toggleOnTrue(DriveCommands.robotOrientedDrive(drive, () -> -driveController.getLeftY(),
                                                 () -> -driveController.getLeftX(), () -> -driveController.getRightX()));
                 // robot centric drive
-                // driveController.R2().whileTrue(drivetrain.applyRequest(
-                // () -> rcDrive.withVelocityX(0.1 *
-                // MaxSpeed).withVelocityY(0).withRotationalRate(0)));
-
-                // driveController.L2().whileTrue(drivetrain.applyRequest(
-                // () -> rcDrive.withVelocityX(-0.1 *
-                // MaxSpeed).withVelocityY(0).withRotationalRate(0)));
-
-                // driveController.R1().whileTrue(drivetrain.applyRequest(
-                // () -> rcDrive.withVelocityY(-0.1 *
-                // MaxSpeed).withVelocityX(0).withRotationalRate(0)));
-
-                // driveController.L1().whileTrue(drivetrain.applyRequest(
-                // () -> rcDrive.withVelocityY(0.1 *
-                // MaxSpeed).withVelocityX(0).withRotationalRate(0)));
-
-                driveController.options().whileTrue(drive.followPathCommandtoTestPose());
-
-                driveController.share()
-                                .onTrue(DriveCommands.stopWithX(drive));
-
                 driveController.povUp()
                                 .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> 1, () -> 0, () -> 0));
                 driveController.povDown()
@@ -311,17 +307,21 @@ public class RobotContainer {
                 driveController.povRight()
                                 .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> 0, () -> -1, () -> 0));
 
+                driveController.options().whileTrue(drive.followPathCommandtoTestPose());
+
+                driveController.share()
+                                .onTrue(DriveCommands.stopWithX(drive));
+
                 driveController.R1().onTrue(drive.pathFindToHubShot());
                 driveController.R2().onTrue(drive.followPathCommandtoTestPose());
-                driveController.L2().onTrue(indexer.setSpindexerSpeedCommand(2));
                 driveController.L1().onTrue(drive.setPose());
 
-                // // driveController.povDown().whileTrue(drivetrain.followPathCommandtoHUB());
-                // final Runnable resetOdometry = Constants.currentMode == Constants.Mode.SIM
-                // ? () -> drive.resetOdometry(driveSimulation.getSimulatedDriveTrainPose())
-                // : () -> drive.resetOdometry(
-                // new Pose2d(drive.getPose().getTranslation(), new Rotation2d()));
-                // driveController.triangle().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
+                // driveController.povDown().whileTrue(drivetrain.followPathCommandtoHUB());
+                final Runnable resetOdometry = Constants.currentMode == Constants.Mode.SIM
+                                ? () -> drive.resetOdometry(driveSimulation.getSimulatedDriveTrainPose())
+                                : () -> drive.resetOdometry(
+                                                new Pose2d(drive.getPose().getTranslation(), new Rotation2d()));
+                driveController.triangle().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
 
                 // ∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
 
@@ -338,66 +338,70 @@ public class RobotContainer {
                 // operatorController.povRight().whileTrue(candle.fire(STRIPS.FIRST));
 
                 // Turret subsystem
-                // operatorController.L1().whileTrue(new PIDTurret(turret, 0));
+                operatorController.L1().whileTrue(new ManualTurret(turret, 0));
 
-                // operatorController.options().whileTrue(
-                //                 turret.runEnd(() -> turret.setTurnMotorSpeed(0.05), () -> turret.setTurnMotorSpeed(0)));
-                // operatorController.share().whileTrue(turret.runEnd(() -> turret.setTurnMotorSpeed(-0.05),
-                //                 () -> turret.setTurnMotorSpeed(0)));
+                operatorController.options().whileTrue(
+                                turret.runEnd(() -> turret.setTurretSpeed(0.05), () -> turret.setTurretSpeed(0)));
+                operatorController.share().whileTrue(turret.runEnd(() -> turret.setTurretSpeed(-0.05),
+                                () -> turret.setTurretSpeed(0)));
 
-                // // operatorController.L2().whileTrue(new PIDTurret(turret,
-                // // Utils.getAngleToHub(drivetrain)));
+                operatorController.L2().whileTrue(new ManualTurret(turret,
+                                Utils.getAngleToHub(drive)));
 
-                // operatorController.touchpad().onTrue(new ZeroTurret(turret));
+                operatorController.touchpad().onTrue(new ZeroTurret(turret));
 
-                // // Shooter Subsystem
-                // operatorController.triangle().onTrue(new ShootSpeed(shooter, 0, false));
+                // Shooter Subsystem
+                operatorController.triangle().onTrue(new ShootSpeed(shooter, 0, false));
 
-                // operatorController.square().onTrue(new ShootSpeed(shooter, 30, false));
+                operatorController.square().onTrue(new ShootSpeed(shooter, 30, false));
 
-                // // operatorController.cross().onTrue(new Shoot(shooter,
-                // // Utils.shooterSpeedFromDistance(
-                // // Utils.distanceFromPose(Constants.PLACES.CENTER_OF_HUB, drivetrain))));
+                operatorController.cross().onTrue(new ShootSpeed(shooter,
+                                Utils.shooterSpeedFromDistance(
+                                                Utils.distanceFromPose(Constants.PLACES.CENTER_OF_HUB, drive)),
+                                false));
 
-                // // Indexer subsystem
-                // // operatorController.R1().whileTrue(new IndexerSpin(indexer,
-                // // IndexerStates.UP));
+                // Indexer subsystem
+                operatorController.R1().whileTrue(new IndexerSpin(indexer,
+                                IndexerStates.UP));
 
-                // // Intake subsystem
-                // // out
-                // operatorController.povUp().whileTrue(new ManualIntake(intake, 0.075));
-                // // in
-                // operatorController.povDown().whileTrue(new ManualIntake(intake, -0.075));
+                // Intake subsystem
+                // out
+                operatorController.povUp().whileTrue(new ManualIntake(intake, 0.075));
+                // in
+                operatorController.povDown().whileTrue(new ManualIntake(intake, -0.075));
 
-                // // roller
-                // operatorController.povLeft().whileTrue(new IntakeSpin(intake));
+                // roller
+                operatorController.povLeft().whileTrue(new IntakeSpin(intake));
 
-                // // set aside for when the pid is tuned and constants are updated
-                // // operatorController.povRight().whileTrue(new PIDIntake(intake, null));
+                // set aside for when the pid is tuned and constants are updated
+                // operatorController.povRight().whileTrue(new PIDIntake(intake, null));
 
-                // // ∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
+                // ∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
 
-                // // testController1.R1().whileTrue(new IndexerSpin(indexer, IndexerStates.UP));
+                testController1.R1().whileTrue(new IndexerSpin(indexer,
+                                IndexerStates.UP));
 
-                // testController1.povDown().onTrue(new ShootSpeed(shooter, 0, false));
-                // testController1.povUp().onTrue(new ShootSpeed(shooter, 20, false));
-                // testController1.povRight().whileTrue(new AutoSpeed(shooter, drive));
+                testController1.povDown().onTrue(new ShootSpeed(shooter, 0, false));
+                testController1.povUp().onTrue(new ShootSpeed(shooter, 20, false));
+                testController1.povRight().whileTrue(new AutoSpeed(shooter, drive));
 
-                // testController1.triangle().onTrue(new ShootSpeed(shooter, 1, true));
-                // testController1.square().onTrue(new ShootSpeed(shooter, -1, true));
+                testController1.triangle().onTrue(new ShootSpeed(shooter, 1, true));
+                testController1.square().onTrue(new ShootSpeed(shooter, -1, true));
 
-                // testController1.circle().onTrue(new ShootSpeed(shooter, 5, true));
-                // testController1.cross().onTrue(new ShootSpeed(shooter, -5, true));
+                testController1.circle().onTrue(new ShootSpeed(shooter, 5, true));
+                testController1.cross().onTrue(new ShootSpeed(shooter, -5, true));
 
-                // testController2.povUp().onTrue(new ManualTurret(turret, 0));
-                // testController2.povDown().onTrue(new ManualTurret(turret, 0.25));
-                // testController2.povRight().whileTrue(new AimAtHub(turret, drive));
+                testController2.povUp().onTrue(new ManualTurret(turret, 0));
+                testController2.povDown().onTrue(new ManualTurret(turret, 0.25));
+                testController2.povRight().whileTrue(new AimAtHub(turret, drive));
 
-                // // testController2.R1().whileTrue(new IndexerSpin(indexer, IndexerStates.UP));
-                // testController2.square().whileTrue(new AimAtHub(turret, drive));
-                // testController2.triangle().whileTrue(new AutoSpeed(shooter, drive));
-                // testController2.circle().toggleOnTrue(new AimAndShoot(shooter, turret, drive, null));
-                // testController2.cross().whileTrue(new ShootSpeed(shooter, 0, false));
+                testController2.R1().whileTrue(new IndexerSpin(indexer,
+                                IndexerStates.UP));
+                testController2.square().whileTrue(new AimAtHub(turret, drive));
+                testController2.triangle().whileTrue(new AutoSpeed(shooter, drive));
+                testController2.circle().toggleOnTrue(new AimAndShoot(shooter, turret, drive,
+                                null));
+                testController2.cross().whileTrue(new ShootSpeed(shooter, 0, false));
         }
 
         public Command resetGyro() {
@@ -407,7 +411,8 @@ public class RobotContainer {
         }
 
         // public Command zeroThings() {
-        //         return new ParallelCommandGroup(new ZeroTurret(turret), new ShootSpeed(shooter, 0, false));
+        // return new ParallelCommandGroup(new ZeroTurret(turret), new
+        // ShootSpeed(shooter, 0, false));
         // }
 
         // ZeroTurret(turret)

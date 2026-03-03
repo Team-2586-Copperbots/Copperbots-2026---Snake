@@ -1,13 +1,13 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.TurretSubsystem;
+import frc.robot.subsystems.turret.Turret;;
 
 public class ManualTurret extends Command {
-    private TurretSubsystem Turret;
+    private Turret Turret;
     private Double angle;
 
-    public ManualTurret(TurretSubsystem TurretSubsystem, double angle) {
+    public ManualTurret(Turret TurretSubsystem, double angle) {
         this.Turret = TurretSubsystem;
         this.angle = angle;
         // Use addRequirements() here to declare subsystem dependencies.
@@ -17,7 +17,7 @@ public class ManualTurret extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        Turret.setTurretRotation(angle);
+        Turret.setTurretRotationTarget(angle);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -37,7 +37,7 @@ public class ManualTurret extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        Turret.setTurretRotation(0);
+        Turret.setTurretRotationTarget(0);
     }
 
 }

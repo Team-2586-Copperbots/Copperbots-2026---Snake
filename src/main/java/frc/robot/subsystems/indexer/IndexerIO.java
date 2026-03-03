@@ -5,6 +5,7 @@ import org.littletonrobotics.junction.AutoLog;
 import frc.robot.subsystems.drive.ModuleIO.ModuleIOInputs;
 
 public interface IndexerIO {
+    
     @AutoLog
     public static class IndexerIOInputs {
         // both are in the range of 1.0 - 0.0

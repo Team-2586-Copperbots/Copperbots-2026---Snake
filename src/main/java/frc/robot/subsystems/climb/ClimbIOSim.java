@@ -9,7 +9,7 @@ public class ClimbIOSim implements ClimbIO {
     private ClimbPosition position = ClimbPosition.DOWN;
     private boolean positionVoltage = false;
 
-    // private LinearSystemSim sim =
+
 
     public ClimbIOSim() {
 

@@ -2,18 +2,29 @@ package frc.robot.subsystems.intake;
 
 import org.littletonrobotics.junction.AutoLog;
 
-import frc.robot.Constants.IntakePosition;
+import frc.robot.subsystems.intake.Intake.IntakePosition;
 
 public interface IntakeIO {
     @AutoLog
     public static class IntakeIOInputs {
-        public double rollerSpeed = 0;
-        public IntakePosition wristPosition = IntakePosition.IN;
+        public double rollerSetpoint = 0;
+        public IntakePosition wristSetpoint = IntakePosition.IN;
+        public boolean isClosedLoop = true;
+        public double currentWristPosition = 0;
+        public double currentRollerSpeed = 0;
+        public double percentageWristSpeed = 0;
     }
 
-    public default void updateInputs(IntakeIOInputs inputs) {}
+    // functions to control things
+    public default void updateInputs(IntakeIOInputs inputs) {
+    }
 
-    public default void setRollerSpeed(double speed) {}
+    public default void setRollerSpeed(double speed) {
+    }
 
-    public default void setWristPosition(IntakePosition position) {}
+    public default void setWristPosition(IntakePosition position) {
+    }
+
+    public default void setWristSpeed(double speed) {
+    }
 }

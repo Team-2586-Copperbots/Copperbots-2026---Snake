@@ -5,14 +5,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Utils;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.shooter.Shooter;
 
 public class AutoSpeed extends Command {
-    private ShooterSubsystem Shooter;
+    private Shooter Shooter;
     private Drive Drivetrain;
 
-    public AutoSpeed(ShooterSubsystem shooterSubsystem, Drive drivetrain) {
+    public AutoSpeed(Shooter shooterSubsystem, Drive drivetrain) {
         this.Shooter = shooterSubsystem;
         this.Drivetrain = drivetrain;
         // Use addRequirements() here to declare subsystem dependencies.

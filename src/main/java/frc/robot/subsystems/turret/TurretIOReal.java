@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.turret;
 
 import static frc.robot.Constants.CANIds.Canivore;
 
@@ -8,35 +8,27 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Utils;
 import frc.robot.Constants.CANIds;
 import frc.robot.Constants.DIO_IDS;
 import frc.robot.Constants.TURRET_CONSTANTS;
 
-//
-//
-// this subsystem works in rotations!!!
-//
-//
+public class TurretIOReal implements TurretIO {
 
-public class TurretSubsystem extends SubsystemBase {
+    // every thing workis in rotations!
+    // everything is messured from the limit switch
+
     private final TalonFX turnMotor;
     private final TalonFXConfiguration turnMotorConfig;
     private final DigitalInput limitSwitch;
     private final PositionVoltage positionVoltage = new PositionVoltage(0);
+    private boolean isClosedLoop = true;
+    private boolean isAtPosition = true;
 
-    public TurretSubsystem() {
+    public TurretIOReal() {
         turnMotor = new TalonFX(CANIds.TURRET_TURN_MOTOR, Canivore);
         limitSwitch = new DigitalInput(DIO_IDS.TURRET_LIMIT_SWITCH);
 
         turnMotorConfig = new TalonFXConfiguration();
-
-        // turnMotorConfig.Feedback.FeedbackRemoteSensorID = CANcoder.getDeviceID();
-        // turnMotorConfig.Feedback.FeedbackSensorSource =
-        // FeedbackSensorSourceValue.RemoteCANcoder;
-        // turnMotorConfig.Feedback.RotorToSensorRatio = 11.2;
 
         var motorOutputConfigs = turnMotorConfig.MotorOutput;
         motorOutputConfigs.NeutralMode = NeutralModeValue.Coast;
@@ -50,31 +42,40 @@ public class TurretSubsystem extends SubsystemBase {
         // pidConfig.kV = 8.000;
 
         turnMotor.getConfigurator().apply(turnMotorConfig);
+    }
 
+    @Override
+    public void updateInputs(TurretIOInputs inputs) {
+        inputs.isClosedLoop = isClosedLoop;
+        inputs.currentRingPose = getRingRotation();
+        inputs.currentRingSpeed = turnMotor.getVelocity().getValueAsDouble();
+        inputs.limitSwitch = limitSwitch.get();
+        inputs.rotationRelitiveToRobotZero = getRobotRelitiveRotation();
     }
 
     // set comand to set the turning motor to a speed -1 to 1
-    public void setTurnMotorSpeed(double speed) {
+    public void setTurretSpeed(double speed) {
+        isClosedLoop = false;
         turnMotor.set(speed);
     }
 
-    // set the turn motors's internal encoder
-    public void setTurnMotorPosition(double rotation) {
-        turnMotor.setPosition(rotation);
-    }
-
     // this uses the CTRE motors built-in positionVoltage controler to set the angle
-    // of the turret within the limits of 0-320 degreas (commented out)
-    public void setTurretRotation(double roations) {
+    // of the turret within the limits of 0-320 degreas
+    public void setTurretSetpoint(double roations) {
+        isClosedLoop = true;
 
         // limits are typed in as degres
-
-        if (roations >= (0 - TURRET_CONSTANTS.TURRET_RING_ZERO_TO_ROBOT_FRONT_OFFSET)
+        if (roations >= (0 - TURRET_CONSTANTS.TURRET_RING_ZERO_TO_ROBOT_BACK_OFFSET)
                 && roations < TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT) {
+            isAtPosition = true;
             turnMotor.setControl(
-                    positionVoltage.withPosition((roations + TURRET_CONSTANTS.TURRET_RING_ZERO_TO_ROBOT_FRONT_OFFSET)
+                    positionVoltage.withPosition((roations + TURRET_CONSTANTS.TURRET_RING_ZERO_TO_ROBOT_BACK_OFFSET)
                             * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO));
         } else {
+            // says that it did not make it to the desired position
+            isAtPosition = false;
+
+            // goes to nearist point relative to desired point
             double startOfDeadZone = 0;
             double endOfDeadZone = TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT;
 
@@ -92,19 +93,21 @@ public class TurretSubsystem extends SubsystemBase {
         }
     }
 
+    // set the turn motors's internal encoder
+    @Override
+    public void setTurretZero() {
+        turnMotor.setPosition(0);
+    }
+
+    @Override
     public double getRingRotation() {
         return (turnMotor.getPosition().getValueAsDouble() / TURRET_CONSTANTS.MOTOR_TO_RING_RATIO);
     }
 
-    public boolean getLimitSwitch() {
-        return !limitSwitch.get();
-    }
-
     @Override
-    public void periodic() {
-        SmartDashboard.putNumber("turret rotation", getRingRotation());
-        SmartDashboard.putString("positionVoltage", positionVoltage.getPositionMeasure().toLongString());
-        SmartDashboard.putBoolean("limit switch", getLimitSwitch());
-
+    public double getRobotRelitiveRotation() {
+        return -0.5 + (turnMotor.getPosition().getValueAsDouble() / TURRET_CONSTANTS.MOTOR_TO_RING_RATIO)
+                + TURRET_CONSTANTS.TURRET_RING_ZERO_TO_ROBOT_BACK_OFFSET;
     }
+
 }

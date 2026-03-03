@@ -15,8 +15,6 @@ public class IndexerIOSim implements IndexerIO {
     private double towerSpeed = 0;
     private double spindexerSpeed = 0;
 
-    public SimulatedMotorController.GenericMotorController towerMotor = new GenericMotorController(DCMotor.getFalcon500(1));
-
     public IndexerIOSim() {
 
     }

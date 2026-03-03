@@ -26,7 +26,10 @@ public class IndexerIOReal implements IndexerIO{
 
     /** Updates the set of loggable inputs. */
     @Override
-    public void updateInputs(IndexerIOInputs inputs) {}
+    public void updateInputs(IndexerIOInputs inputs) {
+        inputs.spindexerSpeed = indexerMotor.getVelocity().getValueAsDouble();
+        inputs.towerSpeed = towerMotor.getVelocity().getValueAsDouble();
+    }
 
     @Override
     public void setTowerSpeed(double output) {
