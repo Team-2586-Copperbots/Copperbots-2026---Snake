@@ -115,13 +115,6 @@ public class Robot extends LoggedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
-    Optional<EstimatedRobotPose> pose = robotContainer.vision.getRobotPose();
-
-    if (pose.isPresent()) {
-      // robotContainer.drive.addVisionMeasurement(pose.get().estimatedPose.toPose2d(),
-      // pose.get().timestampSeconds, );
-    }
-
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

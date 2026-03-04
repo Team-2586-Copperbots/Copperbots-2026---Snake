@@ -19,8 +19,8 @@ public class ClimbIOReal implements ClimbIO {
     private final PositionVoltage positionVoltage = new PositionVoltage(0);
 
     public ClimbIOReal() {
-        climbMotor1 = new TalonFX(CANIds.CLIMB_MOTOR_1, Canivore);
-        climbMotor2 = new TalonFX(CANIds.CLIMB_MOTOR_2, Canivore);
+        climbMotor1 = new TalonFX(CANIds.CLIMB_MOTOR_1);
+        climbMotor2 = new TalonFX(CANIds.CLIMB_MOTOR_2);
         climbMotorConfig = new TalonFXConfiguration();
 
         var motorOutputConfigs = climbMotorConfig.MotorOutput;

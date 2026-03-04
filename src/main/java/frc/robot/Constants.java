@@ -10,9 +10,18 @@ import com.ctre.phoenix6.CANBus;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathConstraints;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 
@@ -61,6 +70,7 @@ public final class Constants {
 
     public static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(3, 4, Units.degreesToRadians(720),
         Units.degreesToRadians(360));
+    public static final double slowdownSpeed = 0.5;
   }
 
   public static class OPERATOR_CONSTANTS {
@@ -103,10 +113,6 @@ public final class Constants {
     public static final int CANDLE = 31;
   }
 
-  // public static class CONFIGS {
-
-  // }
-
   public static class DIO_IDS {
 
     public static final int TURRET_LIMIT_SWITCH = 9;
@@ -126,6 +132,28 @@ public final class Constants {
         Units.inchesToMeters(-7.375), null);
     public static final double TURRET_DISTANCE_FROM_ROBOT_CENTER = Units.inchesToMeters(Math.sqrt(
         (Math.pow(TURRET_OFFSET_FROM_ROBOT_CENTER.getX(), 2) + Math.pow(TURRET_OFFSET_FROM_ROBOT_CENTER.getY(), 2))));
+  }
+
+  public static class INTAKE_CONSTANTS {
+    public static final double rotorToIntake = 5/1 * 59/24 * 45/20;
+  }
+
+  public static class Vision {
+    public static final String backCameraName = "temp camera";
+    // Cam mounted facing forward, half a meter forward of center, half a meter up
+    // from center.
+    public static final Transform3d backCameraTranslation = new Transform3d(-0.3302, -0.14, .46514,
+        new Rotation3d(new Rotation2d(Math.PI)));
+
+    // The layout of the AprilTags on the field
+    public static final AprilTagFieldLayout tagLayout = AprilTagFieldLayout
+        .loadField(AprilTagFields.k2026RebuiltAndymark);
+
+    // The standard deviations of our vision estimated poses, which affect
+    // correction rate
+    // (Fake values. Experiment and determine estimation noise on an actual robot.)
+    public static final Matrix<N3, N1> singleTagStdDevs = VecBuilder.fill(4, 4, 8);
+    public static final Matrix<N3, N1> multiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
   }
 
   public static enum CANDLE_STRIPS {

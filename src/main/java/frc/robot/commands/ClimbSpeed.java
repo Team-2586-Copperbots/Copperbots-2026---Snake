@@ -9,7 +9,6 @@ public class ClimbSpeed extends Command {
     private Climb climb;
     private Double Speed;
 
-
     public ClimbSpeed(Climb climbSubsystem, double speed) {
         this.climb = climbSubsystem;
         this.Speed = speed;
@@ -31,11 +30,7 @@ public class ClimbSpeed extends Command {
 
     @Override
     public boolean isFinished() {
-        // if ((Shooter.getMotor1Speed() - Speed) < 0.5) {
-        //     return true;
-        // } else {
-            return false;
-        // }
+        return false;
     }
 
     // Called once the command ends or is interrupted.

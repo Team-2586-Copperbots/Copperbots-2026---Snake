@@ -23,7 +23,6 @@ import frc.robot.commands.PIDIntake;
 import frc.robot.commands.ZeroTurret;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CANDle;
-import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbIO;
 import frc.robot.subsystems.climb.ClimbIOReal;
@@ -59,6 +58,8 @@ import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.turret.TurretIO;
 import frc.robot.subsystems.turret.TurretIOReal;
 import frc.robot.subsystems.turret.TurretIOSim;
+import frc.robot.subsystems.vision.PhotonSubsystem;
+import frc.robot.subsystems.vision.Vision;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.GyroSimulation;
@@ -125,7 +126,7 @@ public class RobotContainer {
         public IntakeSimulation.IntakeSide intakeSimulation = null;
 
         public Climb climb;
-        public final PhotonSubsystem vision;
+        public final Vision vision;
         public final Drive drive;
         private final Intake intake;
         private final Indexer indexer;
@@ -165,7 +166,7 @@ public class RobotContainer {
                                 indexer = new Indexer(new IndexerIOReal());
                                 intake = new Intake(new IntakeIOReal());
                                 shooter = new Shooter(new ShooterIOReal());
-                                vision = new PhotonSubsystem();
+                                vision = new Vision(drive::addVisionMeasurement);
                                 turret = new Turret(new TurretIOReal());
 
                                 break;
@@ -186,7 +187,7 @@ public class RobotContainer {
                                 intake = new Intake(new IntakeIOSim(driveSimulation));
                                 indexer = new Indexer(new IndexerIOSim());
                                 climb = new Climb(new ClimbIOSim());
-                                vision = new PhotonSubsystem();
+                                vision = new Vision(drive::addVisionMeasurement);
                                 shooter = new Shooter(new ShooterIOSim());
                                 turret = new Turret(new TurretIOSim());
 
@@ -213,7 +214,7 @@ public class RobotContainer {
                                 });
                                 climb = new Climb(new ClimbIO() {
                                 });
-                                vision = new PhotonSubsystem();
+                                vision = new Vision(drive::addVisionMeasurement);
                                 shooter = new Shooter(new ShooterIO() {
                                 });
                                 turret = new Turret(new TurretIO() {
@@ -301,8 +302,8 @@ public class RobotContainer {
 
                 // speed up or slow down drivtrain command that overrides the default command
                 driveController.R1()
-                                .toggleOnTrue(DriveCommands.robotOrientedDrive(drive, () -> -driveController.getLeftY(),
-                                                () -> -driveController.getLeftX(), () -> -driveController.getRightX()));
+                                .toggleOnTrue(DriveCommands.robotOrientedDrive(drive, () -> -driveController.getLeftY() * Constants.ROBOT_PROPERTIES.slowdownSpeed,
+                                                () -> -driveController.getLeftX() * Constants.ROBOT_PROPERTIES.slowdownSpeed, () -> -driveController.getRightX()));
                 // robot centric drive
                 driveController.povUp()
                                 .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> 1, () -> 0, () -> 0));
@@ -318,16 +319,17 @@ public class RobotContainer {
                 driveController.share()
                                 .onTrue(DriveCommands.stopWithX(drive));
 
-                driveController.R1().onTrue(drive.pathFindToHubShot());
-                driveController.R2().onTrue(drive.followPathCommandtoTestPose());
-                driveController.L1().onTrue(drive.setPose());
+                driveController.R2().onTrue(drive.pathFindToHubShot());
 
-                // driveController.povDown().whileTrue(drivetrain.followPathCommandtoHUB());
-                final Runnable resetOdometry = Constants.currentMode == Constants.Mode.SIM
+                driveController.L1().onTrue(drive.commandResetOdometry(new Pose2d(3, 3, new Rotation2d())));
+
+
+
+                final Runnable resetHeading = Constants.currentMode == Constants.Mode.SIM
                                 ? () -> drive.resetOdometry(driveSimulation.getSimulatedDriveTrainPose())
                                 : () -> drive.resetOdometry(
                                                 new Pose2d(drive.getPose().getTranslation(), new Rotation2d()));
-                driveController.triangle().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
+                driveController.triangle().onTrue(Commands.runOnce(resetHeading).ignoringDisable(true));
 
                 // ∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
 
@@ -358,11 +360,11 @@ public class RobotContainer {
                 // Shooter Subsystem
                 operatorController.triangle().onTrue(new ShootSpeed(shooter, 0, false));
 
-                operatorController.square().onTrue(new ShootSpeed(shooter, 25, false));
+                operatorController.square().onTrue(new ShootSpeed(shooter, 17, false));
 
-                operatorController.circle().whileTrue(new ClimbSpeed(climb, 0.05));
+                operatorController.circle().whileTrue(new ClimbSpeed(climb, 0.25));
 
-                operatorController.cross().whileTrue(new ClimbSpeed(climb, -0.05));
+                operatorController.cross().whileTrue(new ClimbSpeed(climb, -0.25));
 
                 // Indexer subsystem
                 operatorController.R1().whileTrue(new IndexerSpin(indexer,

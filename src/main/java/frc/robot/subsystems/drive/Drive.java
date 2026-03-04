@@ -273,6 +273,7 @@ public class Drive extends SubsystemBase {
     Pose2d target = DRIVEBASE_TARGET_POSES.TEST_POSE2D;
     return AutoBuilder.pathfindToPose(target, ROBOT_PROPERTIES.PATH_CONSTRAINTS, 0);
   }
+  
 
   public Command pathFromString(String name) {
     return pathBuilder.build(new Path(name));
@@ -427,6 +428,11 @@ public class Drive extends SubsystemBase {
   /** Resets the current odometry pose. */
   public void resetOdometry(Pose2d pose) {
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
+  }
+
+  /** Resets the current odometry pose. */
+  public Command commandResetOdometry(Pose2d pose) {
+    return runOnce(() -> poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose));
   }
 
   /** Adds a new timestamped vision measurement. */

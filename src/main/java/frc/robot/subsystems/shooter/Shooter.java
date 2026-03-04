@@ -20,6 +20,7 @@ import org.littletonrobotics.junction.Logger;
 public class Shooter extends SubsystemBase {
     private ShooterIO io;
     private ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
+    private double setPoint = 0;
 
     public Shooter(ShooterIO io) {
         this.io = io;
@@ -27,12 +28,14 @@ public class Shooter extends SubsystemBase {
 
     // negative to decrese
     public void setShooterSpeedAjust(double amount) {
-        io.setMotorSetpoint(inputs.motorSetpoint += amount);
+        setPoint += amount;
+        io.setMotorSetpoint(setPoint);
     }
 
     // sets the absolute speed
     public void setShooterSpeedSet(double setPoint) {
-        io.setMotorSetpoint(inputs.motorSetpoint = setPoint);
+        setPoint = setPoint;
+        io.setMotorSetpoint(setPoint);
     }
 
     public double getMotor1Speed() {
