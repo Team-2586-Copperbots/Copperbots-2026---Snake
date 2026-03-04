@@ -139,10 +139,10 @@ public final class Constants {
   }
 
   public static class Vision {
-    public static final String backCameraName = "temp camera";
+    public static final String backCameraName = "backCamera";
     // Cam mounted facing forward, half a meter forward of center, half a meter up
     // from center.
-    public static final Transform3d backCameraTranslation = new Transform3d(-0.3302, -0.14, .46514,
+    public static final Transform3d backCameraTranslation = new Transform3d(Units.inchesToMeters(-12), Units.inchesToMeters(5.5), Units.inchesToMeters(8),
         new Rotation3d(new Rotation2d(Math.PI)));
 
     // The layout of the AprilTags on the field

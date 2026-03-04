@@ -126,7 +126,7 @@ public class RobotContainer {
         public IntakeSimulation.IntakeSide intakeSimulation = null;
 
         public Climb climb;
-        public final Vision vision;
+        public final PhotonSubsystem photonSubsystem;
         public final Drive drive;
         private final Intake intake;
         private final Indexer indexer;
@@ -166,7 +166,7 @@ public class RobotContainer {
                                 indexer = new Indexer(new IndexerIOReal());
                                 intake = new Intake(new IntakeIOReal());
                                 shooter = new Shooter(new ShooterIOReal());
-                                vision = new Vision();
+                                photonSubsystem = new PhotonSubsystem();
                                 turret = new Turret(new TurretIOReal());
 
                                 break;
@@ -187,7 +187,7 @@ public class RobotContainer {
                                 intake = new Intake(new IntakeIOSim(driveSimulation));
                                 indexer = new Indexer(new IndexerIOSim());
                                 climb = new Climb(new ClimbIOSim());
-                                vision = new Vision();
+                                photonSubsystem = new PhotonSubsystem();
                                 shooter = new Shooter(new ShooterIOSim());
                                 turret = new Turret(new TurretIOSim());
 
@@ -214,7 +214,7 @@ public class RobotContainer {
                                 });
                                 climb = new Climb(new ClimbIO() {
                                 });
-                                vision = new Vision();
+                                photonSubsystem = new PhotonSubsystem();
                                 shooter = new Shooter(new ShooterIO() {
                                 });
                                 turret = new Turret(new TurretIO() {
@@ -302,8 +302,12 @@ public class RobotContainer {
 
                 // speed up or slow down drivtrain command that overrides the default command
                 driveController.R1()
-                                .toggleOnTrue(DriveCommands.robotOrientedDrive(drive, () -> -driveController.getLeftY() * Constants.ROBOT_PROPERTIES.slowdownSpeed,
-                                                () -> -driveController.getLeftX() * Constants.ROBOT_PROPERTIES.slowdownSpeed, () -> -driveController.getRightX()));
+                                .toggleOnTrue(DriveCommands.robotOrientedDrive(drive,
+                                                () -> -driveController.getLeftY()
+                                                                * Constants.ROBOT_PROPERTIES.slowdownSpeed,
+                                                () -> -driveController.getLeftX()
+                                                                * Constants.ROBOT_PROPERTIES.slowdownSpeed,
+                                                () -> -driveController.getRightX()));
                 // robot centric drive
                 driveController.povUp()
                                 .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> 1, () -> 0, () -> 0));
@@ -322,8 +326,6 @@ public class RobotContainer {
                 driveController.R2().onTrue(drive.pathFindToHubShot());
 
                 driveController.L1().onTrue(drive.commandResetOdometry(new Pose2d(3, 3, new Rotation2d())));
-
-
 
                 final Runnable resetHeading = Constants.currentMode == Constants.Mode.SIM
                                 ? () -> drive.resetOdometry(driveSimulation.getSimulatedDriveTrainPose())
@@ -347,7 +349,8 @@ public class RobotContainer {
 
                 // Turret subsystem
                 operatorController.L1().whileTrue(new ManualTurret(turret, 0));
-                operatorController.L2().whileTrue(new AimAndShoot(shooter, turret, drive, Constants.PLACES.CENTER_OF_HUB));
+                operatorController.L2()
+                                .whileTrue(new AimAndShoot(shooter, turret, drive, Constants.PLACES.CENTER_OF_HUB));
 
                 operatorController.options().whileTrue(
                                 turret.runEnd(() -> turret.setTurretSpeed(0.05), () -> turret.setTurretSpeed(0)));
@@ -384,7 +387,7 @@ public class RobotContainer {
                 // ∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
 
                 // testController1.R1().whileTrue(new IndexerSpin(indexer,
-                //                 IndexerStates.UP));
+                // IndexerStates.UP));
 
                 // testController1.povDown().onTrue(new ShootSpeed(shooter, 0, false));
                 // testController1.povUp().onTrue(new ShootSpeed(shooter, 20, false));
@@ -401,11 +404,11 @@ public class RobotContainer {
                 // testController2.povRight().whileTrue(new AimAtHub(turret, drive));
 
                 // testController2.R1().whileTrue(new IndexerSpin(indexer,
-                //                 IndexerStates.UP));
+                // IndexerStates.UP));
                 // testController2.square().whileTrue(new AimAtHub(turret, drive));
                 // testController2.triangle().whileTrue(new AutoSpeed(shooter, drive));
                 // testController2.circle().toggleOnTrue(new AimAndShoot(shooter, turret, drive,
-                //                 null));
+                // null));
                 // testController2.cross().whileTrue(new ShootSpeed(shooter, 0, false));
         }
 

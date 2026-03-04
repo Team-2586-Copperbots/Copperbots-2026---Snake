@@ -96,7 +96,9 @@ public class Vision extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Logger.recordOutput("estimated pose", getRobotPose().get().estimatedPose);
+        if (getRobotPose().get().estimatedPose != null) {
+            Logger.recordOutput("estimated pose", getRobotPose().get().estimatedPose);
+        }
         for (var result : cameraBack.getAllUnreadResults()) {
             updateEstimationStdDevs(getRobotPose(), result.getTargets());
         }

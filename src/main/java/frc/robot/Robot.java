@@ -114,11 +114,17 @@ public class Robot extends LoggedRobot {
     // robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-    
-    if (robotContainer.vision.getRobotPose().isPresent()) {
-      robotContainer.drive.addVisionMeasurement(robotContainer.vision.getRobotPose().get().estimatedPose.toPose2d(),
-          robotContainer.vision.timestamp,
-          robotContainer.vision.getEstimationStdDevs());
+
+    // if (robotContainer.vision.getRobotPose().isPresent()) {
+    // robotContainer.drive.addVisionMeasurement(robotContainer.vision.getRobotPose().get().estimatedPose.toPose2d(),
+    // robotContainer.vision.timestamp,
+    // robotContainer.vision.getEstimationStdDevs());
+    // }
+
+    Optional<EstimatedRobotPose> pose = robotContainer.photonSubsystem.getRobotPose();
+    if (pose.isPresent()) {
+      robotContainer.drive.addVisionMeasurement(pose.get().estimatedPose.toPose2d(), pose.get().timestampSeconds,
+          robotContainer.photonSubsystem.getAmbiguity());
     }
   }
 

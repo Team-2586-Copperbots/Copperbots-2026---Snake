@@ -1,5 +1,6 @@
 package frc.robot.subsystems.vision;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.littletonrobotics.junction.Logger;
@@ -8,24 +9,32 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
+
+import frc.robot.Constants.Vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class PhotonSubsystem extends SubsystemBase {
 
     private final PhotonCamera camera1 = new PhotonCamera("TempCamera");
+    private Matrix<N3, N1> curentStdDevs;
     // private final PhotonCameraSim aprilTag1Sim = new PhotonCameraSim(aprilTag1);
 
-    public final Transform3d camera1Pos = new Transform3d(-0.3302, -0.14, .46514, new Rotation3d(new Rotation2d(Math.PI)));
+    public final Transform3d camera1Pos = Vision.backCameraTranslation;
 
-    //private VisionSystemSim visonSim = new VisionSystemSim("Vision Sim");
-    
+    // private VisionSystemSim visonSim = new VisionSystemSim("Vision Sim");
+
     public final AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
 
     PhotonPoseEstimator poseEstimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
@@ -35,10 +44,10 @@ public class PhotonSubsystem extends SubsystemBase {
         poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
         // for simulations
         // if (RobotBase.isSimulation()) {
-        //     aprilTag1Sim.prop.setCalibError(0.08, .02);
-        //     aprilTag1Sim.prop.setFPS(30);
-        //     aprilTag1Sim.prop.setAvgLatencyMs(35);
-        //     aprilTag1Sim.prop.setLatencyStdDevMs(5);
+        // aprilTag1Sim.prop.setCalibError(0.08, .02);
+        // aprilTag1Sim.prop.setFPS(30);
+        // aprilTag1Sim.prop.setAvgLatencyMs(35);
+        // aprilTag1Sim.prop.setLatencyStdDevMs(5);
         // }
     }
 
@@ -52,38 +61,55 @@ public class PhotonSubsystem extends SubsystemBase {
         return robotPose;
     }
 
-    // public double getAmbiguity() {
-    //     if (getRobotPose().isPresent()) {
-    //         EstimatedRobotPose result
-    //     }
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-    //     // Optional<EstimatedRobotPose> robotPose = Optional.empty();
+    public Matrix<N3, N1>  getAmbiguity() {
+        updateEstimationStdDevs(getRobotPose(), getRobotPose().get().targetsUsed);
+        return curentStdDevs;
+    }
 
-    //     // for (PhotonPipelineResult change : camera1.getAllUnreadResults()) {
-    //     //     robotPose = poseEstimator.update(change);
-    //     // }
+    private void updateEstimationStdDevs(
+            Optional<EstimatedRobotPose> estimatedPose, List<PhotonTrackedTarget> targets) {
+        if (estimatedPose.isEmpty()) {
+            // No pose input. Default to single-tag std devs
+            curentStdDevs = Vision.singleTagStdDevs;
 
-    //     // return robotPose;
-    // }
+        } else {
+            // Pose present. Start running Heuristic
+            var estStdDevs = Vision.singleTagStdDevs;
+            int numTags = 0;
+            double avgDist = 0;
 
+            // Precalculation - see how many tags we found, and calculate an
+            // average-distance metric
+            for (var tgt : targets) {
+                var tagPose = poseEstimator.getFieldTags().getTagPose(tgt.getFiducialId());
+                if (tagPose.isEmpty())
+                    continue;
+                numTags++;
+                avgDist += tagPose
+                        .get()
+                        .toPose2d()
+                        .getTranslation()
+                        .getDistance(estimatedPose.get().estimatedPose.toPose2d().getTranslation());
+            }
+
+            if (numTags == 0) {
+                // No tags visible. Default to single-tag std devs
+                curentStdDevs = Vision.singleTagStdDevs;
+            } else {
+                // One or more tags visible, run the full heuristic.
+                avgDist /= numTags;
+                // Decrease std devs if multiple targets are visible
+                if (numTags > 1)
+                    estStdDevs = Vision.multiTagStdDevs;
+                // Increase std devs based on (average) distance
+                if (numTags == 1 && avgDist > 4)
+                    estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+                else
+                    estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
+                curentStdDevs = estStdDevs;
+            }
+        }
+    }
 
     public double getCamera1Yaw() {
         double yaw = Double.MAX_VALUE;
@@ -99,10 +125,12 @@ public class PhotonSubsystem extends SubsystemBase {
         return yaw;
     }
 
-
     @Override
     public void periodic() {
-        Logger.recordOutput("estimated pose", getRobotPose().get().estimatedPose);
+        if (getRobotPose().isPresent()) {
+            Logger.recordOutput("estimated pose", getRobotPose().get().estimatedPose);
+        }
+        // Logger.recordOutput("estimated pose", getRobotPose().get().estimatedPose);
     }
 
 }
