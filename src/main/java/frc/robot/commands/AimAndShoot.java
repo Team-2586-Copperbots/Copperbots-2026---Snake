@@ -38,7 +38,7 @@ public class AimAndShoot extends Command {
     public void execute() {
         Turret.setTurretRotationTarget(Utils.getAngleToHub(Drivetrain));
         Shooter.setShooterSpeedSet(
-                Utils.shooterSpeedFromDistance(Utils.distanceFromPose(Constants.PLACES.CENTER_OF_HUB, Drivetrain)));
+                Utils.shooterSpeedFromDistance(Utils.distanceFromPose(target, Drivetrain)));
 
     }
 

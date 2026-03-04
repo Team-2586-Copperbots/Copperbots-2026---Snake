@@ -347,8 +347,7 @@ public class RobotContainer {
 
                 // Turret subsystem
                 operatorController.L1().whileTrue(new ManualTurret(turret, 0));
-                operatorController.L2().whileTrue(new ManualTurret(turret,
-                                Utils.getAngleToHub(drive)));
+                operatorController.L2().whileTrue(new AimAndShoot(shooter, turret, drive, Constants.PLACES.CENTER_OF_HUB));
 
                 operatorController.options().whileTrue(
                                 turret.runEnd(() -> turret.setTurretSpeed(0.05), () -> turret.setTurretSpeed(0)));
@@ -384,30 +383,30 @@ public class RobotContainer {
 
                 // ∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
 
-                testController1.R1().whileTrue(new IndexerSpin(indexer,
-                                IndexerStates.UP));
+                // testController1.R1().whileTrue(new IndexerSpin(indexer,
+                //                 IndexerStates.UP));
 
-                testController1.povDown().onTrue(new ShootSpeed(shooter, 0, false));
-                testController1.povUp().onTrue(new ShootSpeed(shooter, 20, false));
-                testController1.povRight().whileTrue(new AutoSpeed(shooter, drive));
+                // testController1.povDown().onTrue(new ShootSpeed(shooter, 0, false));
+                // testController1.povUp().onTrue(new ShootSpeed(shooter, 20, false));
+                // testController1.povRight().whileTrue(new AutoSpeed(shooter, drive));
 
-                testController1.triangle().onTrue(new ShootSpeed(shooter, 1, true));
-                testController1.square().onTrue(new ShootSpeed(shooter, -1, true));
+                // testController1.triangle().onTrue(new ShootSpeed(shooter, 1, true));
+                // testController1.square().onTrue(new ShootSpeed(shooter, -1, true));
 
-                testController1.circle().onTrue(new ShootSpeed(shooter, 5, true));
-                testController1.cross().onTrue(new ShootSpeed(shooter, -5, true));
+                // testController1.circle().onTrue(new ShootSpeed(shooter, 5, true));
+                // testController1.cross().onTrue(new ShootSpeed(shooter, -5, true));
 
-                testController2.povUp().onTrue(new ManualTurret(turret, 0));
-                testController2.povDown().onTrue(new ManualTurret(turret, 0.25));
-                testController2.povRight().whileTrue(new AimAtHub(turret, drive));
+                // testController2.povUp().onTrue(new ManualTurret(turret, 0));
+                // testController2.povDown().onTrue(new ManualTurret(turret, 0.25));
+                // testController2.povRight().whileTrue(new AimAtHub(turret, drive));
 
-                testController2.R1().whileTrue(new IndexerSpin(indexer,
-                                IndexerStates.UP));
-                testController2.square().whileTrue(new AimAtHub(turret, drive));
-                testController2.triangle().whileTrue(new AutoSpeed(shooter, drive));
-                testController2.circle().toggleOnTrue(new AimAndShoot(shooter, turret, drive,
-                                null));
-                testController2.cross().whileTrue(new ShootSpeed(shooter, 0, false));
+                // testController2.R1().whileTrue(new IndexerSpin(indexer,
+                //                 IndexerStates.UP));
+                // testController2.square().whileTrue(new AimAtHub(turret, drive));
+                // testController2.triangle().whileTrue(new AutoSpeed(shooter, drive));
+                // testController2.circle().toggleOnTrue(new AimAndShoot(shooter, turret, drive,
+                //                 null));
+                // testController2.cross().whileTrue(new ShootSpeed(shooter, 0, false));
         }
 
         public Command resetGyro() {

@@ -22,16 +22,6 @@ public final class Utils {
         return false;
     }
 
-    // TODO: when robot built, find if cole wants squared inputs
-    public static double squareInput(double input) {
-        boolean negative = input < 0;
-        if (negative) {
-            return -Math.pow(input, 2);
-        } else {
-            return Math.pow(input, 2);
-        }
-    }
-
     public static double shooterSpeedFromDistance(double distance) {
         // regresion equation for shooter
         double speed = ((4.86 * distance) + 35.7);
@@ -91,7 +81,7 @@ public final class Utils {
         }
 
         // factor in drivetrain rotation
-        double angle = (baseTurretAngle + drivetrain.getPose().getRotation().getRotations() + 0.5) % 1;
+        double angle = (baseTurretAngle + drivetrain.getPose().getRotation().getRotations()) % 1;
 
         return angle;
     }

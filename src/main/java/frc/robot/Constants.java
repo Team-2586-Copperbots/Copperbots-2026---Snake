@@ -119,7 +119,7 @@ public final class Constants {
   }
 
   public static class SHOOTER_CONSTANTS {
-    public static final double SHOOTER_IDLE_SPEED = 0.0; // RPM
+    public static final double SHOOTER_IDLE_SPEED = 40.0; // RPM
     public static final double HEIGHT_OF_WHEEL_OFF_GROUND = 0.64135; // in meters
   }
 
@@ -128,8 +128,8 @@ public final class Constants {
                                                                                      // ring of oditys
     public static final double TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET = 0.044;
     public static final double ROTATION_RANGE_IN_ROT = 0.7;
-    public static final Pose2d TURRET_OFFSET_FROM_ROBOT_CENTER = new Pose2d(Units.inchesToMeters(-7.375),
-        Units.inchesToMeters(-7.375), null);
+    public static final Pose2d TURRET_OFFSET_FROM_ROBOT_CENTER = new Pose2d(Units.inchesToMeters(-7.5),
+        Units.inchesToMeters(8.5), null);
     public static final double TURRET_DISTANCE_FROM_ROBOT_CENTER = Units.inchesToMeters(Math.sqrt(
         (Math.pow(TURRET_OFFSET_FROM_ROBOT_CENTER.getX(), 2) + Math.pow(TURRET_OFFSET_FROM_ROBOT_CENTER.getY(), 2))));
   }
