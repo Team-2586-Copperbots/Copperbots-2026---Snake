@@ -273,7 +273,10 @@ public class Drive extends SubsystemBase {
     Pose2d target = DRIVEBASE_TARGET_POSES.TEST_POSE2D;
     return AutoBuilder.pathfindToPose(target, ROBOT_PROPERTIES.PATH_CONSTRAINTS, 0);
   }
-  
+
+  public Command setPose() {
+    return runOnce(() -> poseEstimator.resetPose(new Pose2d(2, 3, new Rotation2d())));
+  }
 
   public Command pathFromString(String name) {
     return pathBuilder.build(new Path(name));
@@ -414,10 +417,6 @@ public class Drive extends SubsystemBase {
   @AutoLogOutput(key = "Odometry/Robot")
   public Pose2d getPose() {
     return poseEstimator.getEstimatedPosition();
-  }
-
-  public Command setPose() {
-    return runOnce(() -> poseEstimator.resetPose(new Pose2d(2, 3, new Rotation2d())));
   }
 
   /** Returns the current odometry rotation. */

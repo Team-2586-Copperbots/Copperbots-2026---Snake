@@ -4,14 +4,11 @@
 
 package frc.robot;
 
-import frc.robot.Constants;
 import frc.robot.Constants.OPERATOR_CONSTANTS;
-import static frc.robot.Constants.OPERATOR_CONSTANTS.SLOW_SPEED_LIMITER;
 import frc.robot.Constants.PLACES;
 import frc.robot.Constants.SHOOTER_CONSTANTS;
 import frc.robot.commands.AimAndShoot;
 import frc.robot.commands.AimAtHub;
-import frc.robot.commands.AutoSpeed;
 import frc.robot.commands.ClimbSpeed;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ShootSpeed;
@@ -30,15 +27,9 @@ import frc.robot.subsystems.climb.ClimbIOSim;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.util.jar.Attributes.Name;
-
 import org.ironmaple.simulation.IntakeSimulation;
 import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
-import org.ironmaple.simulation.drivesims.GyroSimulation;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
-import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.indexer.IndexerIOSim;
 import frc.robot.subsystems.indexer.Indexer;
@@ -58,38 +49,26 @@ import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.turret.TurretIO;
 import frc.robot.subsystems.turret.TurretIOReal;
 import frc.robot.subsystems.turret.TurretIOSim;
-import frc.robot.subsystems.vision.PhotonSubsystem;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionConstants;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOPhotonVision;
+import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import frc.robot.subsystems.vision.old.PhotonSubsystem;
 
-import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.drivesims.GyroSimulation;
-import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
-import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
-import org.littletonrobotics.junction.Logger;
-
-import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -101,25 +80,16 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-        private double MaxSpeed = OPERATOR_CONSTANTS.MAX_SPEED_LIMITER
-                        * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts
-                                                                              // desired
-                                                                              // top
-        // speed
-        private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per
-                                                                                          // second
-                                                                                          // max
-                                                                                          // angular velocity
-        /* Setting up bindings for necessary control of the swerve drive platform */
+        // private double MaxSpeed = OPERATOR_CONSTANTS.MAX_SPEED_LIMITER
+        //                 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts
+        //                                                                       // desired
+        //                                                                       // top
+        // // speed
+        // private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per
+        //                                                                                   // second
+        //                                                                                   // max
+        //                                                                                   // angular velocity
 
-        // used 2025 for side to side movement
-        //
-        private final SwerveRequest.RobotCentric rcDrive = new SwerveRequest.RobotCentric().withDeadband(MaxSpeed * 0.1)
-                        .withRotationalDeadband(MaxAngularRate * 0.1);
-        @SuppressWarnings("unused")
-        private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-        @SuppressWarnings("unused")
-        private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
         // simulated objects
         public SwerveDriveSimulation driveSimulation = null;
@@ -128,6 +98,7 @@ public class RobotContainer {
         public Climb climb;
         public final PhotonSubsystem photonSubsystem;
         public final Drive drive;
+        public final Vision vision;
         private final Intake intake;
         private final Indexer indexer;
         private final Shooter shooter;
@@ -166,7 +137,8 @@ public class RobotContainer {
                                 indexer = new Indexer(new IndexerIOReal());
                                 intake = new Intake(new IntakeIOReal());
                                 shooter = new Shooter(new ShooterIOReal());
-                                photonSubsystem = new PhotonSubsystem();
+                                // photonSubsystem = new PhotonSubsystem();
+                                vision = new Vision(drive::addVisionMeasurement, new VisionIOPhotonVision(VisionConstants.backCamera, VisionConstants.robotToBackCamera));
                                 turret = new Turret(new TurretIOReal());
 
                                 break;
@@ -187,7 +159,8 @@ public class RobotContainer {
                                 intake = new Intake(new IntakeIOSim(driveSimulation));
                                 indexer = new Indexer(new IndexerIOSim());
                                 climb = new Climb(new ClimbIOSim());
-                                photonSubsystem = new PhotonSubsystem();
+                                // photonSubsystem = new PhotonSubsystem();
+                                vision = new Vision(drive::addVisionMeasurement, new VisionIOPhotonVisionSim(VisionConstants.backCamera, VisionConstants.robotToBackCamera, drive::getPose));
                                 shooter = new Shooter(new ShooterIOSim());
                                 turret = new Turret(new TurretIOSim());
 
@@ -214,7 +187,8 @@ public class RobotContainer {
                                 });
                                 climb = new Climb(new ClimbIO() {
                                 });
-                                photonSubsystem = new PhotonSubsystem();
+                                // photonSubsystem = new PhotonSubsystem();
+                                vision = new Vision(drive::addVisionMeasurement, new VisionIO() {});
                                 shooter = new Shooter(new ShooterIO() {
                                 });
                                 turret = new Turret(new TurretIO() {

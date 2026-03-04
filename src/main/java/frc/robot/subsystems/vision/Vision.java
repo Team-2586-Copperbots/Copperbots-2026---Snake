@@ -1,201 +1,178 @@
-/*
- * MIT License
- *
- * Copyright (c) PhotonVision
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+// Copyright (c) 2021-2026 Littleton Robotics
+// http://github.com/Mechanical-Advantage
+//
+// Use of this source code is governed by a BSD
+// license that can be found in the LICENSE file
+// at the root directory of this project.
 
 package frc.robot.subsystems.vision;
 
-import static frc.robot.Constants.Vision.*;
+import static frc.robot.subsystems.vision.VisionConstants.*;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
-import frc.robot.Robot;
-
+import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
-
 import org.littletonrobotics.junction.Logger;
-import org.photonvision.EstimatedRobotPose;
-import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.simulation.PhotonCameraSim;
-import org.photonvision.simulation.SimCameraProperties;
-import org.photonvision.simulation.VisionSystemSim;
-import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class Vision extends SubsystemBase {
-    private final PhotonCamera cameraBack;
-    public final PhotonPoseEstimator poseEstimator;
-    public double timestamp;
-    private Matrix<N3, N1> curStdDevs;
+  private final VisionConsumer consumer;
+  private final VisionIO[] io;
+  private final VisionIOInputsAutoLogged[] inputs;
+  private final Alert[] disconnectedAlerts;
 
-    // Simulation
-    private PhotonCameraSim cameraSim;
-    private VisionSystemSim visionSim;
+  public Vision(VisionConsumer consumer, VisionIO... io) {
+    this.consumer = consumer;
+    this.io = io;
 
-    public Vision() {
-        cameraBack = new PhotonCamera(backCameraName);
-        poseEstimator = new PhotonPoseEstimator(tagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-                backCameraTranslation);
-        poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-
-        // ----- Simulation
-        if (Robot.isSimulation()) {
-            // Create the vision system simulation which handles cameras and targets on the
-            // field.
-            visionSim = new VisionSystemSim("main");
-            // Add all the AprilTags inside the tag layout as visible targets to this
-            // simulated field.
-            visionSim.addAprilTags(tagLayout);
-            // Create simulated camera properties. These can be set to mimic your actual
-            // camera.
-            var cameraProp = new SimCameraProperties();
-            cameraProp.setCalibration(960, 720, Rotation2d.fromDegrees(72));
-            cameraProp.setCalibError(0.35, 0.10);
-            cameraProp.setFPS(30);
-            cameraProp.setAvgLatencyMs(40);
-            cameraProp.setLatencyStdDevMs(15);
-            // Create a PhotonCameraSim which will update the linked PhotonCamera's values
-            // with visible
-            // targets.
-            cameraSim = new PhotonCameraSim(cameraBack, cameraProp);
-            // Add the simulated camera to view the targets on this simulated field.
-            visionSim.addCamera(cameraSim, backCameraTranslation);
-
-            cameraSim.enableDrawWireframe(true);
-        }
+    // Initialize inputs
+    this.inputs = new VisionIOInputsAutoLogged[io.length];
+    for (int i = 0; i < inputs.length; i++) {
+      inputs[i] = new VisionIOInputsAutoLogged();
     }
 
-    @Override
-    public void periodic() {
-        if (getRobotPose().get().estimatedPose != null) {
-            Logger.recordOutput("estimated pose", getRobotPose().get().estimatedPose);
-        }
-        for (var result : cameraBack.getAllUnreadResults()) {
-            updateEstimationStdDevs(getRobotPose(), result.getTargets());
-        }
+    // Initialize disconnected alerts
+    this.disconnectedAlerts = new Alert[io.length];
+    for (int i = 0; i < inputs.length; i++) {
+      disconnectedAlerts[i] =
+          new Alert(
+              "Vision camera " + Integer.toString(i) + " is disconnected.", AlertType.kWarning);
+    }
+  }
+
+  /**
+   * Returns the X angle to the best target, which can be used for simple servoing with vision.
+   *
+   * @param cameraIndex The index of the camera to use.
+   */
+  public Rotation2d getTargetX(int cameraIndex) {
+    return inputs[cameraIndex].latestTargetObservation.tx();
+  }
+
+  @Override
+  public void periodic() {
+    for (int i = 0; i < io.length; i++) {
+      io[i].updateInputs(inputs[i]);
+      Logger.processInputs("Vision/Camera" + Integer.toString(i), inputs[i]);
     }
 
-    public Optional<EstimatedRobotPose> getRobotPose() {
-        Optional<EstimatedRobotPose> robotPose = Optional.empty();
+    // Initialize logging values
+    List<Pose3d> allTagPoses = new LinkedList<>();
+    List<Pose3d> allRobotPoses = new LinkedList<>();
+    List<Pose3d> allRobotPosesAccepted = new LinkedList<>();
+    List<Pose3d> allRobotPosesRejected = new LinkedList<>();
 
-        for (PhotonPipelineResult change : cameraBack.getAllUnreadResults()) {
-            robotPose = poseEstimator.update(change);
-            timestamp = change.getTimestampSeconds();
+    // Loop over cameras
+    for (int cameraIndex = 0; cameraIndex < io.length; cameraIndex++) {
+      // Update disconnected alert
+      disconnectedAlerts[cameraIndex].set(!inputs[cameraIndex].connected);
+
+      // Initialize logging values
+      List<Pose3d> tagPoses = new LinkedList<>();
+      List<Pose3d> robotPoses = new LinkedList<>();
+      List<Pose3d> robotPosesAccepted = new LinkedList<>();
+      List<Pose3d> robotPosesRejected = new LinkedList<>();
+
+      // Add tag poses
+      for (int tagId : inputs[cameraIndex].tagIds) {
+        var tagPose = aprilTagLayout.getTagPose(tagId);
+        if (tagPose.isPresent()) {
+          tagPoses.add(tagPose.get());
         }
+      }
 
-        return robotPose;
-    }
+      // Loop over pose observations
+      for (var observation : inputs[cameraIndex].poseObservations) {
+        // Check whether to reject pose
+        boolean rejectPose =
+            observation.tagCount() == 0 // Must have at least one tag
+                || (observation.tagCount() == 1
+                    && observation.ambiguity() > maxAmbiguity) // Cannot be high ambiguity
+                || Math.abs(observation.pose().getZ())
+                    > maxZError // Must have realistic Z coordinate
 
-    /**
-     * Calculates new standard deviations This algorithm is a heuristic that creates
-     * dynamic standard
-     * deviations based on number of tags, estimation strategy, and distance from
-     * the tags.
-     *
-     * @param estimatedPose The estimated pose to guess standard deviations for.
-     * @param targets       All targets in this camera frame
-     */
-    private void updateEstimationStdDevs(
-            Optional<EstimatedRobotPose> estimatedPose, List<PhotonTrackedTarget> targets) {
-        if (estimatedPose.isEmpty()) {
-            // No pose input. Default to single-tag std devs
-            curStdDevs = singleTagStdDevs;
+                // Must be within the field boundaries
+                || observation.pose().getX() < 0.0
+                || observation.pose().getX() > aprilTagLayout.getFieldLength()
+                || observation.pose().getY() < 0.0
+                || observation.pose().getY() > aprilTagLayout.getFieldWidth();
 
+        // Add pose to log
+        robotPoses.add(observation.pose());
+        if (rejectPose) {
+          robotPosesRejected.add(observation.pose());
         } else {
-            // Pose present. Start running Heuristic
-            var estStdDevs = singleTagStdDevs;
-            int numTags = 0;
-            double avgDist = 0;
-
-            // Precalculation - see how many tags we found, and calculate an
-            // average-distance metric
-            for (var tgt : targets) {
-                var tagPose = poseEstimator.getFieldTags().getTagPose(tgt.getFiducialId());
-                if (tagPose.isEmpty())
-                    continue;
-                numTags++;
-                avgDist += tagPose
-                        .get()
-                        .toPose2d()
-                        .getTranslation()
-                        .getDistance(estimatedPose.get().estimatedPose.toPose2d().getTranslation());
-            }
-
-            if (numTags == 0) {
-                // No tags visible. Default to single-tag std devs
-                curStdDevs = singleTagStdDevs;
-            } else {
-                // One or more tags visible, run the full heuristic.
-                avgDist /= numTags;
-                // Decrease std devs if multiple targets are visible
-                if (numTags > 1)
-                    estStdDevs = multiTagStdDevs;
-                // Increase std devs based on (average) distance
-                if (numTags == 1 && avgDist > 4)
-                    estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
-                else
-                    estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
-                curStdDevs = estStdDevs;
-            }
+          robotPosesAccepted.add(observation.pose());
         }
+
+        // Skip if rejected
+        if (rejectPose) {
+          continue;
+        }
+
+        // Calculate standard deviations
+        double stdDevFactor =
+            Math.pow(observation.averageTagDistance(), 2.0) / observation.tagCount();
+        double linearStdDev = linearStdDevBaseline * stdDevFactor;
+        double angularStdDev = angularStdDevBaseline * stdDevFactor;
+        if (observation.type() == PoseObservationType.MEGATAG_2) {
+          linearStdDev *= linearStdDevMegatag2Factor;
+          angularStdDev *= angularStdDevMegatag2Factor;
+        }
+        if (cameraIndex < cameraStdDevFactors.length) {
+          linearStdDev *= cameraStdDevFactors[cameraIndex];
+          angularStdDev *= cameraStdDevFactors[cameraIndex];
+        }
+
+        // Send vision observation
+        consumer.accept(
+            observation.pose().toPose2d(),
+            observation.timestamp(),
+            VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
+      }
+
+      // Log camera metadata
+      Logger.recordOutput(
+          "Vision/Camera" + Integer.toString(cameraIndex) + "/TagPoses",
+          tagPoses.toArray(new Pose3d[0]));
+      Logger.recordOutput(
+          "Vision/Camera" + Integer.toString(cameraIndex) + "/RobotPoses",
+          robotPoses.toArray(new Pose3d[0]));
+      Logger.recordOutput(
+          "Vision/Camera" + Integer.toString(cameraIndex) + "/RobotPosesAccepted",
+          robotPosesAccepted.toArray(new Pose3d[0]));
+      Logger.recordOutput(
+          "Vision/Camera" + Integer.toString(cameraIndex) + "/RobotPosesRejected",
+          robotPosesRejected.toArray(new Pose3d[0]));
+      allTagPoses.addAll(tagPoses);
+      allRobotPoses.addAll(robotPoses);
+      allRobotPosesAccepted.addAll(robotPosesAccepted);
+      allRobotPosesRejected.addAll(robotPosesRejected);
     }
 
-    /**
-     * Returns the latest standard deviations of the estimated pose from {@link
-     * #getEstimatedGlobalPose()}, for use with {@link
-     * edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
-     * SwerveDrivePoseEstimator}. This should
-     * only be used when there are targets visible.
-     */
-    public Matrix<N3, N1> getEstimationStdDevs() {
-        return curStdDevs;
-    }
+    // Log summary data
+    Logger.recordOutput("Vision/Summary/TagPoses", allTagPoses.toArray(new Pose3d[0]));
+    Logger.recordOutput("Vision/Summary/RobotPoses", allRobotPoses.toArray(new Pose3d[0]));
+    Logger.recordOutput(
+        "Vision/Summary/RobotPosesAccepted", allRobotPosesAccepted.toArray(new Pose3d[0]));
+    Logger.recordOutput(
+        "Vision/Summary/RobotPosesRejected", allRobotPosesRejected.toArray(new Pose3d[0]));
+  }
 
-    // ----- Simulation
-
-    public void simulationPeriodic(Pose2d robotSimPose) {
-        visionSim.update(robotSimPose);
-    }
-
-    /** Reset pose history of the robot in the vision system simulation. */
-    public void resetSimPose(Pose2d pose) {
-        if (Robot.isSimulation())
-            visionSim.resetRobotPose(pose);
-    }
-
-    /** A Field2d for visualizing our robot and objects on the field. */
-    public Field2d getSimDebugField() {
-        if (!Robot.isSimulation())
-            return null;
-        return visionSim.getDebugField();
-    }
+  @FunctionalInterface
+  public static interface VisionConsumer {
+    public void accept(
+        Pose2d visionRobotPoseMeters,
+        double timestampSeconds,
+        Matrix<N3, N1> visionMeasurementStdDevs);
+  }
 }
