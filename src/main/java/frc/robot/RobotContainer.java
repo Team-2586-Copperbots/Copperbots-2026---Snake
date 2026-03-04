@@ -166,7 +166,7 @@ public class RobotContainer {
                                 indexer = new Indexer(new IndexerIOReal());
                                 intake = new Intake(new IntakeIOReal());
                                 shooter = new Shooter(new ShooterIOReal());
-                                vision = new Vision(drive::addVisionMeasurement);
+                                vision = new Vision();
                                 turret = new Turret(new TurretIOReal());
 
                                 break;
@@ -187,7 +187,7 @@ public class RobotContainer {
                                 intake = new Intake(new IntakeIOSim(driveSimulation));
                                 indexer = new Indexer(new IndexerIOSim());
                                 climb = new Climb(new ClimbIOSim());
-                                vision = new Vision(drive::addVisionMeasurement);
+                                vision = new Vision();
                                 shooter = new Shooter(new ShooterIOSim());
                                 turret = new Turret(new TurretIOSim());
 
@@ -214,7 +214,7 @@ public class RobotContainer {
                                 });
                                 climb = new Climb(new ClimbIO() {
                                 });
-                                vision = new Vision(drive::addVisionMeasurement);
+                                vision = new Vision();
                                 shooter = new Shooter(new ShooterIO() {
                                 });
                                 turret = new Turret(new TurretIO() {

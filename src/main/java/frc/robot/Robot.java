@@ -114,7 +114,12 @@ public class Robot extends LoggedRobot {
     // robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-
+    
+    if (robotContainer.vision.getRobotPose().isPresent()) {
+      robotContainer.drive.addVisionMeasurement(robotContainer.vision.getRobotPose().get().estimatedPose.toPose2d(),
+          robotContainer.vision.timestamp,
+          robotContainer.vision.getEstimationStdDevs());
+    }
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

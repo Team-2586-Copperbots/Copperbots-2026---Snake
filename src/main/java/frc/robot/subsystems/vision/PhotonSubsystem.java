@@ -2,6 +2,7 @@ package frc.robot.subsystems.vision;
 
 import java.util.Optional;
 
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -101,7 +102,7 @@ public class PhotonSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // getRobotPose().get().estimatedPose
+        Logger.recordOutput("estimated pose", getRobotPose().get().estimatedPose);
     }
 
 }

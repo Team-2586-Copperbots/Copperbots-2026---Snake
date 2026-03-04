@@ -33,11 +33,14 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
 
 import java.util.List;
 import java.util.Optional;
+
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -45,28 +48,24 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
+import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-public class Vision {
+public class Vision extends SubsystemBase {
     private final PhotonCamera cameraBack;
-    private final PhotonPoseEstimator photonEstimator;
+    public final PhotonPoseEstimator poseEstimator;
+    public double timestamp;
     private Matrix<N3, N1> curStdDevs;
-    private final EstimateConsumer estConsumer;
 
     // Simulation
     private PhotonCameraSim cameraSim;
     private VisionSystemSim visionSim;
 
-    /**
-     * @param estConsumer Lamba that will accept a pose estimate and pass it to your
-     *                    desired {@link
-     *                    edu.wpi.first.math.estimator.SwerveDrivePoseEstimator}
-     */
-    public Vision(EstimateConsumer estConsumer) {
-        this.estConsumer = estConsumer;
+    public Vision() {
         cameraBack = new PhotonCamera(backCameraName);
-        photonEstimator = new PhotonPoseEstimator(tagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+        poseEstimator = new PhotonPoseEstimator(tagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
                 backCameraTranslation);
+        poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
         // ----- Simulation
         if (Robot.isSimulation()) {
@@ -95,33 +94,23 @@ public class Vision {
         }
     }
 
+    @Override
     public void periodic() {
-        Optional<EstimatedRobotPose> visionEst = Optional.empty();
+        Logger.recordOutput("estimated pose", getRobotPose().get().estimatedPose);
         for (var result : cameraBack.getAllUnreadResults()) {
-            visionEst = photonEstimator.estimateCoprocMultiTagPose(result);
-            if (visionEst.isEmpty()) {
-                visionEst = photonEstimator.estimateLowestAmbiguityPose(result);
-            }
-            updateEstimationStdDevs(visionEst, result.getTargets());
-
-            if (Robot.isSimulation()) {
-                visionEst.ifPresentOrElse(
-                        est -> getSimDebugField()
-                                .getObject("VisionEstimation")
-                                .setPose(est.estimatedPose.toPose2d()),
-                        () -> {
-                            getSimDebugField().getObject("VisionEstimation").setPoses();
-                        });
-            }
-
-            visionEst.ifPresent(
-                    est -> {
-                        // Change our trust in the measurement based on the tags we can see
-                        var estStdDevs = getEstimationStdDevs();
-
-                        estConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
-                    });
+            updateEstimationStdDevs(getRobotPose(), result.getTargets());
         }
+    }
+
+    public Optional<EstimatedRobotPose> getRobotPose() {
+        Optional<EstimatedRobotPose> robotPose = Optional.empty();
+
+        for (PhotonPipelineResult change : cameraBack.getAllUnreadResults()) {
+            robotPose = poseEstimator.update(change);
+            timestamp = change.getTimestampSeconds();
+        }
+
+        return robotPose;
     }
 
     /**
@@ -148,7 +137,7 @@ public class Vision {
             // Precalculation - see how many tags we found, and calculate an
             // average-distance metric
             for (var tgt : targets) {
-                var tagPose = photonEstimator.getFieldTags().getTagPose(tgt.getFiducialId());
+                var tagPose = poseEstimator.getFieldTags().getTagPose(tgt.getFiducialId());
                 if (tagPose.isEmpty())
                     continue;
                 numTags++;
@@ -206,10 +195,5 @@ public class Vision {
         if (!Robot.isSimulation())
             return null;
         return visionSim.getDebugField();
-    }
-
-    @FunctionalInterface
-    public static interface EstimateConsumer {
-        public void accept(Pose2d pose, double timestamp, Matrix<N3, N1> estimationStdDevs);
     }
 }
