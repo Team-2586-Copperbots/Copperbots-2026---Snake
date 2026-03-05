@@ -29,13 +29,13 @@ public class IntakeSpin extends Command {
 
     @Override
     public boolean isFinished() {
-        return false;
+        return true;
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        intake.setRollerSpeed(0);
+
     }
 
 }

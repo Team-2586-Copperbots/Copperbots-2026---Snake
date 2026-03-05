@@ -4,6 +4,25 @@
 
 package frc.robot;
 
+import org.ironmaple.simulation.IntakeSimulation;
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.littletonrobotics.junction.Logger;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OPERATOR_CONSTANTS;
 import frc.robot.Constants.PLACES;
 import frc.robot.Constants.SHOOTER_CONSTANTS;
@@ -11,12 +30,12 @@ import frc.robot.commands.AimAndShoot;
 import frc.robot.commands.AimAtHub;
 import frc.robot.commands.ClimbSpeed;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.ShootSpeed;
 import frc.robot.commands.IndexerSpin;
 import frc.robot.commands.IntakeSpin;
-import frc.robot.commands.ManualIntake;
 import frc.robot.commands.ManualTurret;
 import frc.robot.commands.PIDIntake;
+import frc.robot.commands.RunIntake;
+import frc.robot.commands.ShootSpeed;
 import frc.robot.commands.ZeroTurret;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CANDle;
@@ -24,19 +43,21 @@ import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbIO;
 import frc.robot.subsystems.climb.ClimbIOReal;
 import frc.robot.subsystems.climb.ClimbIOSim;
-
-import org.ironmaple.simulation.IntakeSimulation;
-import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import frc.robot.subsystems.drive.*;
-import frc.robot.subsystems.indexer.IndexerIOSim;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.GyroIO;
+import frc.robot.subsystems.drive.GyroIOPigeon2;
+import frc.robot.subsystems.drive.GyroIOSim;
+import frc.robot.subsystems.drive.ModuleIO;
+import frc.robot.subsystems.drive.ModuleIOSim;
+import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.indexer.Indexer;
+import frc.robot.subsystems.indexer.Indexer.IndexerStates;
 import frc.robot.subsystems.indexer.IndexerIO;
 import frc.robot.subsystems.indexer.IndexerIOReal;
-import frc.robot.subsystems.indexer.Indexer.IndexerStates;
+import frc.robot.subsystems.indexer.IndexerIOSim;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.Intake.IntakePosition;
+import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.shooter.Shooter;
@@ -52,19 +73,6 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -146,8 +154,9 @@ public class RobotContainer {
                         case SIM:
                                 // Sim robot, instantiate physics sim IO implementations
                                 driveSimulation = new SwerveDriveSimulation(Drive.getMapleSimConfig(),
-                                                new Pose2d(-3, -3, new Rotation2d()));
+                                                new Pose2d(3, 3, new Rotation2d()));
                                 SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
+
                                 drive = new Drive(
                                                 new GyroIOSim(driveSimulation.getGyroSimulation()),
                                                 new ModuleIOSim(driveSimulation.getModules()[0]),
@@ -353,9 +362,9 @@ public class RobotContainer {
 
                 // Intake subsystem
                 // out
-                operatorController.povUp().whileTrue(new ManualIntake(intake, 0.075));
+                operatorController.povUp().whileTrue(new RunIntake(intake, 0.075, 1));
                 // in
-                operatorController.povDown().whileTrue(new ManualIntake(intake, -0.075));
+                operatorController.povDown().whileTrue(new RunIntake(intake, -0.075, 1));
 
                 // roller
                 operatorController.povLeft().whileTrue(new IntakeSpin(intake, 1));
@@ -368,7 +377,7 @@ public class RobotContainer {
 
                 testController1.R1().whileTrue(new IndexerSpin(indexer,
                                 IndexerStates.UP));
-                
+
                 testController1.touchpad().toggleOnTrue(new AimAtHub(turret, drive));
 
                 testController1.povDown().onTrue(new ShootSpeed(shooter, 0, false));

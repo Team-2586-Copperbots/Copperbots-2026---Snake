@@ -36,6 +36,7 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -97,8 +98,8 @@ public class Drive extends SubsystemBase {
         .withCustomModuleTranslations(getModuleTranslations())
         .withGyro(COTS.ofPigeon2())
         .withSwerveModule(new SwerveModuleSimulationConfig(
-            DCMotor.getKrakenX60Foc(1),
             DCMotor.getKrakenX60(1),
+            DCMotor.getFalcon500(1),
             TunerConstants.FrontLeft.DriveMotorGearRatio,
             TunerConstants.FrontLeft.SteerMotorGearRatio,
             Volts.of(TunerConstants.FrontLeft.DriveFrictionVoltage),

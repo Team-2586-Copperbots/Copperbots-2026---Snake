@@ -18,12 +18,13 @@ public class Intake extends SubsystemBase {
     }
 
     // positive is out
-    public void setMovementBarSpeed(double speed) {
+    public void setWristSpeed(double speed) {
         io.setWristSpeed(speed);
     }
 
     public void setRollerSpeed(double speed) {
-        if ((inputs.wristSetpoint == IntakePosition.IN) || (inputs.currentWristPosition == IntakePosition.IN.value)) {
+        //TODO: update the position of IntakePosition.IN
+        if ((inputs.wristSetpoint == IntakePosition.IN) || (Math.abs(inputs.currentWristPosition - IntakePosition.IN.value)) < 0.05) {
             io.setRollerSpeed(speed);
         }
     }
