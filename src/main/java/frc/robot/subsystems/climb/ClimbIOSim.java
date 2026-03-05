@@ -1,7 +1,5 @@
 package frc.robot.subsystems.climb;
 
-import edu.wpi.first.math.system.LinearSystem;
-import edu.wpi.first.wpilibj.simulation.LinearSystemSim;
 import frc.robot.subsystems.climb.Climb.ClimbPosition;
 
 public class ClimbIOSim implements ClimbIO {

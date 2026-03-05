@@ -2,8 +2,6 @@ package frc.robot.subsystems.indexer;
 
 import org.littletonrobotics.junction.AutoLog;
 
-import frc.robot.subsystems.drive.ModuleIO.ModuleIOInputs;
-
 public interface IndexerIO {
     
     @AutoLog

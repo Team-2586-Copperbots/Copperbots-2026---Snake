@@ -11,8 +11,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.Constants.CANIds;
 import frc.robot.subsystems.climb.Climb.ClimbPosition;
 
-import static frc.robot.Constants.CANIds.Canivore;
-
 public class ClimbIOReal implements ClimbIO {
     private final TalonFX climbMotor1, climbMotor2;
     private final TalonFXConfiguration climbMotorConfig;

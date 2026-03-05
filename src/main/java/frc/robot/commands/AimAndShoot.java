@@ -1,12 +1,10 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Utils;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.unused.CommandSwerveDrivetrain;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.turret.Turret;
 
@@ -36,7 +34,7 @@ public class AimAndShoot extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        Turret.setTurretRotationTarget(Utils.getAngleToHub(Drive));
+        Turret.setTurretRotationTarget(Utils.getAngleToHubWithVelocity(Drive));
         Shooter.setShooterSpeedSet(
                 Utils.shooterSpeedFromDistance(Utils.distanceFromPose(target, Drive)));
 

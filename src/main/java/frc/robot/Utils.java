@@ -1,16 +1,15 @@
 package frc.robot;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.struct.Struct;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.PLACES;
-import frc.robot.Constants.SHOOTER_CONSTANTS;
 import frc.robot.Constants.TURRET_CONSTANTS;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.unused.CommandSwerveDrivetrain;
 
 public final class Utils {
 
@@ -24,14 +23,15 @@ public final class Utils {
 
     public static double shooterSpeedFromDistance(double distance) {
         // regresion equation for shooter
-        double speed = ((4.86 * distance) + 35.7);
+        double speed = ((4.42 * distance) + 34.3);
 
         return speed;
     }
 
     public static double timeFromDistance(double distance) {
         // TODO: make vagly accurate
-        double time = (0.25 * distance);
+        double time = 0;
+        // time = (0.25 * distance);
         return time;
     }
 
@@ -81,7 +81,7 @@ public final class Utils {
         }
 
         // factor in drivetrain rotation
-        double angle = (baseTurretAngle + drivetrain.getPose().getRotation().getRotations()) % 1;
+        double angle = (baseTurretAngle + drivetrain.getPose().getRotation().getRotations());
 
         return angle;
     }
@@ -103,12 +103,15 @@ public final class Utils {
         double xTotal = (robotX + velocityXDistance);
         double yTotal = (robotY + velocityYDistance);
 
-        double xAim = xTotal - PLACES.CENTER_OF_HUB.getX();
-        double yAim = yTotal - PLACES.CENTER_OF_HUB.getY();
+        double xAim = (PLACES.CENTER_OF_HUB.getX() + -xTotal);
+        double yAim = (PLACES.CENTER_OF_HUB.getY() + -yTotal);
+        SmartDashboard.putNumber("xAim", xAim);
+        SmartDashboard.putNumber("yAim", yAim);
         angle = Units.radiansToRotations(Math.atan(yAim / xAim));
+        SmartDashboard.putNumber("angle", angle);
 
         // factor in drivetrain rotation
-        angle = -angle + -drivetrain.getPose().getRotation().getRotations();
+        angle = (-angle + drivetrain.getPose().getRotation().getRotations() + 0.5) % 1;
 
         return angle;
     }

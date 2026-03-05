@@ -48,6 +48,8 @@ public class ShooterIOReal implements ShooterIO {
         inputs.motorCurents = new double[] { shooterMotor1.getSupplyCurrent().getValueAsDouble(),
                 shooterMotor2.getSupplyCurrent().getValueAsDouble() };
         inputs.motorSetpoint = velocityVoltage.Velocity;
+        inputs.motorTemps = new double[] { shooterMotor1.getDeviceTemp().getValueAsDouble(),
+                shooterMotor2.getDeviceTemp().getValueAsDouble() };
     }
 
     @Override

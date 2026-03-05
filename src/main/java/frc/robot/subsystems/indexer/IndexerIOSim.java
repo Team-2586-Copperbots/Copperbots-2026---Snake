@@ -1,16 +1,5 @@
 package frc.robot.subsystems.indexer;
 
-import org.ironmaple.simulation.motorsims.SimulatedMotorController;
-import org.ironmaple.simulation.motorsims.SimulatedMotorController.GenericMotorController;
-
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.hardware.TalonFX;
-
-import edu.wpi.first.math.system.plant.DCMotor;
-import frc.robot.Constants;
-import frc.robot.subsystems.drive.ModuleIO.ModuleIOInputs;
-import frc.robot.subsystems.indexer.IndexerIO.IndexerIOInputs;
-
 public class IndexerIOSim implements IndexerIO {
     private double towerSpeed = 0;
     private double spindexerSpeed = 0;

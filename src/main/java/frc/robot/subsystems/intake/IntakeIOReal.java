@@ -4,8 +4,6 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
-import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import frc.robot.Constants;
@@ -57,14 +55,14 @@ public class IntakeIOReal implements IntakeIO {
     @Override
     public void updateInputs(IntakeIOInputs inputs) {
         inputs.currentRollerSpeed = rollerMotor.getVelocity().getValueAsDouble();
-        inputs.currentWristPosition = wristMotor.getPosition().getValueAsDouble();
+        inputs.currentWristPosition = cancoder.getPosition().getValueAsDouble();
         inputs.wristSetpoint = targetPosition;
         inputs.isClosedLoop = isClosedLoop;
     }
 
     @Override
     public void setRollerSpeed(double speed) {
-        rollerMotor.set(speed);
+        rollerMotor.set(-speed);
     }
 
     @Override

@@ -7,6 +7,7 @@ public interface ShooterIO {
     public static class ShooterIOInputs {
         public double currentMotorSpeed = 0;
         public double[] motorCurents = new double[2];
+        public double[] motorTemps = new double[2];
         public double motorSetpoint = 10;
         public double percentageSpeed = 0;
     }

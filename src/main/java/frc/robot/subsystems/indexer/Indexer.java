@@ -1,13 +1,8 @@
 package frc.robot.subsystems.indexer;
 
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.hardware.TalonFX;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.CANIds;
 import org.littletonrobotics.junction.*;
-import static frc.robot.Constants.CANIds.Canivore;
 
 public class Indexer extends SubsystemBase {
     private IndexerIO io;

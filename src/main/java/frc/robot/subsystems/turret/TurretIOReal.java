@@ -51,6 +51,7 @@ public class TurretIOReal implements TurretIO {
         inputs.currentRingSpeed = turnMotor.getVelocity().getValueAsDouble();
         inputs.limitSwitch = !limitSwitch.get();
         inputs.rotationRelitiveToRobotZero = getRobotRelitiveRotation();
+        inputs.isAtPosition = isAtPosition;
     }
 
     // set comand to set the turning motor to a speed -1 to 1

@@ -6,9 +6,11 @@ import frc.robot.subsystems.intake.Intake;
 
 public class IntakeSpin extends Command {
     private Intake intake;
+    private double speed;
 
-    public IntakeSpin(Intake IntakeSubsystem) {
+    public IntakeSpin(Intake IntakeSubsystem, double speed) {
         this.intake = IntakeSubsystem;
+        this.speed = speed;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(IntakeSubsystem);
     }
@@ -16,7 +18,7 @@ public class IntakeSpin extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        intake.setRollerSpeed(-0.7);
+        intake.setRollerSpeed(speed);
     }
 
     // Called every time the scheduler runs while the command is scheduled.

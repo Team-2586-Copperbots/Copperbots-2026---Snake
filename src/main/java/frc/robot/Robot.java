@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import java.util.Optional;
-
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnField;
 import org.littletonrobotics.junction.LogFileUtil;
@@ -14,15 +12,11 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
-import org.photonvision.EstimatedRobotPose;
-
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.commands.PathfindingCommand;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -115,17 +109,24 @@ public class Robot extends LoggedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
+
+    // vision is now done using a drive supplyer and periodic in vision.java
+
+
+    // TODO spelling?
+    // ------ for manulal use of new vision (file no-longer exists) ------
     // if (robotContainer.vision.getRobotPose().isPresent()) {
     // robotContainer.drive.addVisionMeasurement(robotContainer.vision.getRobotPose().get().estimatedPose.toPose2d(),
     // robotContainer.vision.timestamp,
     // robotContainer.vision.getEstimationStdDevs());
     // }
 
-    Optional<EstimatedRobotPose> pose = robotContainer.photonSubsystem.getRobotPose();
-    if (pose.isPresent()) {
-      robotContainer.drive.addVisionMeasurement(pose.get().estimatedPose.toPose2d(), pose.get().timestampSeconds,
-          robotContainer.photonSubsystem.getAmbiguity());
-    }
+    // ------ for use with old photon subsystem (/subsystems/vision/old) ------
+    // Optional<EstimatedRobotPose> pose = robotContainer.photonSubsystem.getRobotPose();
+    // if (pose.isPresent()) {
+    //   robotContainer.drive.addVisionMeasurement(pose.get().estimatedPose.toPose2d(), pose.get().timestampSeconds,
+    //       robotContainer.photonSubsystem.getAmbiguity());
+    // }
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

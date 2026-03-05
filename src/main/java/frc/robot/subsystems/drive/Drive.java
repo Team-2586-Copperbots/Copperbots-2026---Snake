@@ -129,6 +129,7 @@ public class Drive extends SubsystemBase {
   private SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation,
       lastModulePositions, Pose2d.kZero);
 
+  @SuppressWarnings("unused")
   private final Consumer<Pose2d> resetSimulationPoseCallBack;
 
   public Drive(
@@ -204,6 +205,7 @@ public class Drive extends SubsystemBase {
     gyroIO.updateInputs(gyroInputs);
     Logger.processInputs("Drive/Gyro", gyroInputs);
     Logger.recordOutput("hub angle", Utils.getAngleToHub(this));
+    Logger.recordOutput("distance to hub", Utils.distanceFromPose(Constants.PLACES.CENTER_OF_HUB, this));
     for (var module : modules) {
       module.periodic();
     }

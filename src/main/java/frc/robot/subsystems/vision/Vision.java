@@ -133,6 +133,8 @@ public class Vision extends SubsystemBase {
           angularStdDev *= cameraStdDevFactors[cameraIndex];
         }
 
+        Logger.recordOutput("backCamera", observation.pose().toPose2d());
+
         // Send vision observation
         consumer.accept(
             observation.pose().toPose2d(),

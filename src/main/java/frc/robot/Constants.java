@@ -10,18 +10,8 @@ import com.ctre.phoenix6.CANBus;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathConstraints;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 
@@ -127,9 +117,9 @@ public final class Constants {
     public static final double MOTOR_TO_RING_RATIO = (66 / 12) * 3 * 3 * 1.105598958;// weried mystery number from the
                                                                                      // ring of oditys
     public static final double TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET = 0.044;
-    public static final double ROTATION_RANGE_IN_ROT = 0.7;
+    public static final double ROTATION_RANGE_IN_ROT = 0.809 + TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET;
     public static final Pose2d TURRET_OFFSET_FROM_ROBOT_CENTER = new Pose2d(Units.inchesToMeters(-7.5),
-        Units.inchesToMeters(8.5), null);
+        Units.inchesToMeters(-8.5), null);
     public static final double TURRET_DISTANCE_FROM_ROBOT_CENTER = Units.inchesToMeters(Math.sqrt(
         (Math.pow(TURRET_OFFSET_FROM_ROBOT_CENTER.getX(), 2) + Math.pow(TURRET_OFFSET_FROM_ROBOT_CENTER.getY(), 2))));
   }
@@ -138,25 +128,7 @@ public final class Constants {
     public static final double rotorToIntake = 5/1 * 59/24 * 45/20;
   }
 
-  public static class Vision {
-    public static final String backCameraName = "backCamera";
-    // Cam mounted facing forward, half a meter forward of center, half a meter up
-    // from center.
-    public static final Transform3d backCameraTranslation = new Transform3d(Units.inchesToMeters(-12), Units.inchesToMeters(5.5), Units.inchesToMeters(8),
-        new Rotation3d(new Rotation2d(Math.PI)));
-
-    // The layout of the AprilTags on the field
-    public static final AprilTagFieldLayout tagLayout = AprilTagFieldLayout
-        .loadField(AprilTagFields.k2026RebuiltAndymark);
-
-    // The standard deviations of our vision estimated poses, which affect
-    // correction rate
-    // (Fake values. Experiment and determine estimation noise on an actual robot.)
-    public static final Matrix<N3, N1> singleTagStdDevs = VecBuilder.fill(4, 4, 8);
-    public static final Matrix<N3, N1> multiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
-  }
-
-  public static enum CANDLE_STRIPS {
+    public static enum CANDLE_STRIPS {
     // TODO: fix indexe (plural?) when strips are made
     BUILT_IN(0, 7),
     FIRST(8, 8 + 21),
