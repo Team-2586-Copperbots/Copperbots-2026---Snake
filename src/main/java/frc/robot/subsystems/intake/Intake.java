@@ -23,7 +23,9 @@ public class Intake extends SubsystemBase {
     }
 
     public void setRollerSpeed(double speed) {
-        io.setRollerSpeed(speed);;
+        if ((inputs.wristSetpoint == IntakePosition.IN) || (inputs.currentWristPosition == IntakePosition.IN.value)) {
+            io.setRollerSpeed(speed);
+        }
     }
 
     public double getMovementBarPosition() {
@@ -48,8 +50,8 @@ public class Intake extends SubsystemBase {
     }
 
     public static enum IntakePosition {
-        IN(0),
-        OUT(1),
+        IN(0.359),
+        OUT(0.984),
         HALFWAY(0.5);
 
         public final double value;
