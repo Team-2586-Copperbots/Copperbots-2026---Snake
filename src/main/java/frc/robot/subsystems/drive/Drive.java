@@ -38,7 +38,9 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Utils;
@@ -105,7 +107,7 @@ public class Drive extends SubsystemBase {
             Volts.of(TunerConstants.FrontLeft.DriveFrictionVoltage),
             Volts.of(TunerConstants.FrontLeft.SteerFrictionVoltage),
             Inches.of(2),
-            KilogramSquareMeters.of(TunerConstants.FrontLeft.SteerInertia),
+            KilogramSquareMeters.of(0.05),
             WHEEL_COF));
   }
 
@@ -114,6 +116,7 @@ public class Drive extends SubsystemBase {
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
   public FollowPath.Builder pathBuilder;
+  private Path.Waypoint robotWaypoint;
   private final SysIdRoutine sysId;
   private final Alert gyroDisconnectedAlert = new Alert("Disconnected gyro, using kinematics as fallback.",
       AlertType.kError);
@@ -174,24 +177,7 @@ public class Drive extends SubsystemBase {
           Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
         });
 
-    // configure BLine
-    // BLine:
-    // 1. Set global constraints (once, at robot init)
-    // Path.DefaultGlobalConstraints = new
-    // Path.DefaultGlobalConstraints(kNumConfigAttempts, kNumConfigAttempts,
-    // kNumConfigAttempts, m_lastSimTime, kSimLoopPeriod, m_drivetrainId,
-    // kNumConfigAttempts);
-
-    // 2. Create a FollowPath builder
-    pathBuilder = new FollowPath.Builder(
-        this,
-        this::getPose,
-        this::getChassisSpeeds,
-        (speeds) -> this.runVelocity(speeds),
-        new PIDController(10.0, 0.0, 0.0),
-        new PIDController(3.0, 0.0, 0.0),
-        new PIDController(2.0, 0.0, 0.0)).withDefaultShouldFlip()
-        .withPoseReset(this::resetOdometry).withDefaultShouldFlip();
+    buildBline();
 
     // Configure SysId
     sysId = new SysIdRoutine(
@@ -207,6 +193,7 @@ public class Drive extends SubsystemBase {
     Logger.processInputs("Drive/Gyro", gyroInputs);
     Logger.recordOutput("hub angle", Utils.getAngleToHub(this));
     Logger.recordOutput("distance to hub", Utils.distanceFromPose(Constants.PLACES.CENTER_OF_HUB, this));
+    robotWaypoint = getRobotWaypoint();
     for (var module : modules) {
       module.periodic();
     }
@@ -268,6 +255,29 @@ public class Drive extends SubsystemBase {
   //
 
   // mythings
+
+  private void buildBline() {
+    // configure BLine
+    // BLine:
+    // 1. Set global constraints (once, at robot init)
+    // Path.DefaultGlobalConstraints = new
+    // Path.DefaultGlobalConstraints(kNumConfigAttempts, kNumConfigAttempts,
+    // kNumConfigAttempts, m_lastSimTime, kSimLoopPeriod, m_drivetrainId,
+    // kNumConfigAttempts);
+
+    // 2. Create a FollowPath builder
+    // importent!: https://www.chiefdelphi.com/t/introducing-bline-a-new-rapid-polyline-autonomous-path-planning-suite/509778/89
+    // how to mirrior
+    pathBuilder = new FollowPath.Builder(
+        this,
+        this::getPose,
+        this::getChassisSpeeds,
+        (speeds) -> this.runVelocity(speeds),
+        new PIDController(5.0, 0.0, 0.0),
+        new PIDController(3.0, 0.0, 0.0),
+        new PIDController(2.0, 0.0, 0.0)).withDefaultShouldFlip();
+  }
+
   public Command cRunVelocity(ChassisSpeeds speeds) {
     return run(() -> runVelocity(speeds));
   }
@@ -277,21 +287,26 @@ public class Drive extends SubsystemBase {
     return AutoBuilder.pathfindToPose(target, ROBOT_PROPERTIES.PATH_CONSTRAINTS, 0);
   }
 
-  public Command setPose() {
-    return runOnce(() -> poseEstimator.resetPose(new Pose2d(2, 3, new Rotation2d())));
-  }
-
   public Command pathFromString(String name) {
     return pathBuilder.build(new Path(name));
   }
 
   public Command pathFindToHubShot() {
-    return pathBuilder.build(new Path(robotElement(), new Path.Waypoint(Constants.DRIVEBASE_TARGET_POSES.TEST_POSE2D)));
+    return pathBuilder
+        .build(new Path(getRobotWaypoint(), new Path.Waypoint(Constants.DRIVEBASE_TARGET_POSES.TEST_POSE2D)));
   }
 
-  public Path.Waypoint robotElement() {
-    return new Path.Waypoint(this.getPose());
+  public Command goTo(Pose2d target) {
+    // need a lamda?
+    Command path = pathBuilder.build(new Path(getRobotWaypoint(), new Path.Waypoint(target))); 
+    return path;
   }
+
+  public Path.Waypoint getRobotWaypoint() {
+    return new Path.Waypoint(getPose());
+  }
+
+  
 
   //
   //

@@ -154,9 +154,8 @@ public class RobotContainer {
                         case SIM:
                                 // Sim robot, instantiate physics sim IO implementations
                                 driveSimulation = new SwerveDriveSimulation(Drive.getMapleSimConfig(),
-                                                new Pose2d(3, 3, new Rotation2d()));
+                                                new Pose2d(2, 2, new Rotation2d()));
                                 SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
-
                                 drive = new Drive(
                                                 new GyroIOSim(driveSimulation.getGyroSimulation()),
                                                 new ModuleIOSim(driveSimulation.getModules()[0]),
@@ -171,7 +170,7 @@ public class RobotContainer {
                                 // photonSubsystem = new PhotonSubsystem();
                                 vision = new Vision(drive::addVisionMeasurement,
                                                 new VisionIOPhotonVisionSim(VisionConstants.backCamera,
-                                                                VisionConstants.robotToBackCamera, drive::getPose));
+                                                                VisionConstants.robotToBackCamera, driveSimulation::getSimulatedDriveTrainPose));
                                 shooter = new Shooter(new ShooterIOSim());
                                 turret = new Turret(new TurretIOSim());
 
@@ -286,14 +285,14 @@ public class RobotContainer {
                                                 () -> -driveController.getLeftX(),
                                                 () -> -driveController.getRightX()));
 
-                // speed up or slow down drivtrain command that overrides the default command
-                driveController.R1()
-                                .toggleOnTrue(DriveCommands.robotOrientedDrive(drive,
-                                                () -> -driveController.getLeftY()
-                                                                * Constants.ROBOT_PROPERTIES.slowdownSpeed,
-                                                () -> -driveController.getLeftX()
-                                                                * Constants.ROBOT_PROPERTIES.slowdownSpeed,
-                                                () -> -driveController.getRightX()));
+                // // speed up or slow down drivtrain command that overrides the default command
+                // driveController.R1()
+                //                 .toggleOnTrue(DriveCommands.robotOrientedDrive(drive,
+                //                                 () -> -driveController.getLeftY()
+                //                                                 * Constants.ROBOT_PROPERTIES.slowdownSpeed,
+                //                                 () -> -driveController.getLeftX()
+                //                                                 * Constants.ROBOT_PROPERTIES.slowdownSpeed,
+                //                                 () -> -driveController.getRightX()));
                 // robot centric drive
                 driveController.povUp()
                                 .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> 1, () -> 0,
@@ -312,15 +311,11 @@ public class RobotContainer {
                                 .onTrue(DriveCommands.stopWithX(drive));
 
                 driveController.R2().onTrue(drive.pathFindToHubShot());
+                driveController.R1().whileTrue(drive.pathFromString("example_a"));
+                driveController.triangle().whileTrue(drive.followPathCommandtoTestPose());
+                driveController.square().whileTrue(drive.goTo(new Pose2d(2, 2, new Rotation2d())));
 
-                driveController.L1().onTrue(drive.commandResetOdometry(new Pose2d(3, 3, new Rotation2d())));
-
-                final Runnable resetHeading = Constants.currentMode == Constants.Mode.SIM
-                                ? () -> drive.resetOdometry(driveSimulation.getSimulatedDriveTrainPose())
-                                : () -> drive.resetOdometry(
-                                                new Pose2d(drive.getPose().getTranslation(), new Rotation2d()));
-                driveController.triangle().onTrue(Commands.runOnce(resetHeading).ignoringDisable(true));
-
+                
                 // ∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
 
                 // CANDle subsystem
@@ -362,13 +357,13 @@ public class RobotContainer {
 
                 // Intake subsystem
                 // out
-                operatorController.povUp().whileTrue(new RunIntake(intake, 0.075, 1));
+                operatorController.povUp().whileTrue(new RunIntake(intake, 0.075, Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
                 // in
-                operatorController.povDown().whileTrue(new RunIntake(intake, -0.075, 1));
+                operatorController.povDown().whileTrue(new RunIntake(intake, -0.075, Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
 
                 // roller
-                operatorController.povLeft().whileTrue(new IntakeSpin(intake, 1));
-                operatorController.povRight().whileTrue(new IntakeSpin(intake, -1));
+                operatorController.povLeft().whileTrue(new IntakeSpin(intake, Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
+                operatorController.povRight().whileTrue(new IntakeSpin(intake, 0));
 
                 // set aside for when the pid is tuned and constants are updated
                 // operatorController.povRight().whileTrue(new PIDIntake(intake, null));
@@ -424,7 +419,7 @@ public class RobotContainer {
                 if (Constants.currentMode != Constants.Mode.SIM)
                         return;
 
-                driveSimulation.setSimulationWorldPose(new Pose2d(3, 3, new Rotation2d()));
+                // driveSimulation.setSimulationWorldPose(new Pose2d(3, 3, new Rotation2d()));
                 SimulatedArena.getInstance().resetFieldForAuto();
         }
 

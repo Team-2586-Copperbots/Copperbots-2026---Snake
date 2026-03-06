@@ -8,20 +8,20 @@
     },
     {
       "type": "translation",
-      "x_meters": 5.0,
-      "y_meters": 6.0,
+      "x_meters": 2.1217871649065803,
+      "y_meters": 4.888610885458976,
       "intermediate_handoff_radius_meters": 0.2
     },
     {
       "type": "rotation",
       "rotation_radians": 1.2,
-      "t_ratio": 0.5000000000000001,
+      "t_ratio": 0.5,
       "profiled_rotation": true
     },
     {
       "type": "translation",
-      "x_meters": 6.900308692120227,
-      "y_meters": 1.888610885458978,
+      "x_meters": 3.024695369618195,
+      "y_meters": 2.9430056864337955,
       "intermediate_handoff_radius_meters": 0.2
     },
     {

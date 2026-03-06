@@ -71,6 +71,7 @@ public final class Constants {
     public static final double MAX_SPEED_LIMITER = 1;
     public static final double SLOW_SPEED_LIMITER = 0.2;
     public static final double setRPM = 45;
+    public static final double ROLLER_SPEED = 0.6;
   }
 
   public static class PLACES {
