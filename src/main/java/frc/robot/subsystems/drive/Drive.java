@@ -267,7 +267,8 @@ public class Drive extends SubsystemBase {
     // kNumConfigAttempts);
 
     // 2. Create a FollowPath builder
-    // importent!: https://www.chiefdelphi.com/t/introducing-bline-a-new-rapid-polyline-autonomous-path-planning-suite/509778/89
+    // importent!:
+    // https://www.chiefdelphi.com/t/introducing-bline-a-new-rapid-polyline-autonomous-path-planning-suite/509778/89
     // how to mirrior
     pathBuilder = new FollowPath.Builder(
         this,
@@ -298,26 +299,21 @@ public class Drive extends SubsystemBase {
   }
 
   public Command goTo(Pose2d target) {
-    // need a lamda?
-    Command path = pathBuilder.build(new Path(new Path.Waypoint(target))); 
-    return path;
+    return pathBuilder.build(new Path(new Path.Waypoint(target)));
   }
+
   public Command goT2o(Pose2d target) {
     odometryLock.lock();
     try {
-        Path.Waypoint currentWaypoint = new Path.Waypoint(getPose());
-        Path path = new Path(currentWaypoint, new Path.Waypoint(target));
-        Logger.recordOutput("path", path.getStartPose());
-        Command pathToRun = pathBuilder.build(path);
-        return pathToRun;
+      Path.Waypoint currentWaypoint = new Path.Waypoint(getPose());
+      Path path = new Path(currentWaypoint, new Path.Waypoint(target));
+      Logger.recordOutput("path", path.getStartPose());
+      Command pathToRun = pathBuilder.build(path);
+      return pathToRun;
     } finally {
-        odometryLock.unlock();
+      odometryLock.unlock();
     }
   }
-
-  
-
-  
 
   //
   //
