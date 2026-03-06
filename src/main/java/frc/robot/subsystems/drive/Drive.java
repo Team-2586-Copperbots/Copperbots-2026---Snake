@@ -116,7 +116,7 @@ public class Drive extends SubsystemBase {
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
   public FollowPath.Builder pathBuilder;
-  private Path.Waypoint robotWaypoint;
+  private Path.Waypoint robotWaypoint = new Path.Waypoint(new Pose2d());
   private final SysIdRoutine sysId;
   private final Alert gyroDisconnectedAlert = new Alert("Disconnected gyro, using kinematics as fallback.",
       AlertType.kError);
@@ -193,7 +193,8 @@ public class Drive extends SubsystemBase {
     Logger.processInputs("Drive/Gyro", gyroInputs);
     Logger.recordOutput("hub angle", Utils.getAngleToHub(this));
     Logger.recordOutput("distance to hub", Utils.distanceFromPose(Constants.PLACES.CENTER_OF_HUB, this));
-    robotWaypoint = getRobotWaypoint();
+    robotWaypoint = new Path.Waypoint(getPose());
+    Logger.recordOutput("robotWaypoint", new Pose2d(robotWaypoint.translationTarget().translation(), new Rotation2d()));
     for (var module : modules) {
       module.periodic();
     }
@@ -293,18 +294,28 @@ public class Drive extends SubsystemBase {
 
   public Command pathFindToHubShot() {
     return pathBuilder
-        .build(new Path(getRobotWaypoint(), new Path.Waypoint(Constants.DRIVEBASE_TARGET_POSES.TEST_POSE2D)));
+        .build(new Path(new Path.Waypoint(Constants.DRIVEBASE_TARGET_POSES.TEST_POSE2D)));
   }
 
   public Command goTo(Pose2d target) {
     // need a lamda?
-    Command path = pathBuilder.build(new Path(getRobotWaypoint(), new Path.Waypoint(target))); 
+    Command path = pathBuilder.build(new Path(new Path.Waypoint(target))); 
     return path;
   }
-
-  public Path.Waypoint getRobotWaypoint() {
-    return new Path.Waypoint(getPose());
+  public Command goT2o(Pose2d target) {
+    odometryLock.lock();
+    try {
+        Path.Waypoint currentWaypoint = new Path.Waypoint(getPose());
+        Path path = new Path(currentWaypoint, new Path.Waypoint(target));
+        Logger.recordOutput("path", path.getStartPose());
+        Command pathToRun = pathBuilder.build(path);
+        return pathToRun;
+    } finally {
+        odometryLock.unlock();
+    }
   }
+
+  
 
   
 

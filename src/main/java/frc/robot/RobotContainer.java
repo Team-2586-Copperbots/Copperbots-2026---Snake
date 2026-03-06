@@ -170,7 +170,8 @@ public class RobotContainer {
                                 // photonSubsystem = new PhotonSubsystem();
                                 vision = new Vision(drive::addVisionMeasurement,
                                                 new VisionIOPhotonVisionSim(VisionConstants.backCamera,
-                                                                VisionConstants.robotToBackCamera, driveSimulation::getSimulatedDriveTrainPose));
+                                                                VisionConstants.robotToBackCamera,
+                                                                driveSimulation::getSimulatedDriveTrainPose));
                                 shooter = new Shooter(new ShooterIOSim());
                                 turret = new Turret(new TurretIOSim());
 
@@ -287,12 +288,12 @@ public class RobotContainer {
 
                 // // speed up or slow down drivtrain command that overrides the default command
                 // driveController.R1()
-                //                 .toggleOnTrue(DriveCommands.robotOrientedDrive(drive,
-                //                                 () -> -driveController.getLeftY()
-                //                                                 * Constants.ROBOT_PROPERTIES.slowdownSpeed,
-                //                                 () -> -driveController.getLeftX()
-                //                                                 * Constants.ROBOT_PROPERTIES.slowdownSpeed,
-                //                                 () -> -driveController.getRightX()));
+                // .toggleOnTrue(DriveCommands.robotOrientedDrive(drive,
+                // () -> -driveController.getLeftY()
+                // * Constants.ROBOT_PROPERTIES.slowdownSpeed,
+                // () -> -driveController.getLeftX()
+                // * Constants.ROBOT_PROPERTIES.slowdownSpeed,
+                // () -> -driveController.getRightX()));
                 // robot centric drive
                 driveController.povUp()
                                 .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> 1, () -> 0,
@@ -315,7 +316,6 @@ public class RobotContainer {
                 driveController.triangle().whileTrue(drive.followPathCommandtoTestPose());
                 driveController.square().whileTrue(drive.goTo(new Pose2d(2, 2, new Rotation2d())));
 
-                
                 // ∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
 
                 // CANDle subsystem
@@ -347,9 +347,9 @@ public class RobotContainer {
 
                 operatorController.square().onTrue(new ShootSpeed(shooter, 17, false));
 
-                operatorController.circle().whileTrue(new ClimbSpeed(climb, 0.25));
+                operatorController.circle().whileTrue(new ClimbSpeed(climb, 0.99));
 
-                operatorController.cross().whileTrue(new ClimbSpeed(climb, -0.25));
+                operatorController.cross().whileTrue(new ClimbSpeed(climb, -0.99));
 
                 // Indexer subsystem
                 operatorController.R1().whileTrue(new IndexerSpin(indexer,
@@ -357,12 +357,15 @@ public class RobotContainer {
 
                 // Intake subsystem
                 // out
-                operatorController.povUp().whileTrue(new RunIntake(intake, 0.075, Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
+                operatorController.povUp()
+                                .whileTrue(new RunIntake(intake, 0.075, Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
                 // in
-                operatorController.povDown().whileTrue(new RunIntake(intake, -0.075, Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
+                operatorController.povDown()
+                                .whileTrue(new RunIntake(intake, -0.075, Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
 
                 // roller
-                operatorController.povLeft().whileTrue(new IntakeSpin(intake, Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
+                operatorController.povLeft()
+                                .whileTrue(new IntakeSpin(intake, Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
                 operatorController.povRight().whileTrue(new IntakeSpin(intake, 0));
 
                 // set aside for when the pid is tuned and constants are updated
