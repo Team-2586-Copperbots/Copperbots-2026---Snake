@@ -333,6 +333,7 @@ public class RobotContainer {
                                 new IndexerSpin(indexer, IndexerStates.OFF),
                                 new ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_RPS, false),
                                 new ManualTurret(turret, 0)));
+                operatorController.circle().onTrue(new ShootSpeed(shooter, 30, false));
 
                 // indexer sudsystem
                 operatorController.square().onTrue(new IndexerSpin(indexer, IndexerStates.UP));
@@ -347,6 +348,7 @@ public class RobotContainer {
                 // pid intake
                 operatorController.povUp().onTrue(new RunIntake(intake, IntakePosition.OUT, 0));
                 operatorController.povDown().onTrue(new RunIntake(intake, IntakePosition.IN, 0));
+                operatorController.cross().onTrue(new RunIntake(intake, -0.1, 0));
                 // roller
                 operatorController.povLeft()
                                 .onTrue(new IntakeSpin(intake, Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));

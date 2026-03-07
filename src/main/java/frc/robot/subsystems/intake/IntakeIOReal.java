@@ -32,10 +32,10 @@ public class IntakeIOReal implements IntakeIO {
         wristMotorConfig = new TalonFXConfiguration();
         rollerMotorConfig = new TalonFXConfiguration();
 
-        wristMotorConfig.Feedback.FeedbackRemoteSensorID = cancoder.getDeviceID();
-        wristMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-        wristMotorConfig.Feedback.RotorToSensorRatio = Constants.INTAKE_CONSTANTS.rotorToIntake;
-        wristMotorConfig.Feedback.SensorToMechanismRatio = 1;
+        // wristMotorConfig.Feedback.FeedbackRemoteSensorID = cancoder.getDeviceID();
+        // wristMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+        // wristMotorConfig.Feedback.RotorToSensorRatio = Constants.INTAKE_CONSTANTS.rotorToIntake;
+        // wristMotorConfig.Feedback.SensorToMechanismRatio = 1;
         
 
         var motorOutputConfigs = wristMotorConfig.MotorOutput;
@@ -43,7 +43,7 @@ public class IntakeIOReal implements IntakeIO {
 
         var pidConfig = wristMotorConfig.Slot0;
         // TODO: tune pid at all!?
-        pidConfig.kP = 0.05;
+        pidConfig.kP = 0.1;
         pidConfig.kI = 0.00;
         pidConfig.kD = 0.00;
 

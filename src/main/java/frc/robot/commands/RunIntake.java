@@ -6,8 +6,8 @@ import frc.robot.subsystems.intake.Intake.IntakePosition;
 
 public class RunIntake extends Command {
     private Intake intake;
-    private Intake.IntakePosition position;
-    private Double wristSpeed;
+    private Intake.IntakePosition position = null;
+    private Double wristSpeed = Double.NaN;
     private double rollerSpeed;
 
     public RunIntake(Intake intake, IntakePosition position, double rollerSpeed) {
