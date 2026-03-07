@@ -55,7 +55,10 @@ public class IntakeIOReal implements IntakeIO {
     public void updateInputs(IntakeIOInputs inputs) {
         inputs.currentRollerSpeed = rollerMotor.getVelocity().getValueAsDouble();
         inputs.currentWristPosition = wristMotor.getPosition().getValueAsDouble();
+
         inputs.wristSetpoint = targetPosition;
+        inputs.percentageWristSpeed = wristMotor.get();
+        inputs.rollerSetpoint = rollerMotor.get();
         inputs.isClosedLoop = isClosedLoop;
     }
 

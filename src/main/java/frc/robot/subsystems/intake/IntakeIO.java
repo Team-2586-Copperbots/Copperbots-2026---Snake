@@ -9,10 +9,11 @@ public interface IntakeIO {
     public static class IntakeIOInputs {
         public double rollerSetpoint = 0;
         public IntakePosition wristSetpoint = IntakePosition.IN;
+        public double percentageWristSpeed = 0;
         public boolean isClosedLoop = true;
+
         public double currentWristPosition = 0;
         public double currentRollerSpeed = 0;
-        public double percentageWristSpeed = 0;
     }
 
     // functions to control things
