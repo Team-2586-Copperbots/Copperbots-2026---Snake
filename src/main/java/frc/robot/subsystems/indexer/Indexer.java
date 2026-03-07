@@ -32,7 +32,6 @@ public class Indexer extends SubsystemBase {
 
     public static enum IndexerStates {
         UP(-0.3, 0.4),
-        TOWER(0, 0.4),
         DOWN(0.3, -0.4),
         OFF(0, 0);
 

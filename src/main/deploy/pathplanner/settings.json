@@ -6,12 +6,12 @@
     "testing"
   ],
   "autoFolders": [],
-  "defaultMaxVel": 6.0,
-  "defaultMaxAccel": 5.0,
+  "defaultMaxVel": 4.58,
+  "defaultMaxAccel": 8.72,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
   "defaultNominalVoltage": 12.0,
-  "robotMass": 68.0,
+  "robotMass": 56.699,
   "robotMOI": 6.883,
   "robotTrackwidth": 0.546,
   "driveWheelRadius": 0.0508,
@@ -30,5 +30,7 @@
   "brModuleY": -0.289,
   "bumperOffsetX": 0.0,
   "bumperOffsetY": 0.0,
-  "robotFeatures": []
+  "robotFeatures": [
+    "{\"name\":\"Rectangle\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":0.5,\"y\":0.0},\"size\":{\"width\":0.78,\"length\":0.15},\"borderRadius\":0.05,\"strokeWidth\":0.02,\"filled\":false}}"
+  ]
 }

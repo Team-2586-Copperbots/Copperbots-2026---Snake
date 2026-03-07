@@ -5,7 +5,6 @@
 package frc.robot;
 
 import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.SimulatedArena.FieldMap;
 import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnField;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;

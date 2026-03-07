@@ -70,13 +70,14 @@ public final class Constants {
     public static final int TEST_CONTROLER2_PORT = 3;
     public static final double MAX_SPEED_LIMITER = 1;
     public static final double SLOW_SPEED_LIMITER = 0.2;
-    public static final double setRPM = 45;
+    public static final double IDLE_RPS = 45;
     public static final double ROLLER_SPEED = 0.6;
   }
 
   public static class PLACES {
     public static final Pose2d CENTER_OF_HUB = new Pose2d(11.92, 4.04, null);
-    public static final Pose2d FRONT_OF_HUB = new Pose2d(4.00, 4.08, null);
+    public static final Pose2d TOP_BLUEALIANCE = new Pose2d(2.5, 4.04 + 2.45, null);
+    public static final Pose2d BOTTOM_BLUEALIANCE = new Pose2d(2.5, 4.04 - 2.45, null);
   }
 
   public static class DRIVEBASE_TARGET_POSES {
@@ -126,10 +127,10 @@ public final class Constants {
   }
 
   public static class INTAKE_CONSTANTS {
-    public static final double rotorToIntake = 5/1 * 59/24 * 45/20;
+    public static final double rotorToIntake = 5 / 1 * 59 / 24 * 45 / 20;
   }
 
-    public static enum CANDLE_STRIPS {
+  public static enum CANDLE_STRIPS {
     // TODO: fix indexe (plural?) when strips are made
     BUILT_IN(0, 7),
     FIRST(8, 8 + 21),

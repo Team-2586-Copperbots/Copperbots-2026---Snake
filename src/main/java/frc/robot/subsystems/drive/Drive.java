@@ -35,14 +35,13 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
+import frc.robot.subsystems.drive.MyDriveConstants.BLine_PIDs;
 import frc.robot.Utils;
 import frc.robot.Constants.DRIVEBASE_TARGET_POSES;
 import frc.robot.Constants.Mode;
@@ -116,7 +115,6 @@ public class Drive extends SubsystemBase {
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
   public FollowPath.Builder pathBuilder;
-  private Path.Waypoint robotWaypoint = new Path.Waypoint(new Pose2d());
   private final SysIdRoutine sysId;
   private final Alert gyroDisconnectedAlert = new Alert("Disconnected gyro, using kinematics as fallback.",
       AlertType.kError);
@@ -178,6 +176,9 @@ public class Drive extends SubsystemBase {
         });
 
     buildBline();
+    Preferences.initDouble("tkP", BLine_PIDs.tkP);
+    Preferences.initDouble("rkP", BLine_PIDs.rkP);
+    Preferences.initDouble("CTkP", BLine_PIDs.CTkP);
 
     // Configure SysId
     sysId = new SysIdRoutine(
@@ -193,8 +194,6 @@ public class Drive extends SubsystemBase {
     Logger.processInputs("Drive/Gyro", gyroInputs);
     Logger.recordOutput("hub angle", Utils.getAngleToHub(this));
     Logger.recordOutput("distance to hub", Utils.distanceFromPose(Constants.PLACES.CENTER_OF_HUB, this));
-    robotWaypoint = new Path.Waypoint(getPose());
-    Logger.recordOutput("robotWaypoint", new Pose2d(robotWaypoint.translationTarget().translation(), new Rotation2d()));
     for (var module : modules) {
       module.periodic();
     }
@@ -275,9 +274,17 @@ public class Drive extends SubsystemBase {
         this::getPose,
         this::getChassisSpeeds,
         (speeds) -> this.runVelocity(speeds),
-        new PIDController(5.0, 0.0, 0.0),
-        new PIDController(3.0, 0.0, 0.0),
-        new PIDController(2.0, 0.0, 0.0)).withDefaultShouldFlip();
+        new PIDController(BLine_PIDs.tkP, BLine_PIDs.tkI, BLine_PIDs.tkD),
+        new PIDController(BLine_PIDs.rkP, BLine_PIDs.rkI, BLine_PIDs.rkD),
+        new PIDController(BLine_PIDs.CTkP, BLine_PIDs.CTkI, BLine_PIDs.CTkD))
+        .withDefaultShouldFlip();
+    FollowPath.setPoseLoggingConsumer(pair -> {
+      Logger.recordOutput(pair.getFirst(), pair.getSecond());
+    });
+
+    FollowPath.setTranslationListLoggingConsumer(pair -> {
+      Logger.recordOutput(pair.getFirst(), pair.getSecond());
+    });
   }
 
   public Command cRunVelocity(ChassisSpeeds speeds) {
@@ -300,19 +307,6 @@ public class Drive extends SubsystemBase {
 
   public Command goTo(Pose2d target) {
     return pathBuilder.build(new Path(new Path.Waypoint(target)));
-  }
-
-  public Command goT2o(Pose2d target) {
-    odometryLock.lock();
-    try {
-      Path.Waypoint currentWaypoint = new Path.Waypoint(getPose());
-      Path path = new Path(currentWaypoint, new Path.Waypoint(target));
-      Logger.recordOutput("path", path.getStartPose());
-      Command pathToRun = pathBuilder.build(path);
-      return pathToRun;
-    } finally {
-      odometryLock.unlock();
-    }
   }
 
   //

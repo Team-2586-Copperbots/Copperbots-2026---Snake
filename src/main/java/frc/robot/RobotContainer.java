@@ -7,24 +7,20 @@ package frc.robot;
 import org.ironmaple.simulation.IntakeSimulation;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import org.littletonrobotics.junction.Logger;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OPERATOR_CONSTANTS;
-import frc.robot.Constants.PLACES;
 import frc.robot.Constants.SHOOTER_CONSTANTS;
 import frc.robot.commands.AimAndShoot;
 import frc.robot.commands.AimAtHub;
@@ -114,10 +110,8 @@ public class RobotContainer {
                         OPERATOR_CONSTANTS.DRIVER_CONTROLER_PORT);
         private final CommandPS4Controller operatorController = new CommandPS4Controller(
                         OPERATOR_CONSTANTS.OPERATOR_CONTROLER_PORT);
-        @SuppressWarnings("unused")
         private final CommandPS4Controller testController1 = new CommandPS4Controller(
                         OPERATOR_CONSTANTS.TEST_CONTROLER1_PORT);
-        @SuppressWarnings("unused")
         private final CommandPS4Controller testController2 = new CommandPS4Controller(
                         OPERATOR_CONSTANTS.TEST_CONTROLER2_PORT);
 
@@ -246,7 +240,7 @@ public class RobotContainer {
         private void configureAutoCommands() {
 
                 NamedCommands.registerCommand("aim'n'Shoot",
-                                new AimAndShoot(shooter, turret, drive, PLACES.CENTER_OF_HUB));
+                                new AimAndShoot(shooter, turret, drive));
                 NamedCommands.registerCommand("shoot", new ShootSpeed(shooter, 20, false));
                 NamedCommands.registerCommand("intake spin", new IntakeSpin(intake, 1));
                 // NamedCommands.registerCommand("indexer", new IndexerSpin(indexer,
@@ -312,7 +306,7 @@ public class RobotContainer {
                                 .onTrue(DriveCommands.stopWithX(drive));
 
                 driveController.R2().onTrue(drive.pathFindToHubShot());
-                driveController.R1().whileTrue(drive.pathFromString("example_a"));
+                driveController.R1().whileTrue(drive.pathFromString("trench_bottom"));
                 driveController.triangle().whileTrue(drive.followPathCommandtoTestPose());
                 driveController.square().whileTrue(drive.goTo(new Pose2d(2, 2, new Rotation2d())));
 
@@ -330,46 +324,34 @@ public class RobotContainer {
 
                 // operatorController.povRight().whileTrue(candle.fire(STRIPS.FIRST));
 
-                // Turret subsystem
-                operatorController.L1().whileTrue(new ManualTurret(turret, 0));
-                operatorController.L2()
-                                .toggleOnTrue(new AimAndShoot(shooter, turret, drive, Constants.PLACES.CENTER_OF_HUB));
+                // Shooter + turret Subsystems
+                operatorController.L2().onTrue(new ParallelCommandGroup(
+                                new AimAndShoot(shooter, turret, drive),
+                                new SequentialCommandGroup(new WaitCommand(0.5),
+                                                new IndexerSpin(indexer, IndexerStates.UP))));
+                operatorController.touchpad().onTrue(new ParallelCommandGroup(
+                                new IndexerSpin(indexer, IndexerStates.OFF),
+                                new ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_RPS, false),
+                                new ManualTurret(turret, 0)));
 
-                operatorController.options().whileTrue(
-                                turret.runEnd(() -> turret.setTurretSpeed(0.05), () -> turret.setTurretSpeed(0)));
-                operatorController.share().whileTrue(
-                                turret.runEnd(() -> turret.setTurretSpeed(-0.05), () -> turret.setTurretSpeed(0)));
+                // indexer sudsystem
+                operatorController.square().onTrue(new IndexerSpin(indexer, IndexerStates.UP));
+                operatorController.triangle().onTrue(new IndexerSpin(indexer, IndexerStates.OFF));
 
-                operatorController.touchpad().onTrue(new ZeroTurret(turret));
 
-                // Shooter Subsystem
-                operatorController.triangle().onTrue(new ShootSpeed(shooter, 0, false));
+                // climb
+                operatorController.L1().whileTrue(new ClimbSpeed(climb, 0.9));
+                operatorController.L2().whileTrue(new ClimbSpeed(climb, -0.9));
 
-                operatorController.square().onTrue(new ShootSpeed(shooter, 17, false));
 
-                operatorController.circle().whileTrue(new ClimbSpeed(climb, 0.99));
-
-                operatorController.cross().whileTrue(new ClimbSpeed(climb, -0.99));
-
-                // Indexer subsystem
-                operatorController.R1().whileTrue(new IndexerSpin(indexer,
-                                IndexerStates.UP));
-
-                // Intake subsystem
-                // out
-                operatorController.povUp()
-                                .whileTrue(new RunIntake(intake, 0.075, Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
-                // in
-                operatorController.povDown()
-                                .whileTrue(new RunIntake(intake, -0.075, Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
-
+                // pid intake
+                operatorController.povUp().onTrue(new RunIntake(intake, IntakePosition.OUT, 0));
+                operatorController.povDown().onTrue(new RunIntake(intake, IntakePosition.IN, 0));
                 // roller
                 operatorController.povLeft()
-                                .whileTrue(new IntakeSpin(intake, Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
-                operatorController.povRight().whileTrue(new IntakeSpin(intake, 0));
-
-                // set aside for when the pid is tuned and constants are updated
-                // operatorController.povRight().whileTrue(new PIDIntake(intake, null));
+                                .onTrue(new IntakeSpin(intake, Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
+                operatorController.povRight().onTrue(new IntakeSpin(intake, 0));
+                operatorController.share().onTrue(new IntakeSpin(intake, -Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
 
                 // ∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
 
@@ -394,8 +376,7 @@ public class RobotContainer {
                 testController2.R1().whileTrue(new IndexerSpin(indexer,
                                 IndexerStates.UP));
                 testController2.square().whileTrue(new AimAtHub(turret, drive));
-                testController2.circle().toggleOnTrue(new AimAndShoot(shooter, turret, drive,
-                                null));
+                testController2.circle().toggleOnTrue(new AimAndShoot(shooter, turret, drive));
                 testController2.cross().whileTrue(new ShootSpeed(shooter, 0, false));
         }
 

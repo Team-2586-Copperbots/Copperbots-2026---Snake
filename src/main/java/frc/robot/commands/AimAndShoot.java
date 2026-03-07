@@ -15,11 +15,11 @@ public class AimAndShoot extends Command {
     private Pose2d target;
 
     public AimAndShoot(Shooter ShooterSubsystem, Turret TurretSubsystem,
-            Drive DrivetrainSubsystem, Pose2d Target) {
+            Drive Drivetrain) {
         this.Shooter = ShooterSubsystem;
         this.Turret = TurretSubsystem;
-        this.Drive = DrivetrainSubsystem;
-        this.target = Target;
+        this.Drive = Drivetrain;
+        this.target = Utils.findTarget(Drivetrain);
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(ShooterSubsystem);
         addRequirements(TurretSubsystem);

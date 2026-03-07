@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 0.45,
-        "y": 6.65
+        "y": 6.5
       },
       "prevControl": null,
       "nextControl": {
         "x": 0.4830605896140311,
-        "y": 6.2377189007809815
+        "y": 6.087718900780981
       },
       "isLocked": false,
       "linkedName": "middle ish point"
@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 2.93,
-        "y": 3.11
+        "x": 2.5122967189728955,
+        "y": 1.7254493580599135
       },
       "prevControl": {
-        "x": 2.0193493975903607,
-        "y": 1.7292530120481933
+        "x": 1.601646116563256,
+        "y": 0.34470237010810756
       },
       "nextControl": null,
       "isLocked": false,
@@ -54,8 +54,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 6.0,
-    "maxAcceleration": 5.0,
+    "maxVelocity": 4.58,
+    "maxAcceleration": 8.72,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

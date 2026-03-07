@@ -51,7 +51,6 @@ public class RunIntake extends Command {
         if (!wristSpeed.isNaN()) {
             intake.setWristSpeed(0);
         }
-        intake.setRollerSpeed(0);
     }
 
 }

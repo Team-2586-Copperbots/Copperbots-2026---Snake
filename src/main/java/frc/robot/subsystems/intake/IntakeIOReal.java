@@ -4,6 +4,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import frc.robot.Constants;
@@ -31,13 +32,11 @@ public class IntakeIOReal implements IntakeIO {
         wristMotorConfig = new TalonFXConfiguration();
         rollerMotorConfig = new TalonFXConfiguration();
 
-        // wristMotorConfig.Feedback.FeedbackRemoteSensorID = cancoder.getDeviceID();
-        // wristMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-        // wristMotorConfig.Feedback.RotorToSensorRatio = intakeconstants rotorToIntake;
-        // wristMotorConfig.Feedback.SensorToMechanismRatio = 1;
-        // 1/5
-        // 24/59
-        // 20/45
+        wristMotorConfig.Feedback.FeedbackRemoteSensorID = cancoder.getDeviceID();
+        wristMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+        wristMotorConfig.Feedback.RotorToSensorRatio = Constants.INTAKE_CONSTANTS.rotorToIntake;
+        wristMotorConfig.Feedback.SensorToMechanismRatio = 1;
+        
 
         var motorOutputConfigs = wristMotorConfig.MotorOutput;
         motorOutputConfigs.NeutralMode = NeutralModeValue.Brake;
@@ -62,7 +61,7 @@ public class IntakeIOReal implements IntakeIO {
 
     @Override
     public void setRollerSpeed(double speed) {
-        rollerMotor.set(-speed);
+        rollerMotor.set(speed);
     }
 
     @Override

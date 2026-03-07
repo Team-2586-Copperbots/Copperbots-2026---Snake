@@ -1,10 +1,7 @@
 package frc.robot;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.util.struct.Struct;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.PLACES;
@@ -19,6 +16,18 @@ public final class Utils {
             return alliance.get() == DriverStation.Alliance.Blue;
         }
         return false;
+    }
+
+    public static Pose2d findTarget(Drive drive) {
+        if (drive.getPose().getX() > PLACES.CENTER_OF_HUB.getX()) {
+            if (drive.getPose().getY() > PLACES.CENTER_OF_HUB.getY()) {
+                return PLACES.TOP_BLUEALIANCE;
+            } else {
+                return PLACES.BOTTOM_BLUEALIANCE;
+            }
+        } else {
+            return PLACES.CENTER_OF_HUB;
+        }
     }
 
     public static double shooterSpeedFromDistance(double distance) {
