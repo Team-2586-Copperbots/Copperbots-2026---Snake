@@ -1,9 +1,9 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Utils;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.turret.Turret;
+import frc.robot.util.GeneralUtils;
 
 public class AimAtHub extends Command {
     private Turret Turret;
@@ -25,7 +25,7 @@ public class AimAtHub extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        Turret.setTurretRotationTarget(Utils.getAngleToHubWithVelocity(Drivetrain));
+        Turret.setTurretRotationTarget(GeneralUtils.getAngleToHubWithVelocity(Drivetrain));
     }
 
     @Override

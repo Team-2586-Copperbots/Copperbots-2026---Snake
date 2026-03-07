@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intake;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -19,6 +20,7 @@ public class IntakeIOReal implements IntakeIO {
 
     private final TalonFXConfiguration wristMotorConfig;
     private final TalonFXConfiguration rollerMotorConfig;
+    private final CANcoderConfiguration coancoderConfig;
 
     private final PositionVoltage positionVoltage = new PositionVoltage(0);
     private IntakePosition targetPosition = IntakePosition.IN;
@@ -31,6 +33,7 @@ public class IntakeIOReal implements IntakeIO {
 
         wristMotorConfig = new TalonFXConfiguration();
         rollerMotorConfig = new TalonFXConfiguration();
+        coancoderConfig = new CANcoderConfiguration();
 
         wristMotorConfig.Feedback.FeedbackRemoteSensorID = cancoder.getDeviceID();
         wristMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
@@ -48,6 +51,7 @@ public class IntakeIOReal implements IntakeIO {
 
         wristMotor.getConfigurator().apply(wristMotorConfig);
         rollerMotor.getConfigurator().apply(rollerMotorConfig);
+        cancoder.getConfigurator().apply(coancoderConfig);
     }
 
     @Override

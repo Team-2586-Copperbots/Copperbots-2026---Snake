@@ -1,14 +1,14 @@
-package frc.robot;
+package frc.robot.util;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants.PLACES;
+import frc.robot.Constants.FIELD_CONSTANTS;
 import frc.robot.Constants.TURRET_CONSTANTS;
 import frc.robot.subsystems.drive.Drive;
 
-public final class Utils {
+public final class GeneralUtils {
 
     public static boolean isAllianceBlue() {
         var alliance = DriverStation.getAlliance();
@@ -19,14 +19,14 @@ public final class Utils {
     }
 
     public static Pose2d findTarget(Drive drive) {
-        if (drive.getPose().getX() > PLACES.CENTER_OF_HUB.getX()) {
-            if (drive.getPose().getY() > PLACES.CENTER_OF_HUB.getY()) {
-                return PLACES.TOP_BLUEALIANCE;
+        if (drive.getPose().getX() > FIELD_CONSTANTS.CENTER_OF_HUB.getX()) {
+            if (drive.getPose().getY() > FIELD_CONSTANTS.CENTER_OF_HUB.getY()) {
+                return FIELD_CONSTANTS.TOP_FULE_STORAGE;
             } else {
-                return PLACES.BOTTOM_BLUEALIANCE;
+                return FIELD_CONSTANTS.BOTTOM_FULE_STORAGE;
             }
         } else {
-            return PLACES.CENTER_OF_HUB;
+            return FIELD_CONSTANTS.CENTER_OF_HUB;
         }
     }
 
@@ -79,13 +79,13 @@ public final class Utils {
     public static double getAngleToHub(Drive drivetrain) {
         Pose2d shooterPose2d = pose2dForShooter(drivetrain);
 
-        double x = Math.abs(shooterPose2d.getX() - PLACES.CENTER_OF_HUB.getX());
-        double y = Math.abs(shooterPose2d.getY() - PLACES.CENTER_OF_HUB.getY());
+        double x = Math.abs(shooterPose2d.getX() - FIELD_CONSTANTS.CENTER_OF_HUB.getX());
+        double y = Math.abs(shooterPose2d.getY() - FIELD_CONSTANTS.CENTER_OF_HUB.getY());
 
         // in rotations
         double baseTurretAngle = Units.radiansToRotations(Math.atan(y / x));
 
-        if (shooterPose2d.getY() > PLACES.CENTER_OF_HUB.getY()) {
+        if (shooterPose2d.getY() > FIELD_CONSTANTS.CENTER_OF_HUB.getY()) {
             baseTurretAngle = -baseTurretAngle;
         }
 
@@ -104,7 +104,7 @@ public final class Utils {
         double velocityX = drivetrain.getChassisSpeeds().vxMetersPerSecond;
         double velocityY = drivetrain.getChassisSpeeds().vyMetersPerSecond;
 
-        double seconds = timeFromDistance(distanceFromPose(PLACES.CENTER_OF_HUB, drivetrain));
+        double seconds = timeFromDistance(distanceFromPose(FIELD_CONSTANTS.CENTER_OF_HUB, drivetrain));
 
         double velocityXDistance = (velocityX * seconds);
         double velocityYDistance = (velocityY * seconds);
@@ -112,8 +112,8 @@ public final class Utils {
         double xTotal = (robotX + velocityXDistance);
         double yTotal = (robotY + velocityYDistance);
 
-        double xAim = (PLACES.CENTER_OF_HUB.getX() + -xTotal);
-        double yAim = (PLACES.CENTER_OF_HUB.getY() + -yTotal);
+        double xAim = (FIELD_CONSTANTS.CENTER_OF_HUB.getX() + -xTotal);
+        double yAim = (FIELD_CONSTANTS.CENTER_OF_HUB.getY() + -yTotal);
         SmartDashboard.putNumber("xAim", xAim);
         SmartDashboard.putNumber("yAim", yAim);
         angle = Units.radiansToRotations(Math.atan(yAim / xAim));

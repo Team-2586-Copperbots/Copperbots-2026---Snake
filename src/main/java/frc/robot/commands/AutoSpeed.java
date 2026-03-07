@@ -2,9 +2,9 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
-import frc.robot.Utils;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.util.GeneralUtils;
 
 public class AutoSpeed extends Command {
     private Shooter Shooter;
@@ -27,7 +27,8 @@ public class AutoSpeed extends Command {
     @Override
     public void execute() {
         Shooter.setShooterSpeedSet(
-                Utils.shooterSpeedFromDistance(Utils.distanceFromPose(Constants.PLACES.CENTER_OF_HUB, Drivetrain)));
+                GeneralUtils.shooterSpeedFromDistance(
+                        GeneralUtils.distanceFromPose(Constants.FIELD_CONSTANTS.CENTER_OF_HUB, Drivetrain)));
     }
 
     @Override
@@ -38,7 +39,7 @@ public class AutoSpeed extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        Shooter.setShooterSpeedSet(Constants.SHOOTER_CONSTANTS.SHOOTER_IDLE_SPEED);
+        Shooter.setShooterSpeedSet(Constants.OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED);
     }
 
 }

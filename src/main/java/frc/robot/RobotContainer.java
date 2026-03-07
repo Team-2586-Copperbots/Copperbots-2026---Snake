@@ -112,8 +112,8 @@ public class RobotContainer {
                         OPERATOR_CONSTANTS.OPERATOR_CONTROLER_PORT);
         private final CommandPS4Controller testController1 = new CommandPS4Controller(
                         OPERATOR_CONSTANTS.TEST_CONTROLER1_PORT);
-        private final CommandPS4Controller testController2 = new CommandPS4Controller(
-                        OPERATOR_CONSTANTS.TEST_CONTROLER2_PORT);
+        private final CommandPS4Controller simControler = new CommandPS4Controller(
+                        OPERATOR_CONSTANTS.SIM_CONTROLER_PORT);
 
         @SuppressWarnings("unused")
         private final SendableChooser<Command> autoChooser;
@@ -250,7 +250,7 @@ public class RobotContainer {
                 NamedCommands.registerCommand("homeAll",
                                 new SequentialCommandGroup(new ManualTurret(turret, 0),
                                                 new PIDIntake(intake, IntakePosition.IN),
-                                                new ShootSpeed(shooter, SHOOTER_CONSTANTS.SHOOTER_IDLE_SPEED,
+                                                new ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED,
                                                                 false)/*
                                                                        * ,
                                                                        * new IndexerSpin(indexer, IndexerStates.OFF)
@@ -331,7 +331,7 @@ public class RobotContainer {
                                                 new IndexerSpin(indexer, IndexerStates.UP))));
                 operatorController.touchpad().onTrue(new ParallelCommandGroup(
                                 new IndexerSpin(indexer, IndexerStates.OFF),
-                                new ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_RPS, false),
+                                new ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED, false),
                                 new ManualTurret(turret, 0)));
                 operatorController.circle().onTrue(new ShootSpeed(shooter, 30, false));
 
@@ -339,11 +339,9 @@ public class RobotContainer {
                 operatorController.square().onTrue(new IndexerSpin(indexer, IndexerStates.UP));
                 operatorController.triangle().onTrue(new IndexerSpin(indexer, IndexerStates.OFF));
 
-
                 // climb
                 operatorController.L1().whileTrue(new ClimbSpeed(climb, 0.9));
                 operatorController.L2().whileTrue(new ClimbSpeed(climb, -0.9));
-
 
                 // pid intake
                 operatorController.povUp().onTrue(new RunIntake(intake, IntakePosition.OUT, 0));
@@ -371,15 +369,6 @@ public class RobotContainer {
                 testController1.circle().onTrue(new ShootSpeed(shooter, 5, true));
                 testController1.cross().onTrue(new ShootSpeed(shooter, -5, true));
 
-                testController2.povUp().onTrue(new ManualTurret(turret, 0));
-                testController2.povDown().onTrue(new ManualTurret(turret, 0.25));
-                testController2.povRight().whileTrue(new AimAtHub(turret, drive));
-
-                testController2.R1().whileTrue(new IndexerSpin(indexer,
-                                IndexerStates.UP));
-                testController2.square().whileTrue(new AimAtHub(turret, drive));
-                testController2.circle().toggleOnTrue(new AimAndShoot(shooter, turret, drive));
-                testController2.cross().whileTrue(new ShootSpeed(shooter, 0, false));
         }
 
         public Command resetGyro() {

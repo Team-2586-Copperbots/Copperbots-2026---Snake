@@ -40,7 +40,7 @@
       "type": "translation",
       "x_meters": 7.723145895902896,
       "y_meters": 3.3551124162960475,
-      "intermediate_handoff_radius_meters": 0.2
+      "intermediate_handoff_radius_meters": 0.15000000000000002
     },
     {
       "type": "rotation",
@@ -87,7 +87,7 @@
         "end_ordinal": 6
       },
       {
-        "value": 1.5,
+        "value": 1.75,
         "start_ordinal": 4,
         "end_ordinal": 4
       },

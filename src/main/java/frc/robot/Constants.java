@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meters;
+
 import java.io.IOException;
 
 import com.ctre.phoenix6.CANBus;
@@ -13,7 +16,11 @@ import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.DistanceUnit;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.RobotBase;
+import frc.robot.util.AllianceFlipUtil;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -42,6 +49,8 @@ public final class Constants {
     REPLAY
   }
 
+  // drive
+
   public static class ROBOT_PROPERTIES {
     private static RobotConfig ROBOT_CONFIG;
 
@@ -63,26 +72,41 @@ public final class Constants {
     public static final double slowdownSpeed = 0.5;
   }
 
+  // robotcontainer
+
   public static class OPERATOR_CONSTANTS {
+    // controlers
     public static final int DRIVER_CONTROLER_PORT = 0;
     public static final int OPERATOR_CONTROLER_PORT = 1;
     public static final int TEST_CONTROLER1_PORT = 2;
-    public static final int TEST_CONTROLER2_PORT = 3;
+    public static final int SIM_CONTROLER_PORT = 5;
+
+    // drive speed limiter
     public static final double MAX_SPEED_LIMITER = 1;
     public static final double SLOW_SPEED_LIMITER = 0.2;
-    public static final double IDLE_RPS = 45;
-    public static final double ROLLER_SPEED = 0.6;
+
+    public static final double IDLE_SHOOTER_SPEED = 45; // RPS
+    public static final double ROLLER_SPEED = 0.6; // percentage
   }
 
-  public static class PLACES {
-    public static final Pose2d CENTER_OF_HUB = new Pose2d(11.92, 4.04, null);
-    public static final Pose2d TOP_BLUEALIANCE = new Pose2d(2.5, 4.04 + 2.45, null);
-    public static final Pose2d BOTTOM_BLUEALIANCE = new Pose2d(2.5, 4.04 - 2.45, null);
+  // math
+
+  public static class FIELD_CONSTANTS {
+    public static final Distance FIELD_LENGTH = Distance.ofBaseUnits(Units.inchesToMeters(651.22), Meters);
+    public static final Distance FIELD_WIDTH = Distance.ofBaseUnits(Units.inchesToMeters(317.69), Meters);
+
+    public static final Pose2d CENTER_OF_HUB = AllianceFlipUtil.apply(
+        new Pose2d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84), null));
+    public static final Pose2d BOTTOM_FULE_STORAGE = AllianceFlipUtil.apply(new Pose2d(2.75, 1.6, null));
+    public static final Pose2d TOP_FULE_STORAGE = AllianceFlipUtil.apply(
+        new Pose2d(BOTTOM_FULE_STORAGE.getX(), AllianceFlipUtil.applyY(BOTTOM_FULE_STORAGE.getY()), null));
   }
 
   public static class DRIVEBASE_TARGET_POSES {
-    public static final Pose2d TEST_POSE2D = new Pose2d(2, 2, new Rotation2d(Units.degreesToRadians(0)));
+    public static final Pose2d TEST_POSE2D = AllianceFlipUtil.apply(new Pose2d(2, 2, new Rotation2d(Units.degreesToRadians(0))));
   }
+
+  // hardware
 
   public static class CANIds {
     public static final CANBus Canivore = new CANBus("Subsystems");
@@ -106,13 +130,15 @@ public final class Constants {
   }
 
   public static class DIO_IDS {
-
     public static final int TURRET_LIMIT_SWITCH = 9;
   }
 
+  // subsystems + simpuation
+
   public static class SHOOTER_CONSTANTS {
-    public static final double SHOOTER_IDLE_SPEED = 40.0; // RPM
-    public static final double HEIGHT_OF_WHEEL_OFF_GROUND = 0.64135; // in meters
+    public static final Distance HEIGHT_OF_WHEEL_OFF_GROUND = Distance.ofBaseUnits(0.64135, Meters); // in meters
+    public static final double SHOOTER_WHEELE_CIRCUMFERENCE = 2 * 2 * Math.PI;
+    public static final Angle SHOOTER_HOOD_ANGLE = Angle.ofBaseUnits(22.165, Degrees);
   }
 
   public static class TURRET_CONSTANTS {
