@@ -112,27 +112,12 @@ public class Robot extends LoggedRobot {
 
     // vision is now done using a drive supplyer and periodic in vision.java
 
-
-    // TODO spelling?
-    // ------ for manulal use of new vision (file no-longer exists) ------
-    // if (robotContainer.vision.getRobotPose().isPresent()) {
-    // robotContainer.drive.addVisionMeasurement(robotContainer.vision.getRobotPose().get().estimatedPose.toPose2d(),
-    // robotContainer.vision.timestamp,
-    // robotContainer.vision.getEstimationStdDevs());
-    // }
-
-    // ------ for use with old photon subsystem (/subsystems/vision/old) ------
-    // Optional<EstimatedRobotPose> pose = robotContainer.photonSubsystem.getRobotPose();
-    // if (pose.isPresent()) {
-    //   robotContainer.drive.addVisionMeasurement(pose.get().estimatedPose.toPose2d(), pose.get().timestampSeconds,
-    //       robotContainer.photonSubsystem.getAmbiguity());
-    // }
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    robotContainer.resetSimulation();
+    // robotContainer.resetSimulation();
   }
 
   @Override

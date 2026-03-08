@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import static edu.wpi.first.units.Units.Meters;
 import static frc.robot.Constants.FIELD_CONSTANTS;
 
-public class AllianceFlipUtil {
+public final class AllianceFlipUtil {
   public static double applyX(double x) {
     return shouldFlip() ? FIELD_CONSTANTS.FIELD_LENGTH.in(Meters) - x : x;
   }

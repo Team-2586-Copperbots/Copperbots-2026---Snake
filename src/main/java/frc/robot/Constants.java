@@ -97,14 +97,14 @@ public final class Constants {
     public static final Distance FIELD_WIDTH = Distance.ofBaseUnits(Units.inchesToMeters(317.69), Meters);
 
     public static final Pose2d CENTER_OF_HUB = AllianceFlipUtil.apply(
-        new Pose2d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84), null));
-    public static final Pose2d BOTTOM_FULE_STORAGE = AllianceFlipUtil.apply(new Pose2d(2.75, 1.6, null));
+        new Pose2d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84), Rotation2d.kZero));
+    public static final Pose2d BOTTOM_FULE_STORAGE = AllianceFlipUtil.apply(new Pose2d(2.75, 1.6, Rotation2d.kZero));
     public static final Pose2d TOP_FULE_STORAGE = AllianceFlipUtil.apply(
-        new Pose2d(BOTTOM_FULE_STORAGE.getX(), AllianceFlipUtil.applyY(BOTTOM_FULE_STORAGE.getY()), null));
+        new Pose2d(BOTTOM_FULE_STORAGE.getX(), AllianceFlipUtil.applyY(BOTTOM_FULE_STORAGE.getY()), Rotation2d.kZero));
   }
 
   public static class DRIVEBASE_TARGET_POSES {
-    public static final Pose2d TEST_POSE2D = AllianceFlipUtil.apply(new Pose2d(2, 2, new Rotation2d(Units.degreesToRadians(0))));
+    public static final Pose2d TEST_POSE2D = AllianceFlipUtil.apply(new Pose2d(2, 2, Rotation2d.kZero));
   }
 
   // hardware

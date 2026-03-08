@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.OPERATOR_CONSTANTS;
-import frc.robot.Constants.SHOOTER_CONSTANTS;
 import frc.robot.commands.AimAndShoot;
 import frc.robot.commands.AimAtHub;
 import frc.robot.commands.ClimbSpeed;
@@ -33,7 +32,6 @@ import frc.robot.commands.IntakeSpin;
 import frc.robot.commands.ManualTurret;
 import frc.robot.commands.IntakePID;
 import frc.robot.commands.IntakeRatle;
-import frc.robot.commands.IntakePID;
 import frc.robot.commands.ShootSpeed;
 import frc.robot.commands.ZeroTurret;
 import frc.robot.generated.TunerConstants;
@@ -217,9 +215,6 @@ public class RobotContainer {
                 // make chouser for drive charecterization
                 characterizationChooser = new SendableChooser<Command>();
                 addOptionsForCharecterization();
-                // make chouser for drive charecterization
-                characterizationChooser = new SendableChooser<Command>();
-                addOptionsForCharecterization();
 
                 // For convenience a programmer could change this when going to competition.
                 boolean isCompetition = false;
@@ -232,8 +227,7 @@ public class RobotContainer {
                                                 : stream);
                 SmartDashboard.putData("pathplaner chooser", autoChooser);
                 SmartDashboard.putData("bline chooser", bLineChouser);
-                SmartDashboard.putData("pathplaner chooser", autoChooser);
-                SmartDashboard.putData("bline chooser", bLineChouser);
+                SmartDashboard.putData("characterization Chooset", characterizationChooser);
 
         }
 
@@ -245,25 +239,6 @@ public class RobotContainer {
                                                                                                             * turret,
                                                                                                             * drive)
                                                                                                             */));
-
-        }
-
-        private void addOptionsForCharecterization() {
-                // Set up SysId routines
-                characterizationChooser.addOption("Drive Wheel Radius Characterization",
-                                DriveCommands.wheelRadiusCharacterization(drive));
-                characterizationChooser.addOption("Drive Simple FF Characterization",
-                                DriveCommands.feedforwardCharacterization(drive));
-                characterizationChooser.addOption(
-                                "Drive SysId (Quasistatic Forward)",
-                                drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-                characterizationChooser.addOption(
-                                "Drive SysId (Quasistatic Reverse)",
-                                drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-                characterizationChooser.addOption("Drive SysId (Dynamic Forward)",
-                                drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-                characterizationChooser.addOption("Drive SysId (Dynamic Reverse)",
-                                drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
         }
 
@@ -300,10 +275,7 @@ public class RobotContainer {
                                 new SequentialCommandGroup(new ManualTurret(turret, 0),
                                                 new IntakePID(intake, IntakePosition.IN, 0),
                                                 new ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED,
-                                                                false)/*
-                                                                       * ,
-                                                                       * new IndexerSpin(indexer, IndexerStates.OFF)
-                                                                       */));
+                                                                false)));
         }
 
         /**
@@ -394,7 +366,8 @@ public class RobotContainer {
 
                 // pid intake
                 operatorController.povUp().onTrue(new IntakePID(intake, IntakePosition.OUT, 0));
-                operatorController.povDown().onTrue(new IntakePID(intake, IntakePosition.IN, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                operatorController.povDown()
+                                .onTrue(new IntakePID(intake, IntakePosition.IN, OPERATOR_CONSTANTS.ROLLER_SPEED));
                 operatorController.share().whileTrue(new IntakePID(intake, -0.1, OPERATOR_CONSTANTS.ROLLER_SPEED));
                 operatorController.options().whileTrue(new IntakePID(intake, 0.1, OPERATOR_CONSTANTS.ROLLER_SPEED));
 
@@ -413,7 +386,7 @@ public class RobotContainer {
                 testController1.povLeft()
                                 .onTrue(new IntakeSpin(intake, Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
                 testController1.povRight().onTrue(new IntakeSpin(intake, 0));
-                
+
                 testController1.options().whileTrue(new IntakePID(intake, 0.1, OPERATOR_CONSTANTS.ROLLER_SPEED));
                 testController1.share().whileTrue(new IntakePID(intake, -0.1, OPERATOR_CONSTANTS.ROLLER_SPEED));
 
@@ -421,8 +394,6 @@ public class RobotContainer {
                 testController1.povUp().onTrue(new IntakePID(intake, IntakePosition.OUT, 0));
                 testController1.povDown().onTrue(new IntakePID(intake, IntakePosition.HALFWAY, 0));
                 testController1.touchpad().whileTrue(new IntakeRatle(intake));
-
-
 
         }
 
@@ -441,14 +412,16 @@ public class RobotContainer {
          * @return the command to run in autonomous
          */
         public Command getAutonomousCommand() {
-                if (bLineChouser.getSelected() == null) {
-                        return bLineChouser.getSelected();
-                } else if (autoChooser.getSelected() == null) {
-                        return autoChooser.getSelected();
-                } else if (characterizationChooser.getSelected() == null) {
+                boolean characterization = true;
+                if (characterization) {
+                        SmartDashboard.putBoolean("charcterization", true);
                         return characterizationChooser.getSelected();
                 } else {
-                        return Commands.none();
+                        if (bLineChouser.getSelected() != null) {
+                                return bLineChouser.getSelected();
+                        } else {
+                                return autoChooser.getSelected();
+                        }
                 }
 
         }
