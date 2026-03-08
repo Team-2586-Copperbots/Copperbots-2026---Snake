@@ -1,15 +1,19 @@
 package frc.robot.subsystems.turret;
 
+import static edu.wpi.first.units.Units.Rotations;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.Angle;
 import frc.robot.Constants.TURRET_CONSTANTS;
 
 public class TurretIOSim implements TurretIO {
-    private double turretMotorPose;
+    private Rotation2d turretMotorPose;
     private double motorSpeed = 0;
     private boolean isClosedLoop = true;
     private boolean isAtPosition = true;
 
     public TurretIOSim() {
-        turretMotorPose = 0;
+        turretMotorPose = Rotation2d.k180deg;
     }
 
     @Override
@@ -23,29 +27,29 @@ public class TurretIOSim implements TurretIO {
     }
 
     @Override
-    public void setTurretSetpoint(double roations) {
+    public void setTurretSetpoint(Rotation2d roations) {
         isClosedLoop = true;
 
         // limits are typed in as degres
-        if (roations >= (0 - TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET)
-                && roations < TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT) {
+        if (roations.getRotations() >= (-TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET.getRotations())
+                && TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT.minus(roations).getRotations() < 0) {
             isAtPosition = true;
-            turretMotorPose = ((roations + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET)
-                    * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO);
+            turretMotorPose = new Rotation2d( Angle.ofBaseUnits(((roations.plus(TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET).getRotations())
+                    * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO), Rotations));
         } else {
             // says that it did not make it to the desired position
             isAtPosition = false;
 
             // goes to nearist point relative to desired point
-            double startOfDeadZone = 0;
-            double endOfDeadZone = TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT;
+            Rotation2d minOfDeadZone = Rotation2d.kZero;
+            Rotation2d maxOfDeadZone = TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT;
 
-            if (Math.abs((startOfDeadZone - roations)) < Math.abs((endOfDeadZone - roations))) {
-                turretMotorPose = (0 * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO);
-            } else if (Math.abs((startOfDeadZone - roations)) >= Math.abs((endOfDeadZone - roations))) {
-                turretMotorPose = (TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO);
+            if (Math.abs((minOfDeadZone.minus(roations).getRotations())) < Math.abs((maxOfDeadZone.minus(roations).getRotations()))) {
+                turretMotorPose = new Rotation2d(Angle.ofBaseUnits((Rotation2d.kZero.getRotations() * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO), Rotations));
+            } else if (Math.abs((minOfDeadZone.minus(roations).getRotations())) >= Math.abs((maxOfDeadZone.minus(roations).getRotations()))) {
+                turretMotorPose = new Rotation2d(Angle.ofBaseUnits((TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT.getRotations() * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO), Rotations));
             } else {
-                turretMotorPose = (0 * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO);
+                turretMotorPose = new Rotation2d(Angle.ofBaseUnits((Rotation2d.kZero.getRotations() * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO), Rotations));
             }
 
         }
@@ -54,18 +58,18 @@ public class TurretIOSim implements TurretIO {
     // set the turn motors's internal encoder
     @Override
     public void setTurretZero() {
-        turretMotorPose = 0;
+        turretMotorPose = Rotation2d.kZero;
     }
 
     @Override
-    public double getRingRotation() {
-        return (turretMotorPose / TURRET_CONSTANTS.MOTOR_TO_RING_RATIO);
+    public Rotation2d getRingRotation() {
+        return new Rotation2d(Angle.ofBaseUnits((turretMotorPose.getRotations() / TURRET_CONSTANTS.MOTOR_TO_RING_RATIO), Rotations));
     }
 
     @Override
-    public double getRobotRelitiveRotation() {
-        return -0.5 + (turretMotorPose / TURRET_CONSTANTS.MOTOR_TO_RING_RATIO)
-                + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET;
+    public Rotation2d getRobotRelitiveRotation() {
+        return new Rotation2d(Angle.ofBaseUnits((turretMotorPose.getRotations() / TURRET_CONSTANTS.MOTOR_TO_RING_RATIO)
+                + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET.getRotations(), Rotations)) ;
     }
 
 }

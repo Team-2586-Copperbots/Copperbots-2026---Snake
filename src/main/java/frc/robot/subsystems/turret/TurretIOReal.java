@@ -1,5 +1,6 @@
 package frc.robot.subsystems.turret;
 
+import static edu.wpi.first.units.Units.Rotations;
 import static frc.robot.Constants.CANIds.Canivore;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -7,6 +8,8 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants.CANIds;
 import frc.robot.Constants.DIO_IDS;
@@ -62,30 +65,33 @@ public class TurretIOReal implements TurretIO {
 
     // this uses the CTRE motors built-in positionVoltage controler to set the angle
     // of the turret within the limits of 0-320 degreas
-    public void setTurretSetpoint(double roations) {
+    public void setTurretSetpoint(Rotation2d roations) {
         isClosedLoop = true;
 
         // limits are typed in as degres
-        if (roations >= (0 - TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET)
-                && roations < TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT) {
+        if (roations.getRotations() >= (0 - TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET.getRotations())
+                && roations.getRotations() < TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT.getRotations()) {
             isAtPosition = true;
             turnMotor.setControl(
-                    positionVoltage.withPosition((roations + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET)
+                    positionVoltage.withPosition((roations.getRotations()
+                            + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET.getRotations())
                             * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO));
         } else {
             // says that it did not make it to the desired position
             isAtPosition = false;
 
             // goes to nearist point relative to desired point
-            double startOfDeadZone = 0;
-            double endOfDeadZone = TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT;
+            Rotation2d startOfDeadZone = new Rotation2d(Angle.ofBaseUnits(0, Rotations));
+            Rotation2d endOfDeadZone = TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT;
 
-            if (Math.abs((startOfDeadZone - roations)) < Math.abs((endOfDeadZone - roations))) {
+            if (Math.abs((startOfDeadZone.minus(roations).getRotations())) < Math
+                    .abs((endOfDeadZone.minus(roations).getRotations()))) {
                 turnMotor.setControl(positionVoltage.withPosition(
                         0 * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO));
-            } else if (Math.abs((startOfDeadZone - roations)) >= Math.abs((endOfDeadZone - roations))) {
+            } else if (Math.abs((startOfDeadZone.minus(roations).getRotations())) >= Math
+                    .abs((endOfDeadZone.minus(roations).getRotations()))) {
                 turnMotor.setControl(positionVoltage.withPosition(
-                        TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO));
+                        TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT.getRotations() * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO));
             } else {
                 turnMotor.setControl(positionVoltage.withPosition(
                         0 * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO));
@@ -101,14 +107,15 @@ public class TurretIOReal implements TurretIO {
     }
 
     @Override
-    public double getRingRotation() {
-        return (turnMotor.getPosition().getValueAsDouble() / TURRET_CONSTANTS.MOTOR_TO_RING_RATIO);
+    public Rotation2d getRingRotation() {
+        return new Rotation2d(turnMotor.getPosition().getValueAsDouble() / TURRET_CONSTANTS.MOTOR_TO_RING_RATIO);
     }
 
     @Override
-    public double getRobotRelitiveRotation() {
-        return -0.5 + (turnMotor.getPosition().getValueAsDouble() / TURRET_CONSTANTS.MOTOR_TO_RING_RATIO)
-                + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET;
+    public Rotation2d getRobotRelitiveRotation() {
+        return new Rotation2d(
+                Angle.ofBaseUnits((turnMotor.getPosition().getValueAsDouble() / TURRET_CONSTANTS.MOTOR_TO_RING_RATIO)
+                        + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET.getRotations(), Rotations));
     }
 
 }

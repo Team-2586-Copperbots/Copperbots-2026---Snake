@@ -1,7 +1,15 @@
 package frc.robot.util;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Rotations;
+
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.FIELD_CONSTANTS;
@@ -47,7 +55,7 @@ public final class GeneralUtils {
     public static double distanceFromPose(Pose2d taretPose2d, Drive drivetrain) {
 
         // double distance = taretPose3d.getTranslation().
-        Pose2d shooterPose2d = pose2dForShooter(drivetrain);
+        Pose2d shooterPose2d = pose2dForTurret(drivetrain);
 
         double distanceX = Math.abs(taretPose2d.getX() - shooterPose2d.getX());
         double distanceY = Math.abs(taretPose2d.getY() - shooterPose2d.getY());
@@ -55,7 +63,7 @@ public final class GeneralUtils {
         return distanceXY;
     }
 
-    public static Pose2d pose2dForShooter(Drive drivetrain) {
+    public static Pose2d pose2dForTurret(Drive drivetrain) {
         // done: update with math for the pose of the shooter from the cad modle do
         // using (unit circle and angle (in radians)) or wario
 
@@ -75,27 +83,7 @@ public final class GeneralUtils {
 
     // this returns the angle (in rot) fron the center of the robot to the center of
     // the hubs
-    // schoeing element by way of math and arcsin()
-    public static double getAngleToHub(Drive drivetrain) {
-        Pose2d shooterPose2d = pose2dForShooter(drivetrain);
-
-        double x = Math.abs(shooterPose2d.getX() - FIELD_CONSTANTS.CENTER_OF_HUB.getX());
-        double y = Math.abs(shooterPose2d.getY() - FIELD_CONSTANTS.CENTER_OF_HUB.getY());
-
-        // in rotations
-        double baseTurretAngle = Units.radiansToRotations(Math.atan(y / x));
-
-        if (shooterPose2d.getY() > FIELD_CONSTANTS.CENTER_OF_HUB.getY()) {
-            baseTurretAngle = -baseTurretAngle;
-        }
-
-        // factor in drivetrain rotation
-        double angle = (baseTurretAngle + drivetrain.getPose().getRotation().getRotations());
-
-        return angle;
-    }
-
-    public static double getAngleToHubWithVelocity(Drive drivetrain) {
+    public static Rotation2d getAngleToHubWithVelocity(Drive drivetrain) {
         double angle = 0;
 
         double robotX = drivetrain.getPose().getX();
@@ -120,7 +108,40 @@ public final class GeneralUtils {
         SmartDashboard.putNumber("angle", angle);
 
         // factor in drivetrain rotation
-        angle = (-angle + drivetrain.getPose().getRotation().getRotations() + 0.5) % 1;
+        angle = (-angle + drivetrain.getPose().getRotation().getRotations()) % 1;
+
+        return new Rotation2d(Angle.ofBaseUnits(angle, Rotations));
+    }
+
+    public Rotation2d getAngleToHubNewMath(Drive drivetrain) {
+        Rotation2d angle = Rotation2d.kZero;
+        Translation2d target = FIELD_CONSTANTS.CENTER_OF_HUB.getTranslation();
+
+        // math startes
+        // robot's pose
+        Pose2d turretPose = pose2dForTurret(drivetrain);
+        // velocity in meters per second
+        ChassisSpeeds velocity = drivetrain.getChassisSpeeds();
+        // how many seconds it will take for the fule to fly
+        double seconds = timeFromDistance(distanceFromPose(FIELD_CONSTANTS.CENTER_OF_HUB, drivetrain));
+        // find the distance that I need to offset the robot by
+        Translation2d velocityDistance = new Translation2d(
+                Distance.ofBaseUnits(velocity.vxMetersPerSecond * seconds, Meters),
+                Distance.ofBaseUnits(velocity.vyMetersPerSecond * seconds, Meters));
+        // make a pose of where the robot will be when the fule is "scored" (assuming the robot continues to move) 
+        Pose2d futureTurretPose = new Pose2d(turretPose.getTranslation().plus(velocityDistance), turretPose.getRotation());
+        // find the turret to target translation
+        // ex: x = 2.5 y = -0.2
+        Translation2d turretToTargetTranslation = futureTurretPose.getTranslation().minus(target);
+        // uses rotation2D's cartesian to polar system to get a angle from one pose to another
+        Rotation2d aimingAngle = new Rotation2d(turretToTargetTranslation.getX(), turretToTargetTranslation.getY());
+        // old things to just put numbers for testing, advantageKit is proably better for this, by now 
+        SmartDashboard.putNumber("xAim", turretToTargetTranslation.getX());
+        SmartDashboard.putNumber("yAim", turretToTargetTranslation.getY());
+        SmartDashboard.putNumber("angle in degres", aimingAngle.getDegrees());
+
+        // factor in drivetrain rotation
+        angle = new Rotation2d(Angle.ofBaseUnits(((aimingAngle.getRotations() + -drivetrain.getPose().getRotation().getRotations()) % 1), Rotations));
 
         return angle;
     }
