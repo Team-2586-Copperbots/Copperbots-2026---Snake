@@ -217,6 +217,9 @@ public class RobotContainer {
                 // make chouser for drive charecterization
                 characterizationChooser = new SendableChooser<Command>();
                 addOptionsForCharecterization();
+                // make chouser for drive charecterization
+                characterizationChooser = new SendableChooser<Command>();
+                addOptionsForCharecterization();
 
                 // For convenience a programmer could change this when going to competition.
                 boolean isCompetition = false;
@@ -227,6 +230,8 @@ public class RobotContainer {
                                 (stream) -> isCompetition
                                                 ? stream.filter(auto -> auto.getName().startsWith("comp"))
                                                 : stream);
+                SmartDashboard.putData("pathplaner chooser", autoChooser);
+                SmartDashboard.putData("bline chooser", bLineChouser);
                 SmartDashboard.putData("pathplaner chooser", autoChooser);
                 SmartDashboard.putData("bline chooser", bLineChouser);
 
@@ -240,6 +245,25 @@ public class RobotContainer {
                                                                                                             * turret,
                                                                                                             * drive)
                                                                                                             */));
+
+        }
+
+        private void addOptionsForCharecterization() {
+                // Set up SysId routines
+                characterizationChooser.addOption("Drive Wheel Radius Characterization",
+                                DriveCommands.wheelRadiusCharacterization(drive));
+                characterizationChooser.addOption("Drive Simple FF Characterization",
+                                DriveCommands.feedforwardCharacterization(drive));
+                characterizationChooser.addOption(
+                                "Drive SysId (Quasistatic Forward)",
+                                drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+                characterizationChooser.addOption(
+                                "Drive SysId (Quasistatic Reverse)",
+                                drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+                characterizationChooser.addOption("Drive SysId (Dynamic Forward)",
+                                drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+                characterizationChooser.addOption("Drive SysId (Dynamic Reverse)",
+                                drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
         }
 
