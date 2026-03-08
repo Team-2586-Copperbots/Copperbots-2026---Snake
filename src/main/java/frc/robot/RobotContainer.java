@@ -346,28 +346,33 @@ public class RobotContainer {
                 // pid intake
                 operatorController.povUp().onTrue(new RunIntake(intake, IntakePosition.OUT, 0));
                 operatorController.povDown().onTrue(new RunIntake(intake, IntakePosition.IN, 0));
-                operatorController.cross().onTrue(new RunIntake(intake, -0.1, 0));
+                operatorController.share().whileTrue(new RunIntake(intake, -0.1, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                operatorController.options().whileTrue(new RunIntake(intake, 0.1, OPERATOR_CONSTANTS.ROLLER_SPEED));
+
                 // roller
                 operatorController.povLeft()
                                 .onTrue(new IntakeSpin(intake, Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
                 operatorController.povRight().onTrue(new IntakeSpin(intake, 0));
-                operatorController.share().onTrue(new IntakeSpin(intake, -Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
+                operatorController.cross().onTrue(new IntakeSpin(intake, -Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
 
                 // ∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
 
                 testController1.R1().whileTrue(new IndexerSpin(indexer,
                                 IndexerStates.UP));
 
-                testController1.touchpad().toggleOnTrue(new AimAtHub(turret, drive));
+                testController1.circle().whileTrue(new ShootSpeed(shooter, 30, false));
+                testController1.povLeft()
+                                .onTrue(new IntakeSpin(intake, Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
+                testController1.povRight().onTrue(new IntakeSpin(intake, 0));
+                
+                testController1.povUp().whileTrue(new RunIntake(intake, 0.1, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                testController1.povDown().whileTrue(new RunIntake(intake, -0.1, OPERATOR_CONSTANTS.ROLLER_SPEED));
 
-                testController1.povDown().onTrue(new ShootSpeed(shooter, 0, false));
-                testController1.povUp().onTrue(new ShootSpeed(shooter, 20, false));
+                // pid intake
+                testController1.L1().onTrue(new RunIntake(intake, IntakePosition.IN, 0));
+                testController1.L2().onTrue(new RunIntake(intake, IntakePosition.OUT, 0));
 
-                testController1.triangle().onTrue(new ShootSpeed(shooter, 1, true));
-                testController1.square().onTrue(new ShootSpeed(shooter, -1, true));
 
-                testController1.circle().onTrue(new ShootSpeed(shooter, 5, true));
-                testController1.cross().onTrue(new ShootSpeed(shooter, -5, true));
 
         }
 
