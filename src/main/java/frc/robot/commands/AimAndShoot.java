@@ -35,7 +35,7 @@ public class AimAndShoot extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        Turret.setTurretRotationTarget(GeneralUtils.getAngleToHubWithVelocity(Drive));
+        Turret.setTurretRotationTarget(GeneralUtils.getAngleToHubNewMath(Drive));
         Shooter.setShooterSpeedSet(
                 GeneralUtils.shooterSpeedFromDistance(GeneralUtils.distanceFromPose(target, Drive)));
 
@@ -49,7 +49,7 @@ public class AimAndShoot extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        Turret.setTurretRotationTarget(Rotation2d.kZero);
+        Turret.setTurretRotationTarget(0);
         Shooter.setShooterSpeedSet(Constants.OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED);
     }
 

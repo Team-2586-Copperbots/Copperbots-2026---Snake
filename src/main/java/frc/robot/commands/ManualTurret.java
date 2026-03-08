@@ -9,11 +9,11 @@ import frc.robot.subsystems.turret.Turret;;
 
 public class ManualTurret extends Command {
     private Turret Turret;
-    private Rotation2d angle;
+    private double angle;
 
     public ManualTurret(Turret TurretSubsystem, double angle) {
         this.Turret = TurretSubsystem;
-        this.angle = new Rotation2d(Angle.ofBaseUnits(angle, Rotations));
+        this.angle = angle;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(TurretSubsystem);
     }
@@ -41,7 +41,7 @@ public class ManualTurret extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        Turret.setTurretRotationTarget(Rotation2d.kZero);
+        Turret.setTurretRotationTarget(0);
     }
 
 }

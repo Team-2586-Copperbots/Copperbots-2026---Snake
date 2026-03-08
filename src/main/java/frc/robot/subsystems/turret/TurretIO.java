@@ -3,25 +3,26 @@ package frc.robot.subsystems.turret;
 import org.littletonrobotics.junction.AutoLog;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public interface TurretIO {
     @AutoLog
     public static class TurretIOInputs {
-        public Rotation2d ringPositionSetpoint = Rotation2d.kZero;
+        public double ringPositionSetpoint = 0;
         public double ringSpeedSetpoint = 0.0;
 
-        public Rotation2d currentRingPose = Rotation2d.kZero;
+        public double currentRingPose = 0;
         public double currentRingSpeed = 0.0;
-        public boolean isClosedLoop = true;
+        public boolean isClosedLoop = false;
         public boolean limitSwitch = false;
         public boolean isAtPosition = true;
-        public Rotation2d rotationRelitiveToRobotZero = Rotation2d.kZero;
+        public double rotationRelitiveToRobotZero = 0;
     }
 
     public default void updateInputs(TurretIOInputs inputs) {
     }
 
-    public default void setTurretSetpoint(Rotation2d rotation) {
+    public default void setTurretSetpoint(double rotation) {
     }
 
     public default void setTurretSpeed(double speed) {
@@ -30,8 +31,8 @@ public interface TurretIO {
     public default void setTurretZero() {
     }
 
-    public default Rotation2d getRingRotation() {return new Rotation2d();}
+    public default double getRingRotation() {return 0;}
 
-    public default Rotation2d getRobotRelitiveRotation() {return new Rotation2d();}
+    public default double getRobotRelitiveRotation() {return 0;}
 
 }

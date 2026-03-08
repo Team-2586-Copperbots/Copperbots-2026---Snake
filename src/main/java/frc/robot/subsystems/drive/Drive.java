@@ -177,9 +177,6 @@ public class Drive extends SubsystemBase {
         });
 
     buildBline();
-    Preferences.initDouble("tkP", BLine_PIDs.tkP);
-    Preferences.initDouble("rkP", BLine_PIDs.rkP);
-    Preferences.initDouble("CTkP", BLine_PIDs.CTkP);
 
     // Configure SysId
     sysId = new SysIdRoutine(
@@ -193,7 +190,7 @@ public class Drive extends SubsystemBase {
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
     Logger.processInputs("Drive/Gyro", gyroInputs);
-    Logger.recordOutput("hub angle", GeneralUtils.getAngleToHubWithVelocity(this));
+    Logger.recordOutput("hub angle", GeneralUtils.getAngleToHubNewMath(this));
     Logger.recordOutput("distance to hub",
         GeneralUtils.distanceFromPose(Constants.FIELD_CONSTANTS.CENTER_OF_HUB, this));
     for (var module : modules) {

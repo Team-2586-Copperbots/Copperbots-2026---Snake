@@ -379,22 +379,26 @@ public class RobotContainer {
 
                 // ∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
 
-                testController1.R1().whileTrue(new IndexerSpin(indexer,
-                                IndexerStates.UP));
+                // testController1.R1().whileTrue(new IndexerSpin(indexer,
+                //                 IndexerStates.UP));
 
-                testController1.circle().whileTrue(new ShootSpeed(shooter, 30, false));
-                testController1.povLeft()
-                                .onTrue(new IntakeSpin(intake, Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
-                testController1.povRight().onTrue(new IntakeSpin(intake, 0));
+                // testController1.circle().whileTrue(new ShootSpeed(shooter, 30, false));
+                // testController1.povLeft()
+                //                 .onTrue(new IntakeSpin(intake, Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
+                // testController1.povRight().onTrue(new IntakeSpin(intake, 0));
 
-                testController1.options().whileTrue(new IntakePID(intake, 0.1, OPERATOR_CONSTANTS.ROLLER_SPEED));
-                testController1.share().whileTrue(new IntakePID(intake, -0.1, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                // testController1.options().whileTrue(new IntakePID(intake, 0.1, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                // testController1.share().whileTrue(new IntakePID(intake, -0.1, OPERATOR_CONSTANTS.ROLLER_SPEED));
 
-                // pid intake
-                testController1.povUp().onTrue(new IntakePID(intake, IntakePosition.OUT, 0));
-                testController1.povDown().onTrue(new IntakePID(intake, IntakePosition.HALFWAY, 0));
-                testController1.touchpad().whileTrue(new IntakeRatle(intake));
+                // // pid intake
+                // testController1.povUp().onTrue(new IntakePID(intake, IntakePosition.OUT, 0));
+                // testController1.povDown().onTrue(new IntakePID(intake, IntakePosition.HALFWAY, 0));
+                // testController1.touchpad().whileTrue(new IntakeRatle(intake));
 
+                testController1.povLeft().onTrue(new ManualTurret(turret, .25));
+                testController1.povRight().whileTrue(new AimAtHub(turret, drive));
+                testController1.povUp().onTrue(new AimAndShoot(shooter, turret, drive));
+                testController1.R1().whileTrue(new IndexerSpin(indexer, IndexerStates.UP));
         }
 
         public Command resetGyro() {

@@ -3,6 +3,8 @@ package frc.robot.subsystems.turret;
 import static edu.wpi.first.units.Units.Rotations;
 import static frc.robot.Constants.CANIds.Canivore;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -11,6 +13,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.CANIds;
 import frc.robot.Constants.DIO_IDS;
 import frc.robot.Constants.TURRET_CONSTANTS;
@@ -65,39 +68,18 @@ public class TurretIOReal implements TurretIO {
 
     // this uses the CTRE motors built-in positionVoltage controler to set the angle
     // of the turret within the limits of 0-320 degreas
-    public void setTurretSetpoint(Rotation2d roations) {
+    @Override
+    public void setTurretSetpoint(double roations) {
         isClosedLoop = true;
-
-        // limits are typed in as degres
-        if (roations.getRotations() >= (0 - TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET.getRotations())
-                && roations.getRotations() < TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT.getRotations()) {
-            isAtPosition = true;
+        if ((roations >= 0)
+                && (roations < TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT)) {
             turnMotor.setControl(
-                    positionVoltage.withPosition((roations.getRotations()
-                            + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET.getRotations())
-                            * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO));
+                    positionVoltage.withPosition(((roations + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET)
+                            * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO)));
         } else {
-            // says that it did not make it to the desired position
-            isAtPosition = false;
-
-            // goes to nearist point relative to desired point
-            Rotation2d startOfDeadZone = new Rotation2d(Angle.ofBaseUnits(0, Rotations));
-            Rotation2d endOfDeadZone = TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT;
-
-            if (Math.abs((startOfDeadZone.minus(roations).getRotations())) < Math
-                    .abs((endOfDeadZone.minus(roations).getRotations()))) {
-                turnMotor.setControl(positionVoltage.withPosition(
-                        0 * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO));
-            } else if (Math.abs((startOfDeadZone.minus(roations).getRotations())) >= Math
-                    .abs((endOfDeadZone.minus(roations).getRotations()))) {
-                turnMotor.setControl(positionVoltage.withPosition(
-                        TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT.getRotations() * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO));
-            } else {
-                turnMotor.setControl(positionVoltage.withPosition(
-                        0 * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO));
-            }
-
+            turnMotor.setControl(positionVoltage.withPosition(1));
         }
+
     }
 
     // set the turn motors's internal encoder
@@ -107,15 +89,13 @@ public class TurretIOReal implements TurretIO {
     }
 
     @Override
-    public Rotation2d getRingRotation() {
-        return new Rotation2d(turnMotor.getPosition().getValueAsDouble() / TURRET_CONSTANTS.MOTOR_TO_RING_RATIO);
+    public double getRingRotation() {
+        return turnMotor.getPosition().getValueAsDouble() / TURRET_CONSTANTS.MOTOR_TO_RING_RATIO;
     }
 
     @Override
-    public Rotation2d getRobotRelitiveRotation() {
-        return new Rotation2d(
-                Angle.ofBaseUnits((turnMotor.getPosition().getValueAsDouble() / TURRET_CONSTANTS.MOTOR_TO_RING_RATIO)
-                        + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET.getRotations(), Rotations));
+    public double getRobotRelitiveRotation() {
+        return getRingRotation() + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET;
     }
 
 }
