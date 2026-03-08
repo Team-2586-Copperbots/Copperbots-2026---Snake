@@ -347,9 +347,9 @@ public class RobotContainer {
 
                 // Shooter + turret Subsystems
                 operatorController.L2().onTrue(new ParallelCommandGroup(
-                                new AimAndShoot(shooter, turret, drive),
+                                new AimAndShoot(shooter, turret, drive)/*,
                                 new SequentialCommandGroup(new WaitCommand(0.5),
-                                                new IndexerSpin(indexer, IndexerStates.UP))));
+                                                new IndexerSpin(indexer, IndexerStates.UP)) */));
                 operatorController.touchpad().onTrue(new ParallelCommandGroup(
                                 new IndexerSpin(indexer, IndexerStates.OFF),
                                 new ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED, false),

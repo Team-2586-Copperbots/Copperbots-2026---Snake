@@ -56,8 +56,10 @@ public class TurretIOReal implements TurretIO {
         inputs.currentRingPose = getRingRotation();
         inputs.currentRingSpeed = turnMotor.getVelocity().getValueAsDouble();
         inputs.limitSwitch = !limitSwitch.get();
-        inputs.rotationRelitiveToRobotZero = getRobotRelitiveRotation();
         inputs.isAtPosition = isAtPosition;
+        
+        inputs.rotationRelitiveToRobotZero = getRobotRelitiveRotation();
+        inputs.ringPositionSetpoint = positionVoltage.Position;
     }
 
     // set comand to set the turning motor to a speed -1 to 1
@@ -71,6 +73,7 @@ public class TurretIOReal implements TurretIO {
     @Override
     public void setTurretSetpoint(double roations) {
         isClosedLoop = true;
+
         if ((roations >= 0)
                 && (roations < TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT)) {
             turnMotor.setControl(

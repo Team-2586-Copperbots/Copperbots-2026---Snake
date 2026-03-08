@@ -146,7 +146,7 @@ public final class Constants {
     public static final double MOTOR_TO_RING_RATIO = (66 / 12) * 3 * 3 * 1.105598958;// weried mystery number from the
                                                                                      // ring of oditys
     public static final double TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET = 0.044;
-    public static final double ROTATION_RANGE_IN_ROT = 0.809 + TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET;
+    public static final double ROTATION_RANGE_IN_ROT = 0.79;
     public static final Pose2d TURRET_OFFSET_FROM_ROBOT_CENTER = new Pose2d(Units.inchesToMeters(-7.5),
         Units.inchesToMeters(-8.5), null);
   }
