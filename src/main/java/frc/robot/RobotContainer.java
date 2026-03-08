@@ -265,6 +265,7 @@ public class RobotContainer {
                 // LEDState.COPPER));
 
                 // operatorController.povRight().whileTrue(candle.fire(STRIPS.FIRST));
+                driveController.R2().whileTrue(led.fire(LED.LED_Strip.FIRST));
 
                 operatorController.square()
                                 .onTrue(new Shooter_ShootSpeed(shooter, 0, false));

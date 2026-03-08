@@ -114,10 +114,14 @@ public final class Constants {
       TOP_FULE_STORAGE = new Pose2d(BOTTOM_FULE_STORAGE.getX(),
           (FIELD_WIDTH.in(Meters) - BOTTOM_FULE_STORAGE.getY()), Rotation2d.kZero);
     }
-
   }
 
-  // MARK: IDs
+  public static class DRIVEBASE_TARGET_POSES {
+    public static final Pose2d TEST_POSE2D = AllianceFlipUtil.apply(new Pose2d(2, 2, Rotation2d.kZero));
+  }
+
+  // hardware
+
   public static class CANIds {
     public static final CANBus Canivore = new CANBus("Subsystems");
     // shooter motors

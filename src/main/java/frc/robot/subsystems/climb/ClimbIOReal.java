@@ -61,7 +61,7 @@ public class ClimbIOReal implements ClimbIO {
 
     @Override
     public void updateAndLogInputs() {
-        inputs.limitSwitch = !limitSwitch.get();
+        inputs.limitSwitch = limitSwitch.get();
         inputs.targetPosition = targePosition;
 
         Logger.processInputs("Climb", inputs);
