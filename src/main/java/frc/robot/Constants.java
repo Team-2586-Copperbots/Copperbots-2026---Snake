@@ -153,7 +153,7 @@ public final class Constants {
   }
 
   public static class INTAKE_CONSTANTS {
-    public static final double rotorToIntake = 5 / 1 * 59 / 24 * 45 / 20;
+    public static final double rotorToIntake = (5 / 1) * (59 / 24) * (45 / 20);
   }
 
   public static enum CANDLE_STRIPS {

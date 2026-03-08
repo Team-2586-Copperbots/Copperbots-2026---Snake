@@ -2,6 +2,11 @@ package frc.robot.subsystems.intake;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import com.ctre.phoenix6.StatusSignal;
+
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.intake.Intake.IntakePosition;
 
 public interface IntakeIO {
@@ -13,6 +18,7 @@ public interface IntakeIO {
         public boolean isClosedLoop = true;
 
         public double currentWristPosition = 0;
+        public double currentCancoderPosition = 0;
         public double currentRollerSpeed = 0;
     }
 
@@ -23,7 +29,10 @@ public interface IntakeIO {
     public default void setRollerSpeed(double speed) {
     }
 
-    public default void setWristPosition(IntakePosition position) {
+    public default void setWristPositionTarget(IntakePosition position) {
+    }
+
+    public default void setWristPositionFromCancoder() {
     }
 
     public default void setWristSpeed(double speed) {

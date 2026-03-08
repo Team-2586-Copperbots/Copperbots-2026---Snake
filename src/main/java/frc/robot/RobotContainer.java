@@ -29,8 +29,9 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.commands.IndexerSpin;
 import frc.robot.commands.IntakeSpin;
 import frc.robot.commands.ManualTurret;
-import frc.robot.commands.PIDIntake;
-import frc.robot.commands.RunIntake;
+import frc.robot.commands.IntakePID;
+import frc.robot.commands.IntakeRatle;
+import frc.robot.commands.IntakePID;
 import frc.robot.commands.ShootSpeed;
 import frc.robot.commands.ZeroTurret;
 import frc.robot.generated.TunerConstants;
@@ -249,7 +250,7 @@ public class RobotContainer {
                 NamedCommands.registerCommand("AimAtHub", new AimAtHub(turret, drive));
                 NamedCommands.registerCommand("homeAll",
                                 new SequentialCommandGroup(new ManualTurret(turret, 0),
-                                                new PIDIntake(intake, IntakePosition.IN),
+                                                new IntakePID(intake, IntakePosition.IN, 0),
                                                 new ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED,
                                                                 false)/*
                                                                        * ,
@@ -340,14 +341,14 @@ public class RobotContainer {
                 operatorController.triangle().onTrue(new IndexerSpin(indexer, IndexerStates.OFF));
 
                 // climb
-                operatorController.L1().whileTrue(new ClimbSpeed(climb, 0.9));
-                operatorController.L2().whileTrue(new ClimbSpeed(climb, -0.9));
+                operatorController.R1().whileTrue(new ClimbSpeed(climb, 0.9));
+                operatorController.R2().whileTrue(new ClimbSpeed(climb, -0.9));
 
                 // pid intake
-                operatorController.povUp().onTrue(new RunIntake(intake, IntakePosition.OUT, 0));
-                operatorController.povDown().onTrue(new RunIntake(intake, IntakePosition.IN, 0));
-                operatorController.share().whileTrue(new RunIntake(intake, -0.1, OPERATOR_CONSTANTS.ROLLER_SPEED));
-                operatorController.options().whileTrue(new RunIntake(intake, 0.1, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                operatorController.povUp().onTrue(new IntakePID(intake, IntakePosition.OUT, 0));
+                operatorController.povDown().onTrue(new IntakePID(intake, IntakePosition.IN, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                operatorController.share().whileTrue(new IntakePID(intake, -0.1, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                operatorController.options().whileTrue(new IntakePID(intake, 0.1, OPERATOR_CONSTANTS.ROLLER_SPEED));
 
                 // roller
                 operatorController.povLeft()
@@ -365,12 +366,13 @@ public class RobotContainer {
                                 .onTrue(new IntakeSpin(intake, Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
                 testController1.povRight().onTrue(new IntakeSpin(intake, 0));
                 
-                testController1.povUp().whileTrue(new RunIntake(intake, 0.1, OPERATOR_CONSTANTS.ROLLER_SPEED));
-                testController1.povDown().whileTrue(new RunIntake(intake, -0.1, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                testController1.options().whileTrue(new IntakePID(intake, 0.1, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                testController1.share().whileTrue(new IntakePID(intake, -0.1, OPERATOR_CONSTANTS.ROLLER_SPEED));
 
                 // pid intake
-                testController1.L1().onTrue(new RunIntake(intake, IntakePosition.IN, 0));
-                testController1.L2().onTrue(new RunIntake(intake, IntakePosition.OUT, 0));
+                testController1.povUp().onTrue(new IntakePID(intake, IntakePosition.OUT, 0));
+                testController1.povDown().onTrue(new IntakePID(intake, IntakePosition.HALFWAY, 0));
+                testController1.touchpad().whileTrue(new IntakeRatle(intake));
 
 
 

@@ -4,13 +4,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.Intake.IntakePosition;
 
-public class RunIntake extends Command {
+public class IntakePID extends Command {
     private Intake intake;
     private Intake.IntakePosition position = null;
     private Double wristSpeed = Double.NaN;
     private double rollerSpeed;
 
-    public RunIntake(Intake intake, IntakePosition position, double rollerSpeed) {
+    public IntakePID(Intake intake, IntakePosition position, double rollerSpeed) {
         this.intake = intake;
         this.position = position;
         this.rollerSpeed = rollerSpeed;
@@ -18,7 +18,7 @@ public class RunIntake extends Command {
         addRequirements(intake);
     }
 
-    public RunIntake(Intake intake, double wristSpeed, double rollerSpeed) {
+    public IntakePID(Intake intake, double wristSpeed, double rollerSpeed) {
         this.intake = intake;
         this.wristSpeed = wristSpeed;
         this.rollerSpeed = rollerSpeed;
@@ -28,13 +28,13 @@ public class RunIntake extends Command {
 
     @Override
     public void initialize() {
-        
+
     }
 
     @Override
     public void execute() {
         if (position != null) {
-            intake.setIntakePosition(position);
+            intake.setIntakePositionTarget(position);
         } else if (!wristSpeed.isNaN()) {
             intake.setWristSpeed(wristSpeed);
         }

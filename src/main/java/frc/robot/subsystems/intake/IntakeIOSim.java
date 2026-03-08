@@ -32,12 +32,12 @@ public class IntakeIOSim implements IntakeIO {
     }
 
     @Override
-    public void setWristPosition(IntakePosition position) {
+    public void setWristPositionTarget(IntakePosition position) {
         targetPosition = position;
         if (position.equals(IntakePosition.OUT)) {
             simulatedIntake.startIntake();
         } else {
-            simulatedIntake.stopIntake(); 
+            simulatedIntake.stopIntake();
         }
     }
 

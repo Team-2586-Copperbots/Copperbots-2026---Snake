@@ -13,8 +13,8 @@ public class Intake extends SubsystemBase {
     }
 
     // Constants.IntakePosition
-    public void setIntakePosition(IntakePosition position) {
-        io.setWristPosition(position);
+    public void setIntakePositionTarget(IntakePosition position) {
+        io.setWristPositionTarget(position);
     }
 
     // positive is out
@@ -23,14 +23,20 @@ public class Intake extends SubsystemBase {
     }
 
     public void setRollerSpeed(double speed) {
-        //TODO: update the position of IntakePosition.IN
-        if ((inputs.wristSetpoint == IntakePosition.IN) || (Math.abs(inputs.currentWristPosition - IntakePosition.IN.value)) < 0.05) {
+        double distanceToStopAt = 0.2;
+        if ((Math.abs(inputs.currentWristPosition - IntakePosition.IN.value)) < distanceToStopAt) {
+            io.setRollerSpeed(0);
+        } else {
             io.setRollerSpeed(speed);
         }
     }
 
-    public double getMovementBarPosition() {
+    public double getWristPosition() {
         return inputs.currentWristPosition;
+    }
+
+    public IntakePosition getWristTarget() {
+        return inputs.wristSetpoint;
     }
 
     public boolean getIsDown() {
@@ -41,7 +47,16 @@ public class Intake extends SubsystemBase {
         } else {
             return false;
         }
+    }
 
+    public boolean isAtTarget() {
+        double tolerence = 0.05;
+        if (Math.abs(getWristPosition() - IntakePosition.HALFWAY.value) < tolerence) {
+            return true;
+        } else {
+            return false;
+        }
+        
     }
 
     @Override
@@ -51,9 +66,9 @@ public class Intake extends SubsystemBase {
     }
 
     public static enum IntakePosition {
-        IN(0.359),
-        OUT(0.984),
-        HALFWAY(0.5);
+        IN(0.94),
+        OUT(6.0),
+        HALFWAY(4);
 
         public final double value;
 
