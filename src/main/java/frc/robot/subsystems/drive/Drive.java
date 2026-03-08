@@ -193,7 +193,7 @@ public class Drive extends SubsystemBase {
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
     Logger.processInputs("Drive/Gyro", gyroInputs);
-    Logger.recordOutput("hub angle", GeneralUtils.getAngleToHub(this));
+    Logger.recordOutput("hub angle", GeneralUtils.getAngleToHubWithVelocity(this));
     Logger.recordOutput("distance to hub",
         GeneralUtils.distanceFromPose(Constants.FIELD_CONSTANTS.CENTER_OF_HUB, this));
     for (var module : modules) {

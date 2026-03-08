@@ -1,15 +1,19 @@
 package frc.robot.commands;
 
+import static edu.wpi.first.units.Units.Rotations;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.turret.Turret;;
 
 public class ManualTurret extends Command {
     private Turret Turret;
-    private Double angle;
+    private Rotation2d angle;
 
     public ManualTurret(Turret TurretSubsystem, double angle) {
         this.Turret = TurretSubsystem;
-        this.angle = angle;
+        this.angle = new Rotation2d(Angle.ofBaseUnits(angle, Rotations));
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(TurretSubsystem);
     }
@@ -37,7 +41,7 @@ public class ManualTurret extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        Turret.setTurretRotationTarget(0);
+        Turret.setTurretRotationTarget(Rotation2d.kZero);
     }
 
 }

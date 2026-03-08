@@ -12,6 +12,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -20,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.OPERATOR_CONSTANTS;
 import frc.robot.Constants.SHOOTER_CONSTANTS;
 import frc.robot.commands.AimAndShoot;
@@ -118,6 +120,7 @@ public class RobotContainer {
         @SuppressWarnings("unused")
         private final SendableChooser<Command> autoChooser;
         private final SendableChooser<Command> bLineChouser;
+        private final SendableChooser<Command> characterizationChooser;
 
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -210,6 +213,9 @@ public class RobotContainer {
                 configureAutoCommands();
                 // make bline autos
                 buildBLineAutos();
+                // make chouser for drive charecterization
+                characterizationChooser = new SendableChooser<Command>();
+                addOptionsForCharecterization();
 
                 // For convenience a programmer could change this when going to competition.
                 boolean isCompetition = false;
@@ -217,12 +223,11 @@ public class RobotContainer {
                 // As an example, this will only show autos that start with "comp" while at
                 // competition as defined by the programmer
                 autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier(
-                                "testing",
                                 (stream) -> isCompetition
                                                 ? stream.filter(auto -> auto.getName().startsWith("comp"))
                                                 : stream);
-                bLineChouser.setDefaultOption("none", null);
-                // SmartDashboard.putData("Auto Mode", autoChooser);
+                SmartDashboard.putData("pathplaner chooser", autoChooser);
+                SmartDashboard.putData("bline chooser", bLineChouser);
 
         }
 
@@ -234,6 +239,25 @@ public class RobotContainer {
                                                                                                             * turret,
                                                                                                             * drive)
                                                                                                             */));
+
+        }
+
+        private void addOptionsForCharecterization() {
+                // Set up SysId routines
+                characterizationChooser.addOption("Drive Wheel Radius Characterization",
+                                DriveCommands.wheelRadiusCharacterization(drive));
+                characterizationChooser.addOption("Drive Simple FF Characterization",
+                                DriveCommands.feedforwardCharacterization(drive));
+                characterizationChooser.addOption(
+                                "Drive SysId (Quasistatic Forward)",
+                                drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+                characterizationChooser.addOption(
+                                "Drive SysId (Quasistatic Reverse)",
+                                drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+                characterizationChooser.addOption("Drive SysId (Dynamic Forward)",
+                                drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+                characterizationChooser.addOption("Drive SysId (Dynamic Reverse)",
+                                drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
         }
 
@@ -345,13 +369,13 @@ public class RobotContainer {
 
                 // pid intake
                 operatorController.povUp().onTrue(new RunIntake(intake, IntakePosition.OUT, 0));
-                operatorController.povDown().onTrue(new RunIntake(intake, IntakePosition.IN, 0));
-                operatorController.cross().onTrue(new RunIntake(intake, -0.1, 0));
+                operatorController.povDown().onTrue(new RunIntake(intake, IntakePosition.IN, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                operatorController.cross().onTrue(new RunIntake(intake, -0.1, OPERATOR_CONSTANTS.ROLLER_SPEED));
                 // roller
                 operatorController.povLeft()
-                                .onTrue(new IntakeSpin(intake, Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
+                                .onTrue(new IntakeSpin(intake, OPERATOR_CONSTANTS.ROLLER_SPEED));
                 operatorController.povRight().onTrue(new IntakeSpin(intake, 0));
-                operatorController.share().onTrue(new IntakeSpin(intake, -Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
+                operatorController.share().onTrue(new IntakeSpin(intake, -OPERATOR_CONSTANTS.ROLLER_SPEED));
 
                 // ∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
 
@@ -386,8 +410,16 @@ public class RobotContainer {
          * @return the command to run in autonomous
          */
         public Command getAutonomousCommand() {
-                // return autoChooser.getSelected();
-                return bLineChouser.getSelected();
+                if (bLineChouser.getSelected() == null) {
+                        return bLineChouser.getSelected();
+                } else if (autoChooser.getSelected() == null) {
+                        return autoChooser.getSelected();
+                } else if (characterizationChooser.getSelected() == null) {
+                        return characterizationChooser.getSelected();
+                } else {
+                        return Commands.none();
+                }
+
         }
 
         public void resetSimulation() {
