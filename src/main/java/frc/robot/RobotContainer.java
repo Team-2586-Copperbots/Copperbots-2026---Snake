@@ -278,7 +278,7 @@ public class RobotContainer {
                                                 new ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED,
                                                                 false)));
 
-                FollowPath.registerEventTrigger("trigger?", new IntakePID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                FollowPath.registerEventTrigger("intake out", new IntakePID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED));
         }
 
         /**

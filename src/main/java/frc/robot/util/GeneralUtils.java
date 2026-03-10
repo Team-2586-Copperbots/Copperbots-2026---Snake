@@ -89,14 +89,8 @@ public final class GeneralUtils {
     }
 
     public static double getAngleToTarget(Drive drivetrain, Pose2d targetPose) {
-<<<<<<< Updated upstream
         Translation2d target = new Translation2d(targetPose.getMeasureX(), targetPose.getMeasureY());
         // Translation2d target = FIELD_CONSTANTS.CENTER_OF_HUB.getTranslation();
-=======
-        // Translation2d target = new Translation2d(targetPose.getMeasureX(),
-        // targetPose.getMeasureY());
-        Translation2d target = FIELD_CONSTANTS.CENTER_OF_HUB.getTranslation();
->>>>>>> Stashed changes
         // math startes
         // robot's pose
         Pose2d turretPose = translation2dForTurret(drivetrain);
