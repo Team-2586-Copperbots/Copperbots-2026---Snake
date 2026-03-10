@@ -407,7 +407,7 @@ public class RobotContainer {
 
         public Command zeroThings() {
                 return new ParallelCommandGroup(new ZeroTurret(turret), new ShootSpeed(shooter, 0, false),
-                                new IndexerSpin(indexer, IndexerStates.OFF), new IntakeSpin(intake, 0)).withTimeout(1);
+                                new IndexerSpin(indexer, IndexerStates.OFF), new IntakeSpin(intake, 0)).withTimeout(5);
         }
 
         /**

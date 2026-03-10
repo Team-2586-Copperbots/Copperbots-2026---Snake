@@ -33,17 +33,28 @@ public final class GeneralUtils {
         return false;
     }
 
-    
     public static Pose2d findTarget(Drive drive) {
         // add stuff fo diffrent aliance / reversed math
-        if (drive.getPose().getX() > FIELD_CONSTANTS.CENTER_OF_HUB.getX()) {
-            if (drive.getPose().getY() > FIELD_CONSTANTS.CENTER_OF_HUB.getY()) {
-                return FIELD_CONSTANTS.TOP_FULE_STORAGE;
+        if (isAllianceBlue()) {
+            if (drive.getPose().getX() > FIELD_CONSTANTS.CENTER_OF_HUB.getX()) {
+                if (drive.getPose().getY() > FIELD_CONSTANTS.CENTER_OF_HUB.getY()) {
+                    return FIELD_CONSTANTS.TOP_FULE_STORAGE;
+                } else {
+                    return FIELD_CONSTANTS.BOTTOM_FULE_STORAGE;
+                }
             } else {
-                return FIELD_CONSTANTS.BOTTOM_FULE_STORAGE;
+                return FIELD_CONSTANTS.CENTER_OF_HUB;
             }
         } else {
-            return FIELD_CONSTANTS.CENTER_OF_HUB;
+            if (drive.getPose().getX() < FIELD_CONSTANTS.CENTER_OF_HUB.getX()) {
+                if (drive.getPose().getY() > FIELD_CONSTANTS.CENTER_OF_HUB.getY()) {
+                    return FIELD_CONSTANTS.TOP_FULE_STORAGE;
+                } else {
+                    return FIELD_CONSTANTS.BOTTOM_FULE_STORAGE;
+                }
+            } else {
+                return FIELD_CONSTANTS.CENTER_OF_HUB;
+            }
         }
     }
 
@@ -91,9 +102,9 @@ public final class GeneralUtils {
         return shooterPose2d;
     }
 
-    public static double getAngleToHubNewMath(Drive drivetrain) {
+    public static double getAngleToTarget(Drive drivetrain, Pose2d targetPose) {
+        // Translation2d target = new Translation2d(targetPose.getMeasureX(), targetPose.getMeasureY());
         Translation2d target = FIELD_CONSTANTS.CENTER_OF_HUB.getTranslation();
-
         // math startes
         // robot's pose
         Pose2d turretPose = translation2dForTurret(drivetrain);
