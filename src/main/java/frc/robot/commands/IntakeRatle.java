@@ -41,7 +41,7 @@ public class IntakeRatle extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        // Intake.setIntakePositionTarget(IntakePosition.OUT);
+        Intake.setIntakePositionTarget(IntakePosition.OUT);
     }
 
 }

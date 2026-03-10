@@ -48,6 +48,7 @@ import frc.robot.Constants.ROBOT_PROPERTIES;
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.BLine.FollowPath;
 import frc.robot.lib.BLine.Path;
+import frc.robot.lib.BLine.Path.EventTrigger;
 import frc.robot.util.GeneralUtils;
 import frc.robot.util.driveUtils.LocalADStarAK;
 

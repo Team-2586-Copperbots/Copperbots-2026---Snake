@@ -35,6 +35,7 @@ import frc.robot.commands.IntakeRatle;
 import frc.robot.commands.ShootSpeed;
 import frc.robot.commands.ZeroTurret;
 import frc.robot.generated.TunerConstants;
+import frc.robot.lib.BLine.FollowPath;
 import frc.robot.subsystems.CANDle;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbIO;
@@ -276,6 +277,8 @@ public class RobotContainer {
                                                 new IntakePID(intake, IntakePosition.IN, 0),
                                                 new ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED,
                                                                 false)));
+
+                FollowPath.registerEventTrigger("trigger?", new IntakePID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED));
         }
 
         /**

@@ -2,22 +2,14 @@ package frc.robot.util;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.Rotations;
-
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.Unit;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.FIELD_CONSTANTS;
 import frc.robot.Constants.SHOOTER_CONSTANTS;
 import frc.robot.Constants.TURRET_CONSTANTS;
@@ -60,17 +52,14 @@ public final class GeneralUtils {
 
     public static double shooterSpeedFromDistance(double distance) {
         // regresion equation for shooter
-        double speed = ((4.42 * distance) + 34.3);
-
-        return speed;
+        return (4.42 * distance) + 34.3;
     }
 
     public static double timeFromDistance(double distance) {
         // TODO: make vagly accurate
         double speed = shooterSpeedFromDistance(distance);
         double exitVelocity = (SHOOTER_CONSTANTS.SHOOTER_WHEELE_CIRCUMFERENCE * speed) / 2;
-        double time = distance / (Math.cos(SHOOTER_CONSTANTS.SHOOTER_HOOD_ANGLE.in(Radians)) * exitVelocity);
-        return time;
+        return distance / (Math.cos(SHOOTER_CONSTANTS.SHOOTER_HOOD_ANGLE.in(Radians)) * exitVelocity);
     }
 
     public static double distanceFromPose(Pose2d taretPose2d, Drive drivetrain) {
@@ -80,8 +69,7 @@ public final class GeneralUtils {
 
         double distanceX = Math.abs(taretPose2d.getX() - shooterPose2d.getX());
         double distanceY = Math.abs(taretPose2d.getY() - shooterPose2d.getY());
-        double distanceXY = Math.sqrt((Math.pow(distanceX, 2) + Math.pow(distanceY, 2)));
-        return distanceXY;
+        return Math.sqrt((Math.pow(distanceX, 2) + Math.pow(distanceY, 2)));
     }
 
     public static Pose2d translation2dForTurret(Drive drivetrain) {
@@ -96,15 +84,19 @@ public final class GeneralUtils {
         double shooterYOffset = (Math.sin(robotPose2d.getRotation().getRadians())
                 * TURRET_CONSTANTS.TURRET_OFFSET_FROM_ROBOT_CENTER.getY());
 
-        Pose2d shooterPose2d = new Pose2d(robotPose2d.getX() + shooterXOffset, robotPose2d.getY() + shooterYOffset,
+        return new Pose2d(robotPose2d.getX() + shooterXOffset, robotPose2d.getY() + shooterYOffset,
                 robotPose2d.getRotation());
-
-        return shooterPose2d;
     }
 
     public static double getAngleToTarget(Drive drivetrain, Pose2d targetPose) {
+<<<<<<< Updated upstream
         Translation2d target = new Translation2d(targetPose.getMeasureX(), targetPose.getMeasureY());
         // Translation2d target = FIELD_CONSTANTS.CENTER_OF_HUB.getTranslation();
+=======
+        // Translation2d target = new Translation2d(targetPose.getMeasureX(),
+        // targetPose.getMeasureY());
+        Translation2d target = FIELD_CONSTANTS.CENTER_OF_HUB.getTranslation();
+>>>>>>> Stashed changes
         // math startes
         // robot's pose
         Pose2d turretPose = translation2dForTurret(drivetrain);
