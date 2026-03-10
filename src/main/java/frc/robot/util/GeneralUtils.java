@@ -103,15 +103,15 @@ public final class GeneralUtils {
     }
 
     public static double getAngleToTarget(Drive drivetrain, Pose2d targetPose) {
-        // Translation2d target = new Translation2d(targetPose.getMeasureX(), targetPose.getMeasureY());
-        Translation2d target = FIELD_CONSTANTS.CENTER_OF_HUB.getTranslation();
+        Translation2d target = new Translation2d(targetPose.getMeasureX(), targetPose.getMeasureY());
+        // Translation2d target = FIELD_CONSTANTS.CENTER_OF_HUB.getTranslation();
         // math startes
         // robot's pose
         Pose2d turretPose = translation2dForTurret(drivetrain);
         // velocity in meters per second
         ChassisSpeeds velocity = drivetrain.getChassisSpeeds();
         // how many seconds it will take for the fule to fly
-        double seconds = timeFromDistance(distanceFromPose(FIELD_CONSTANTS.CENTER_OF_HUB, drivetrain));
+        double seconds = timeFromDistance(distanceFromPose(targetPose, drivetrain));
         // find the distance that I need to offset the robot by
         Translation2d velocityDistance = new Translation2d(
                 Distance.ofBaseUnits(velocity.vxMetersPerSecond * seconds, Meters),

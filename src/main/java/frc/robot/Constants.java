@@ -97,7 +97,7 @@ public final class Constants {
   public static class FIELD_CONSTANTS {
     public static final Distance FIELD_LENGTH = Distance.ofBaseUnits(Units.inchesToMeters(651.22), Meters);
     public static final Distance FIELD_WIDTH = Distance.ofBaseUnits(Units.inchesToMeters(317.69), Meters);
-    @AutoLogOutput
+    
     public static final Pose2d CENTER_OF_HUB = AllianceFlipUtil.apply(
         new Pose2d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84), Rotation2d.kZero));
     public static final Pose2d BOTTOM_FULE_STORAGE = AllianceFlipUtil.apply(new Pose2d(2.75, 1.6, Rotation2d.kZero));

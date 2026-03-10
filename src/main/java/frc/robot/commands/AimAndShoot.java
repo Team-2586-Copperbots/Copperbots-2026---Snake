@@ -22,8 +22,8 @@ public class AimAndShoot extends Command {
         this.Shooter = ShooterSubsystem;
         this.Turret = TurretSubsystem;
         this.Drive = Drivetrain;
-        // this.target = GeneralUtils.findTarget(Drivetrain);
-        this.target = FIELD_CONSTANTS.CENTER_OF_HUB;
+        this.target = GeneralUtils.findTarget(Drivetrain);
+        // this.target = FIELD_CONSTANTS.CENTER_OF_HUB;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(ShooterSubsystem);
         addRequirements(TurretSubsystem);
@@ -38,7 +38,7 @@ public class AimAndShoot extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        Turret.setTurretRotationTarget(GeneralUtils.getAngleToTarget(Drive, target));
+        Turret.setTurretRotationTarget(GeneralUtils.getAngleToTarget(Drive, GeneralUtils.findTarget(Drive)));
         Shooter.setShooterSpeedSet(
                 GeneralUtils.shooterSpeedFromDistance(GeneralUtils.distanceFromPose(target, Drive)));
 
