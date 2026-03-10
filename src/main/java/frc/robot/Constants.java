@@ -10,6 +10,8 @@ import static edu.wpi.first.units.Units.Rotations;
 
 import java.io.IOException;
 
+import org.littletonrobotics.junction.AutoLogOutput;
+
 import com.ctre.phoenix6.CANBus;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathConstraints;
@@ -95,12 +97,12 @@ public final class Constants {
   public static class FIELD_CONSTANTS {
     public static final Distance FIELD_LENGTH = Distance.ofBaseUnits(Units.inchesToMeters(651.22), Meters);
     public static final Distance FIELD_WIDTH = Distance.ofBaseUnits(Units.inchesToMeters(317.69), Meters);
-
+    @AutoLogOutput
     public static final Pose2d CENTER_OF_HUB = AllianceFlipUtil.apply(
         new Pose2d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84), Rotation2d.kZero));
     public static final Pose2d BOTTOM_FULE_STORAGE = AllianceFlipUtil.apply(new Pose2d(2.75, 1.6, Rotation2d.kZero));
     public static final Pose2d TOP_FULE_STORAGE = AllianceFlipUtil.apply(
-        new Pose2d(BOTTOM_FULE_STORAGE.getX(), AllianceFlipUtil.applyY(BOTTOM_FULE_STORAGE.getY()), Rotation2d.kZero));
+        new Pose2d(AllianceFlipUtil.applyX(BOTTOM_FULE_STORAGE.getX()), (FIELD_WIDTH.abs(Meters) - BOTTOM_FULE_STORAGE.getY()), Rotation2d.kZero));
   }
 
   public static class DRIVEBASE_TARGET_POSES {
@@ -123,6 +125,7 @@ public final class Constants {
     public static final int TOWER_MOTOR = 25;
     // climb motor
     public static final int CLIMB_MOTOR_1 = 29;
+
     public static final int CLIMB_MOTOR_2 = 30;
     // turret motor
     public static final int TURRET_TURN_MOTOR = 23;

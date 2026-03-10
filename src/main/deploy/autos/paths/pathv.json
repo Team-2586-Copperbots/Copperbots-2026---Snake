@@ -13,6 +13,12 @@
       }
     },
     {
+      "type": "rotation",
+      "rotation_radians": 0.0,
+      "t_ratio": 0.17899999999999983,
+      "profiled_rotation": true
+    },
+    {
       "type": "translation",
       "x_meters": 7.055841980491966,
       "y_meters": 0.6481285405209531,

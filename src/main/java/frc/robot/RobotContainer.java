@@ -310,26 +310,18 @@ public class RobotContainer {
                 // * Constants.ROBOT_PROPERTIES.slowdownSpeed,
                 // () -> -driveController.getRightX()));
                 // robot centric drive
-                driveController.povUp()
-                                .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> 1, () -> 0,
-                                                () -> -driveController.getRightX()));
-                driveController.povDown()
-                                .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> -1, () -> 0,
-                                                () -> -driveController.getRightX()));
-                driveController.povLeft()
-                                .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> 0, () -> 1, () -> 0));
-                driveController.povRight()
-                                .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> 0, () -> -1, () -> 0));
+                // driveController.povUp()
+                //                 .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> 1, () -> 0,
+                //                                 () -> -driveController.getRightX()));
+                // driveController.povDown()
+                //                 .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> -1, () -> 0,
+                //                                 () -> -driveController.getRightX()));
+                // driveController.povLeft()
+                //                 .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> 0, () -> 1, () -> 0));
+                // driveController.povRight()
+                //                 .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> 0, () -> -1, () -> 0));
 
-                driveController.options().whileTrue(drive.followPathCommandtoTestPose());
-
-                driveController.share()
-                                .onTrue(DriveCommands.stopWithX(drive));
-
-                driveController.R2().onTrue(drive.pathFindToHubShot());
-                driveController.R1().whileTrue(drive.pathFromString("trench_bottom"));
-                driveController.triangle().whileTrue(drive.followPathCommandtoTestPose());
-                driveController.square().whileTrue(drive.goTo(new Pose2d(2, 2, new Rotation2d())));
+                
 
                 // ∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
 
@@ -347,9 +339,12 @@ public class RobotContainer {
 
                 // Shooter + turret Subsystems
                 operatorController.L2().onTrue(new ParallelCommandGroup(
-                                new AimAndShoot(shooter, turret, drive)/*,
-                                new SequentialCommandGroup(new WaitCommand(0.5),
-                                                new IndexerSpin(indexer, IndexerStates.UP)) */));
+                                new AimAndShoot(shooter, turret, drive)/*
+                                                                        * ,
+                                                                        * new SequentialCommandGroup(new
+                                                                        * WaitCommand(0.5),
+                                                                        * new IndexerSpin(indexer, IndexerStates.UP))
+                                                                        */));
                 operatorController.touchpad().onTrue(new ParallelCommandGroup(
                                 new IndexerSpin(indexer, IndexerStates.OFF),
                                 new ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED, false),
@@ -380,19 +375,22 @@ public class RobotContainer {
                 // ∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
 
                 // testController1.R1().whileTrue(new IndexerSpin(indexer,
-                //                 IndexerStates.UP));
+                // IndexerStates.UP));
 
                 // testController1.circle().whileTrue(new ShootSpeed(shooter, 30, false));
                 // testController1.povLeft()
-                //                 .onTrue(new IntakeSpin(intake, Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
+                // .onTrue(new IntakeSpin(intake, Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
                 // testController1.povRight().onTrue(new IntakeSpin(intake, 0));
 
-                // testController1.options().whileTrue(new IntakePID(intake, 0.1, OPERATOR_CONSTANTS.ROLLER_SPEED));
-                // testController1.share().whileTrue(new IntakePID(intake, -0.1, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                // testController1.options().whileTrue(new IntakePID(intake, 0.1,
+                // OPERATOR_CONSTANTS.ROLLER_SPEED));
+                // testController1.share().whileTrue(new IntakePID(intake, -0.1,
+                // OPERATOR_CONSTANTS.ROLLER_SPEED));
 
                 // // pid intake
                 // testController1.povUp().onTrue(new IntakePID(intake, IntakePosition.OUT, 0));
-                // testController1.povDown().onTrue(new IntakePID(intake, IntakePosition.HALFWAY, 0));
+                // testController1.povDown().onTrue(new IntakePID(intake,
+                // IntakePosition.HALFWAY, 0));
                 // testController1.touchpad().whileTrue(new IntakeRatle(intake));
 
                 testController1.povLeft().onTrue(new ManualTurret(turret, .25));
@@ -408,7 +406,8 @@ public class RobotContainer {
         }
 
         public Command zeroThings() {
-                return new ParallelCommandGroup(new ZeroTurret(turret), new ShootSpeed(shooter, 0, false));
+                return new ParallelCommandGroup(new ZeroTurret(turret), new ShootSpeed(shooter, 0, false),
+                                new IndexerSpin(indexer, IndexerStates.OFF), new IntakeSpin(intake, 0)).withTimeout(1);
         }
 
         /**
@@ -416,9 +415,8 @@ public class RobotContainer {
          * @return the command to run in autonomous
          */
         public Command getAutonomousCommand() {
-                boolean characterization = true;
+                boolean characterization = false;
                 if (characterization) {
-                        SmartDashboard.putBoolean("charcterization", true);
                         return characterizationChooser.getSelected();
                 } else {
                         if (bLineChouser.getSelected() != null) {

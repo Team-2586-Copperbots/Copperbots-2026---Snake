@@ -3,33 +3,68 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.57,
-        "y": 2.75
+        "x": 3.8320399429386587,
+        "y": 0.6774179743223976
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.3366048933756995,
-        "y": 2.660408012613675
+        "x": 2.8357631954350926,
+        "y": 0.7162339514978598
       },
       "isLocked": false,
       "linkedName": "starting pose"
     },
     {
       "anchor": {
-        "x": 0.435,
-        "y": 4.799939759036144
+        "x": 0.4679885877318113,
+        "y": 2.4111982881597713
       },
       "prevControl": {
-        "x": 0.4350000000000001,
-        "y": 2.7999397590361443
+        "x": 0.4291726105563481,
+        "y": 0.5868473609129821
+      },
+      "nextControl": {
+        "x": 0.488907751314896,
+        "y": 3.3943989765647564
+      },
+      "isLocked": false,
+      "linkedName": "just before coral"
+    },
+    {
+      "anchor": {
+        "x": 0.4679885877318113,
+        "y": 6.046961483594864
+      },
+      "prevControl": {
+        "x": 0.4265262941993617,
+        "y": 5.61806533987062
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "just before coral"
+      "linkedName": null
     }
   ],
-  "rotationTargets": [],
-  "constraintZones": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 90.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 1.5503038487508463,
+      "maxWaypointRelativePos": 2.0,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 8.72,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -48,7 +83,7 @@
   "folder": "testing",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -150.0
+    "rotation": 177.33699923393306
   },
   "useDefaultConstraints": true
 }

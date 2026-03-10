@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Rotations;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -32,7 +33,9 @@ public final class GeneralUtils {
         return false;
     }
 
+    
     public static Pose2d findTarget(Drive drive) {
+        // add stuff fo diffrent aliance / reversed math
         if (drive.getPose().getX() > FIELD_CONSTANTS.CENTER_OF_HUB.getX()) {
             if (drive.getPose().getY() > FIELD_CONSTANTS.CENTER_OF_HUB.getY()) {
                 return FIELD_CONSTANTS.TOP_FULE_STORAGE;
