@@ -125,6 +125,8 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledPeriodic() {
+
+    Constants.FIELD_CONSTANTS.updatePositions();
   }
 
   /**
@@ -156,6 +158,7 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+
     CommandScheduler.getInstance().schedule(robotContainer.zeroThings());
 
   }

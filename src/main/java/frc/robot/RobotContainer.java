@@ -352,10 +352,10 @@ public class RobotContainer {
                                 new IndexerSpin(indexer, IndexerStates.OFF),
                                 new ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED, false),
                                 new ManualTurret(turret, 0)));
-                operatorController.circle().onTrue(new ShootSpeed(shooter, 30, false));
+                operatorController.square().onTrue(new ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED, false));
 
                 // indexer sudsystem
-                operatorController.square().onTrue(new IndexerSpin(indexer, IndexerStates.UP));
+                operatorController.circle().whileTrue(new IndexerSpin(indexer, IndexerStates.UP));
                 operatorController.triangle().onTrue(new IndexerSpin(indexer, IndexerStates.OFF));
 
                 // climb
@@ -363,7 +363,7 @@ public class RobotContainer {
                 operatorController.R2().whileTrue(new ClimbSpeed(climb, -0.9));
 
                 // pid intake
-                operatorController.povUp().onTrue(new IntakePID(intake, IntakePosition.OUT, 0));
+                operatorController.povUp().onTrue(new IntakePID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED));
                 operatorController.povDown()
                                 .onTrue(new IntakePID(intake, IntakePosition.IN, OPERATOR_CONSTANTS.ROLLER_SPEED));
                 operatorController.share().whileTrue(new IntakePID(intake, -0.1, OPERATOR_CONSTANTS.ROLLER_SPEED));

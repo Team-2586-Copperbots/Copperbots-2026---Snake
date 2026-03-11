@@ -10,6 +10,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants.FIELD_CONSTANTS;
 import frc.robot.Constants.SHOOTER_CONSTANTS;
 import frc.robot.Constants.TURRET_CONSTANTS;
@@ -26,33 +27,31 @@ public final class GeneralUtils {
     }
 
     public static Pose2d findTarget(Drive drive) {
-        // add stuff fo diffrent aliance / reversed math
-        if (isAllianceBlue()) {
+        // depending on the aliance, this metoh will flip the logic for greater/lesser than x
+        // all it does is change if it checks what direction to chech the robot is in our zone
+        if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red) {
             if (drive.getPose().getX() > FIELD_CONSTANTS.CENTER_OF_HUB.getX()) {
-                if (drive.getPose().getY() > FIELD_CONSTANTS.CENTER_OF_HUB.getY()) {
-                    return FIELD_CONSTANTS.TOP_FULE_STORAGE;
-                } else {
-                    return FIELD_CONSTANTS.BOTTOM_FULE_STORAGE;
-                }
-            } else {
                 return FIELD_CONSTANTS.CENTER_OF_HUB;
+            } else if (drive.getPose().getY() > FIELD_CONSTANTS.CENTER_OF_HUB.getY()) {
+                return FIELD_CONSTANTS.TOP_FULE_STORAGE;
+            } else {
+                return FIELD_CONSTANTS.BOTTOM_FULE_STORAGE;
             }
         } else {
             if (drive.getPose().getX() < FIELD_CONSTANTS.CENTER_OF_HUB.getX()) {
-                if (drive.getPose().getY() > FIELD_CONSTANTS.CENTER_OF_HUB.getY()) {
-                    return FIELD_CONSTANTS.TOP_FULE_STORAGE;
-                } else {
-                    return FIELD_CONSTANTS.BOTTOM_FULE_STORAGE;
-                }
-            } else {
                 return FIELD_CONSTANTS.CENTER_OF_HUB;
+            } else if (drive.getPose().getY() > FIELD_CONSTANTS.CENTER_OF_HUB.getY()) {
+                return FIELD_CONSTANTS.TOP_FULE_STORAGE;
+            } else {
+                return FIELD_CONSTANTS.BOTTOM_FULE_STORAGE;
             }
         }
     }
 
     public static double shooterSpeedFromDistance(double distance) {
         // regresion equation for shooter
-        return (4.42 * distance) + 34.3;
+        Logger.recordOutput("distancs", distance);
+        return (4.27 * distance) + 33.8;
     }
 
     public static double timeFromDistance(double distance) {
@@ -100,8 +99,8 @@ public final class GeneralUtils {
         double seconds = timeFromDistance(distanceFromPose(targetPose, drivetrain));
         // find the distance that I need to offset the robot by
         Translation2d velocityDistance = new Translation2d(
-                Distance.ofBaseUnits(velocity.vxMetersPerSecond * seconds, Meters),
-                Distance.ofBaseUnits(velocity.vyMetersPerSecond * seconds, Meters));
+                Distance.ofBaseUnits(-velocity.vxMetersPerSecond * seconds, Meters),
+                Distance.ofBaseUnits(-velocity.vyMetersPerSecond * seconds, Meters));
 
         // make a pose of where the robot will be when the fule is "scored" (assuming
         // the robot continues to move)
@@ -122,6 +121,10 @@ public final class GeneralUtils {
 
         // factor in drivetrain rotation
         rotationAim += AllianceFlipUtil.apply(drivetrain.getPose().getRotation()).getRotations();
+
+        if (!targetPose.equals(FIELD_CONSTANTS.CENTER_OF_HUB)) {
+            rotationAim += 0.5;
+        }
 
         Logger.recordOutput("rotationAim", rotationAim);
 

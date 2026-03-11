@@ -57,7 +57,7 @@ public class TurretIOReal implements TurretIO {
         inputs.currentRingSpeed = turnMotor.getVelocity().getValueAsDouble();
         inputs.limitSwitch = !limitSwitch.get();
         inputs.isAtPosition = isAtPosition;
-        
+
         inputs.rotationRelitiveToRobotZero = getRobotRelitiveRotation();
         inputs.ringPositionSetpoint = positionVoltage.Position;
     }
@@ -76,10 +76,12 @@ public class TurretIOReal implements TurretIO {
 
         if ((roations >= 0)
                 && (roations < TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT)) {
+            isAtPosition = true;
             turnMotor.setControl(
                     positionVoltage.withPosition(((roations + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET)
                             * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO)));
         } else {
+            isAtPosition = false;
             turnMotor.setControl(positionVoltage.withPosition(1));
         }
 

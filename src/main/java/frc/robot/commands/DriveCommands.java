@@ -245,7 +245,7 @@ public class DriveCommands {
                         // Turn in place, accelerating up to full speed
                         Commands.run(
                                 () -> {
-                                    double speed = limiter.calculate(WHEEL_RADIUS_MAX_VELOCITY);
+                                    double speed = 1;
                                     drive.runVelocity(new ChassisSpeeds(0.0, 0.0, speed));
                                 },
                                 drive)),

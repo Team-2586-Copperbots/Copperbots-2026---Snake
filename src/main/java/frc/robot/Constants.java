@@ -97,12 +97,20 @@ public final class Constants {
   public static class FIELD_CONSTANTS {
     public static final Distance FIELD_LENGTH = Distance.ofBaseUnits(Units.inchesToMeters(651.22), Meters);
     public static final Distance FIELD_WIDTH = Distance.ofBaseUnits(Units.inchesToMeters(317.69), Meters);
-    
-    public static final Pose2d CENTER_OF_HUB = AllianceFlipUtil.apply(
-        new Pose2d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84), Rotation2d.kZero));
-    public static final Pose2d BOTTOM_FULE_STORAGE = AllianceFlipUtil.apply(new Pose2d(2.75, 1.6, Rotation2d.kZero));
-    public static final Pose2d TOP_FULE_STORAGE = AllianceFlipUtil.apply(
-        new Pose2d(AllianceFlipUtil.applyX(BOTTOM_FULE_STORAGE.getX()), (FIELD_WIDTH.abs(Meters) - BOTTOM_FULE_STORAGE.getY()), Rotation2d.kZero));
+
+    public static Pose2d CENTER_OF_HUB = new Pose2d();
+    public static Pose2d BOTTOM_FULE_STORAGE = new Pose2d();
+    public static Pose2d TOP_FULE_STORAGE = new Pose2d();
+
+    public static void updatePositions() {
+      CENTER_OF_HUB = AllianceFlipUtil.apply(
+          new Pose2d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84), Rotation2d.kZero));
+      BOTTOM_FULE_STORAGE = AllianceFlipUtil.apply(new Pose2d(2.75, 1.6, Rotation2d.kZero));
+      TOP_FULE_STORAGE = AllianceFlipUtil.apply(
+          new Pose2d(AllianceFlipUtil.applyX(BOTTOM_FULE_STORAGE.getX()),
+              (FIELD_WIDTH.abs(Meters) - BOTTOM_FULE_STORAGE.getY()), Rotation2d.kZero));
+    }
+
   }
 
   public static class DRIVEBASE_TARGET_POSES {
