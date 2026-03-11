@@ -2,10 +2,7 @@ package frc.robot.subsystems.turret;
 
 import org.littletonrobotics.junction.Logger;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.TURRET_CONSTANTS;
 
 //
 //

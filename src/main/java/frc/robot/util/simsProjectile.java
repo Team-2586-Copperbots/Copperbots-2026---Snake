@@ -1,6 +1,5 @@
 package frc.robot.util;
 
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import java.util.function.Supplier;
@@ -9,9 +8,7 @@ import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.LinearVelocity;
 import frc.robot.Constants;
 import frc.robot.Constants.SHOOTER_CONSTANTS;
@@ -31,7 +28,7 @@ public class simsProjectile {
 
         }
 
-        public void shootLemmon(Double shooterRPS) {
+        public void shootLemmon() {
                RebuiltFuelOnFly fuelOnFly = new RebuiltFuelOnFly(
                                 // Specify the position of the chassis when the note is launched
                                 robotPose.get().getTranslation(),

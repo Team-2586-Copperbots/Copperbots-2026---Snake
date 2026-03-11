@@ -1,19 +1,13 @@
 package frc.robot.subsystems.turret;
 
-import static edu.wpi.first.units.Units.Rotations;
 import static frc.robot.Constants.CANIds.Canivore;
-
-import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.CANIds;
 import frc.robot.Constants.DIO_IDS;
 import frc.robot.Constants.TURRET_CONSTANTS;

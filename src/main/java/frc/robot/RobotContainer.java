@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -31,7 +30,6 @@ import frc.robot.commands.IndexerSpin;
 import frc.robot.commands.IntakeSpin;
 import frc.robot.commands.ManualTurret;
 import frc.robot.commands.IntakePID;
-import frc.robot.commands.IntakeRatle;
 import frc.robot.commands.ShootSpeed;
 import frc.robot.commands.ZeroTurret;
 import frc.robot.generated.TunerConstants;
@@ -114,10 +112,10 @@ public class RobotContainer {
                         OPERATOR_CONSTANTS.OPERATOR_CONTROLER_PORT);
         private final CommandPS4Controller testController1 = new CommandPS4Controller(
                         OPERATOR_CONSTANTS.TEST_CONTROLER1_PORT);
+        @SuppressWarnings("unused")
         private final CommandPS4Controller simControler = new CommandPS4Controller(
                         OPERATOR_CONSTANTS.SIM_CONTROLER_PORT);
 
-        @SuppressWarnings("unused")
         private final SendableChooser<Command> autoChooser;
         private final SendableChooser<Command> bLineChouser;
         private final SendableChooser<Command> characterizationChooser;
@@ -143,7 +141,9 @@ public class RobotContainer {
                                 shooter = new Shooter(new ShooterIOReal());
                                 // photonSubsystem = new PhotonSubsystem();
                                 vision = new Vision(drive::addVisionMeasurement, new VisionIOPhotonVision(
-                                                VisionConstants.backCamera, VisionConstants.robotToBackCamera));
+                                                VisionConstants.backCamera, VisionConstants.robotToBackCamera),
+                                                new VisionIOPhotonVision(VisionConstants.camera1Name,
+                                                                VisionConstants.robotToSideCamera));
                                 turret = new Turret(new TurretIOReal());
 
                                 break;
@@ -278,7 +278,8 @@ public class RobotContainer {
                                                 new ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED,
                                                                 false)));
 
-                FollowPath.registerEventTrigger("intake out", new IntakePID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                FollowPath.registerEventTrigger("intake out",
+                                new IntakePID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED));
         }
 
         /**
@@ -314,17 +315,17 @@ public class RobotContainer {
                 // () -> -driveController.getRightX()));
                 // robot centric drive
                 // driveController.povUp()
-                //                 .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> 1, () -> 0,
-                //                                 () -> -driveController.getRightX()));
+                // .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> 1, () -> 0,
+                // () -> -driveController.getRightX()));
                 // driveController.povDown()
-                //                 .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> -1, () -> 0,
-                //                                 () -> -driveController.getRightX()));
+                // .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> -1, () -> 0,
+                // () -> -driveController.getRightX()));
                 // driveController.povLeft()
-                //                 .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> 0, () -> 1, () -> 0));
+                // .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> 0, () -> 1, () ->
+                // 0));
                 // driveController.povRight()
-                //                 .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> 0, () -> -1, () -> 0));
-
-                
+                // .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> 0, () -> -1, () ->
+                // 0));
 
                 // ∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
 
@@ -352,7 +353,8 @@ public class RobotContainer {
                                 new IndexerSpin(indexer, IndexerStates.OFF),
                                 new ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED, false),
                                 new ManualTurret(turret, 0)));
-                operatorController.square().onTrue(new ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED, false));
+                operatorController.square()
+                                .onTrue(new ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED, false));
 
                 // indexer sudsystem
                 operatorController.circle().whileTrue(new IndexerSpin(indexer, IndexerStates.UP));
@@ -363,7 +365,8 @@ public class RobotContainer {
                 operatorController.R2().whileTrue(new ClimbSpeed(climb, -0.9));
 
                 // pid intake
-                operatorController.povUp().onTrue(new IntakePID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                operatorController.povUp()
+                                .onTrue(new IntakePID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED));
                 operatorController.povDown()
                                 .onTrue(new IntakePID(intake, IntakePosition.IN, OPERATOR_CONSTANTS.ROLLER_SPEED));
                 operatorController.share().whileTrue(new IntakePID(intake, -0.1, OPERATOR_CONSTANTS.ROLLER_SPEED));
@@ -409,8 +412,10 @@ public class RobotContainer {
         }
 
         public Command zeroThings() {
-                return new ParallelCommandGroup(new ZeroTurret(turret), new ParallelCommandGroup(new ShootSpeed(shooter, 0, false),
-                                new IndexerSpin(indexer, IndexerStates.OFF), new IntakeSpin(intake, 0)).withTimeout(5));
+                return new ParallelCommandGroup(new ZeroTurret(turret),
+                                new ParallelCommandGroup(new ShootSpeed(shooter, 0, false),
+                                                new IndexerSpin(indexer, IndexerStates.OFF), new IntakeSpin(intake, 0))
+                                                .withTimeout(5));
         }
 
         /**

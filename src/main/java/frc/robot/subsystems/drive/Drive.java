@@ -35,7 +35,6 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -48,7 +47,6 @@ import frc.robot.Constants.ROBOT_PROPERTIES;
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.BLine.FollowPath;
 import frc.robot.lib.BLine.Path;
-import frc.robot.lib.BLine.Path.EventTrigger;
 import frc.robot.util.GeneralUtils;
 import frc.robot.util.driveUtils.LocalADStarAK;
 

@@ -3,12 +3,10 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.intake.Intake.IntakePosition;
 import frc.robot.Constants;
-import frc.robot.Constants.INTAKE_CONSTANTS;
 import frc.robot.subsystems.intake.Intake;
 
 public class IntakeRatle extends Command {
     private Intake Intake;
-    private double tolerence = 0.05;
 
     public IntakeRatle(Intake Intake) {
         this.Intake = Intake;

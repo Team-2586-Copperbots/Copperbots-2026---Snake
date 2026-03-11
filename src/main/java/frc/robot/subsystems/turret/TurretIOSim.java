@@ -1,9 +1,5 @@
 package frc.robot.subsystems.turret;
 
-import static edu.wpi.first.units.Units.Rotations;
-
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.units.measure.Angle;
 import frc.robot.Constants.TURRET_CONSTANTS;
 
 public class TurretIOSim implements TurretIO {

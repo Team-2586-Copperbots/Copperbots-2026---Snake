@@ -6,11 +6,7 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Rotations;
-
 import java.io.IOException;
-
-import org.littletonrobotics.junction.AutoLogOutput;
 
 import com.ctre.phoenix6.CANBus;
 import com.pathplanner.lib.config.RobotConfig;
@@ -19,7 +15,6 @@ import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -167,7 +162,7 @@ public final class Constants {
   }
 
   public static enum CANDLE_STRIPS {
-    // TODO: fix indexe (plural?) when strips are made
+    // TODO: fix indexe (plural?) when strips are made, for eskey
     BUILT_IN(0, 7),
     FIRST(8, 8 + 21),
     SECOND(78, 147),

@@ -26,9 +26,20 @@ public final class GeneralUtils {
         return false;
     }
 
+    public static double squareNumber(Double number) {
+        boolean negative = number < 0;
+        number = number * number;
+        if (negative) {
+            number = -number;
+        }
+        return number;
+    }
+
     public static Pose2d findTarget(Drive drive) {
-        // depending on the aliance, this metoh will flip the logic for greater/lesser than x
-        // all it does is change if it checks what direction to chech the robot is in our zone
+        // depending on the aliance, this metoh will flip the logic for greater/lesser
+        // than x
+        // all it does is change if it checks what direction to chech the robot is in
+        // our zone
         if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red) {
             if (drive.getPose().getX() > FIELD_CONSTANTS.CENTER_OF_HUB.getX()) {
                 return FIELD_CONSTANTS.CENTER_OF_HUB;
@@ -55,7 +66,7 @@ public final class GeneralUtils {
     }
 
     public static double timeFromDistance(double distance) {
-        // TODO: make vagly accurate
+        // should be good
         double speed = shooterSpeedFromDistance(distance);
         double exitVelocity = (SHOOTER_CONSTANTS.SHOOTER_WHEELE_CIRCUMFERENCE * speed) / 2;
         return distance / (Math.cos(SHOOTER_CONSTANTS.SHOOTER_HOOD_ANGLE.in(Radians)) * exitVelocity);
