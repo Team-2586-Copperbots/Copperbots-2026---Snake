@@ -84,7 +84,7 @@ public final class Constants {
     public static final double SLOW_SPEED_LIMITER = 0.2;
 
     public static final double IDLE_SHOOTER_SPEED = 45; // RPS
-    public static final double ROLLER_SPEED = 0.6; // percentage
+    public static final double ROLLER_SPEED = 0.8; // percentage
   }
 
   // math

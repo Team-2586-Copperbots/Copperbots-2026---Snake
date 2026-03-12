@@ -312,7 +312,7 @@ public class DriveCommands {
                                                                                                         .format(state.gyroDelta)
                                                                                                         + " radians");
                                                                         System.out.println("\tWheel Radius: "
-                                                                                        + formatter.format(wheelRadius)
+                                                                                        + (wheelRadius)
                                                                                         + " meters, "
                                                                                         + formatter.format(Units
                                                                                                         .metersToInches(wheelRadius))

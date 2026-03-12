@@ -40,10 +40,10 @@ public class IntakeIOReal implements IntakeIO {
 
         coancoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
 
-        wristMotorConfig.Feedback.FeedbackRemoteSensorID = cancoder.getDeviceID();
-        wristMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-        wristMotorConfig.Feedback.RotorToSensorRatio = Constants.INTAKE_CONSTANTS.rotorToIntake;
-        wristMotorConfig.Feedback.SensorToMechanismRatio = 1;
+        // wristMotorConfig.Feedback.FeedbackRemoteSensorID = cancoder.getDeviceID();
+        // wristMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+        // wristMotorConfig.Feedback.RotorToSensorRatio = Constants.INTAKE_CONSTANTS.rotorToIntake;
+        // wristMotorConfig.Feedback.SensorToMechanismRatio = 1;
 
         var motorOutputConfigs = wristMotorConfig.MotorOutput;
         motorOutputConfigs.NeutralMode = NeutralModeValue.Brake;

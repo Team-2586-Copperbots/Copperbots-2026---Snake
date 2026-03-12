@@ -62,7 +62,7 @@ public final class GeneralUtils {
     public static double shooterSpeedFromDistance(double distance) {
         // regresion equation for shooter
         Logger.recordOutput("distancs", distance);
-        return (4.27 * distance) + 33.8;
+        return ((4.42 * distance) + 34.3);
     }
 
     public static double timeFromDistance(double distance) {

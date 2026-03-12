@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Seconds;
+
 import org.ironmaple.simulation.IntakeSimulation;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -11,12 +13,14 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -69,6 +73,7 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import frc.robot.util.GeneralUtils;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -144,6 +149,7 @@ public class RobotContainer {
                                                 VisionConstants.backCamera, VisionConstants.robotToBackCamera),
                                                 new VisionIOPhotonVision(VisionConstants.camera1Name,
                                                                 VisionConstants.robotToSideCamera));
+
                                 turret = new Turret(new TurretIOReal());
 
                                 break;
@@ -233,7 +239,7 @@ public class RobotContainer {
         }
 
         private void buildBLineAutos() {
-                bLineChouser.addOption("test", new SequentialCommandGroup(drive.pathFromString("example_c")/*
+                bLineChouser.addOption("test", new SequentialCommandGroup(drive.pathFromString("pathv")/*
                                                                                                             * ,
                                                                                                             * new
                                                                                                             * AimAtHub(
@@ -279,7 +285,17 @@ public class RobotContainer {
                                                                 false)));
 
                 FollowPath.registerEventTrigger("intake out",
-                                new IntakePID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                                new IntakePID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED).withTimeout(0.5));
+                FollowPath.registerEventTrigger("intake in",
+                                new IntakePID(intake, IntakePosition.IN, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                FollowPath.registerEventTrigger("aim n shoot",
+                                new ParallelCommandGroup(new AimAndShoot(shooter, turret, drive),
+                                                new SequentialCommandGroup(
+                                                                new WaitCommand(Time.ofBaseUnits(.5, Seconds)),
+                                                                new IndexerSpin(indexer, IndexerStates.UP))));
+                FollowPath.registerEventTrigger("stop shooter", new ParallelCommandGroup(
+                                new ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED, false),
+                                new IndexerSpin(indexer, IndexerStates.OFF)));
         }
 
         /**
@@ -301,8 +317,8 @@ public class RobotContainer {
                 drive.setDefaultCommand(
                                 DriveCommands.fieldOrientedDrive(
                                                 drive,
-                                                () -> -driveController.getLeftY(),
-                                                () -> -driveController.getLeftX(),
+                                                () -> -GeneralUtils.squareNumber(driveController.getLeftY()),
+                                                () -> -GeneralUtils.squareNumber(driveController.getLeftX()),
                                                 () -> -driveController.getRightX()));
 
                 // // speed up or slow down drivtrain command that overrides the default command
@@ -355,6 +371,7 @@ public class RobotContainer {
                                 new ManualTurret(turret, 0)));
                 operatorController.square()
                                 .onTrue(new ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED, false));
+                operatorController.options().onTrue(new ShootSpeed(shooter, 0, false));
 
                 // indexer sudsystem
                 operatorController.circle().whileTrue(new IndexerSpin(indexer, IndexerStates.UP));
@@ -369,8 +386,6 @@ public class RobotContainer {
                                 .onTrue(new IntakePID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED));
                 operatorController.povDown()
                                 .onTrue(new IntakePID(intake, IntakePosition.IN, OPERATOR_CONSTANTS.ROLLER_SPEED));
-                operatorController.share().whileTrue(new IntakePID(intake, -0.1, OPERATOR_CONSTANTS.ROLLER_SPEED));
-                operatorController.options().whileTrue(new IntakePID(intake, 0.1, OPERATOR_CONSTANTS.ROLLER_SPEED));
 
                 // roller
                 operatorController.povLeft()
@@ -415,7 +430,7 @@ public class RobotContainer {
                 return new ParallelCommandGroup(new ZeroTurret(turret),
                                 new ParallelCommandGroup(new ShootSpeed(shooter, 0, false),
                                                 new IndexerSpin(indexer, IndexerStates.OFF), new IntakeSpin(intake, 0))
-                                                .withTimeout(5));
+                                                .withTimeout(1));
         }
 
         /**
