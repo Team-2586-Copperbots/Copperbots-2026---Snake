@@ -239,13 +239,7 @@ public class RobotContainer {
         }
 
         private void buildBLineAutos() {
-                bLineChouser.addOption("test", new SequentialCommandGroup(drive.pathFromString("pathv")/*
-                                                                                                            * ,
-                                                                                                            * new
-                                                                                                            * AimAtHub(
-                                                                                                            * turret,
-                                                                                                            * drive)
-                                                                                                            */));
+                bLineChouser.addOption("test", drive.pathFromString("pathv"));
 
         }
 
@@ -274,10 +268,12 @@ public class RobotContainer {
                                 new AimAndShoot(shooter, turret, drive));
                 NamedCommands.registerCommand("shoot", new ShootSpeed(shooter, 20, false));
                 NamedCommands.registerCommand("intake spin", new IntakeSpin(intake, 1));
-                // NamedCommands.registerCommand("indexer", new IndexerSpin(indexer,
-                // IndexerStates.UP));
-                NamedCommands.registerCommand("aim forward", new ManualTurret(turret, 0));
-                NamedCommands.registerCommand("AimAtHub", new AimAtHub(turret, drive));
+                NamedCommands.registerCommand("intake out",
+                                new IntakePID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                NamedCommands.registerCommand("intake in",
+                                new IntakePID(intake, IntakePosition.IN, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                NamedCommands.registerCommand("indexer on", new IndexerSpin(indexer, IndexerStates.UP));
+                NamedCommands.registerCommand("indexer off", new IndexerSpin(indexer, IndexerStates.OFF));
                 NamedCommands.registerCommand("homeAll",
                                 new SequentialCommandGroup(new ManualTurret(turret, 0),
                                                 new IntakePID(intake, IntakePosition.IN, 0),
@@ -285,7 +281,8 @@ public class RobotContainer {
                                                                 false)));
 
                 FollowPath.registerEventTrigger("intake out",
-                                new IntakePID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED).withTimeout(0.5));
+                                new IntakePID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED)
+                                                .withTimeout(0.5));
                 FollowPath.registerEventTrigger("intake in",
                                 new IntakePID(intake, IntakePosition.IN, OPERATOR_CONSTANTS.ROLLER_SPEED));
                 FollowPath.registerEventTrigger("aim n shoot",
@@ -320,6 +317,8 @@ public class RobotContainer {
                                                 () -> -GeneralUtils.squareNumber(driveController.getLeftY()),
                                                 () -> -GeneralUtils.squareNumber(driveController.getLeftX()),
                                                 () -> -driveController.getRightX()));
+
+                driveController.triangle().onTrue(drive.resetHearding());
 
                 // // speed up or slow down drivtrain command that overrides the default command
                 // driveController.R1()

@@ -12,7 +12,7 @@
         "y": 0.7162339514978598
       },
       "isLocked": false,
-      "linkedName": "starting pose"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -28,7 +28,7 @@
         "y": 3.3943989765647564
       },
       "isLocked": false,
-      "linkedName": "just before coral"
+      "linkedName": null
     },
     {
       "anchor": {

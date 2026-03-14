@@ -20,7 +20,7 @@ import edu.wpi.first.math.util.Units;
 
 public class VisionConstants {
         // AprilTag layout
-        public static AprilTagFieldLayout aprilTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+        public static AprilTagFieldLayout aprilTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
 
         // Camera names, must match names configured on coprocessor
         public static String backCamera = "backCamera";

@@ -91,7 +91,7 @@ public class Drive extends SubsystemBase {
   // 1),
   // getModuleTranslations());
   private Field2d field = new Field2d();
-  
+
   private static DriveTrainSimulationConfig mapleSimConfig = null;
 
   public static DriveTrainSimulationConfig getMapleSimConfig() {
@@ -180,7 +180,6 @@ public class Drive extends SubsystemBase {
         });
 
     buildBline();
-    
 
     // Configure SysId
     sysId = new SysIdRoutine(
@@ -194,7 +193,7 @@ public class Drive extends SubsystemBase {
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
     Logger.processInputs("Drive/Gyro", gyroInputs);
-    Logger.recordOutput("target for turret",GeneralUtils.findTarget(this));
+    Logger.recordOutput("target for turret", GeneralUtils.findTarget(this));
     field.setRobotPose(getPose());
     SmartDashboard.putData("field", field);
     for (var module : modules) {
@@ -288,6 +287,10 @@ public class Drive extends SubsystemBase {
     FollowPath.setTranslationListLoggingConsumer(pair -> {
       Logger.recordOutput(pair.getFirst(), pair.getSecond());
     });
+  }
+
+  public Command resetHearding() {
+    return runOnce(() -> poseEstimator.resetRotation(Rotation2d.kZero));
   }
 
   public Command cRunVelocity(ChassisSpeeds speeds) {
@@ -461,8 +464,9 @@ public class Drive extends SubsystemBase {
       Pose2d visionRobotPoseMeters,
       double timestampSeconds,
       Matrix<N3, N1> visionMeasurementStdDevs) {
+    Pose2d robotPOse = new Pose2d(visionRobotPoseMeters.getTranslation(), rawGyroRotation);
     poseEstimator.addVisionMeasurement(
-        visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+        robotPOse, timestampSeconds, visionMeasurementStdDevs);
   }
 
   /** Returns the maximum linear speed in meters per sec. */

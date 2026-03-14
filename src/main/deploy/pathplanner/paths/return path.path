@@ -12,7 +12,7 @@
         "y": 6.5804593451153615
       },
       "isLocked": false,
-      "linkedName": "middle ish point"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -25,7 +25,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "starting pose"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
