@@ -290,7 +290,7 @@ public class Drive extends SubsystemBase {
   }
 
   public Command resetHearding() {
-    return runOnce(() -> poseEstimator.resetRotation(Rotation2d.kZero));
+    return runOnce(() -> resetOdometry(new Pose2d(getPose().getTranslation(), Rotation2d.kZero)));
   }
 
   public Command cRunVelocity(ChassisSpeeds speeds) {

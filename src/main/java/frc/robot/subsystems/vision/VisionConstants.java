@@ -20,7 +20,8 @@ import edu.wpi.first.math.util.Units;
 
 public class VisionConstants {
         // AprilTag layout
-        public static AprilTagFieldLayout aprilTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
+        public static AprilTagFieldLayout aprilTagLayout = AprilTagFieldLayout
+                        .loadField(AprilTagFields.k2026RebuiltAndymark);
 
         // Camera names, must match names configured on coprocessor
         public static String backCamera = "backCamera";
@@ -30,9 +31,11 @@ public class VisionConstants {
         // (Not used by Limelight, configure in web UI instead)
         public static Transform3d robotToBackCamera = new Transform3d(Units.inchesToMeters(-12),
                         Units.inchesToMeters(5.5), Units.inchesToMeters(8),
-                        new Rotation3d(new Rotation2d(Math.PI)));
+                        new Rotation3d(Rotation2d.fromDegrees(180)));
+        // public static Transform3d robotToSideCamera = new Transform3d(Units.inchesToMeters(-4.5),
+        //                 Units.inchesToMeters(12), Units.inchesToMeters(7.125), new Rotation3d(0.0, 0.0, -Math.PI));
         public static Transform3d robotToSideCamera = new Transform3d(Units.inchesToMeters(-4.5),
-                        Units.inchesToMeters(12), Units.inchesToMeters(7.125), new Rotation3d(0.0, 0.0, -Math.PI));
+                        Units.inchesToMeters(12), Units.inchesToMeters(7.125), new Rotation3d(Rotation2d.fromDegrees(-90)));
 
         // Basic filtering thresholds
         public static double maxAmbiguity = 0.3;

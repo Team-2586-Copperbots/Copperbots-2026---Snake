@@ -49,15 +49,15 @@ public class Intake extends SubsystemBase {
         }
     }
 
-    public boolean isAtTarget() {
-        double tolerence = 0.05;
-        if (Math.abs(getWristPosition() - IntakePosition.HALFWAY.value) < tolerence) {
-            return true;
-        } else {
-            return false;
-        }
+    // public boolean isAtTarget() {
+    //     double tolerence = 0.05;
+    //     if (Math.abs(getWristPosition() - IntakePosition.HALFWAY.value) < tolerence) {
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
         
-    }
+    // }
 
     @Override
     public void periodic() {
@@ -65,10 +65,15 @@ public class Intake extends SubsystemBase {
         Logger.processInputs("Intake", inputs);
     }
 
+    public void refreshPosition() {
+        io.setWristPositionFromCancoder();
+    }
+
     public static enum IntakePosition {
-        IN(0.94),
-        OUT(6.0),
-        HALFWAY(4);
+        IN(0.95),
+        OUT(6.15);
+        // ,
+        // HALFWAY(4);
 
         public final double value;
 

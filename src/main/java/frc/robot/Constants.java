@@ -67,7 +67,7 @@ public final class Constants {
 
     public static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(3, 4, Units.degreesToRadians(720),
         Units.degreesToRadians(360));
-    public static final double slowdownSpeed = 0.5;
+    public static final double slowdownSpeed = 0.2;
   }
 
   // robotcontainer
@@ -81,7 +81,7 @@ public final class Constants {
 
     // drive speed limiter
     public static final double MAX_SPEED_LIMITER = 1;
-    public static final double SLOW_SPEED_LIMITER = 0.2;
+    public static final double SLOW_SPEED_LIMITER = 0.35;
 
     public static final double IDLE_SHOOTER_SPEED = 45; // RPS
     public static final double ROLLER_SPEED = 0.8; // percentage

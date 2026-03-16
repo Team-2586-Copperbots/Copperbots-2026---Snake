@@ -7,37 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "b1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "intake out"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "b1-2"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "intake in"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "b1-3"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "b1-4"
+            "pathName": "b2"
           }
         },
         {

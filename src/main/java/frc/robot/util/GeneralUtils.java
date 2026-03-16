@@ -11,6 +11,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.FIELD_CONSTANTS;
 import frc.robot.Constants.SHOOTER_CONSTANTS;
 import frc.robot.Constants.TURRET_CONSTANTS;
@@ -100,7 +101,7 @@ public final class GeneralUtils {
 
     public static double getAngleToTarget(Drive drivetrain, Pose2d targetPose) {
         Translation2d target = new Translation2d(targetPose.getMeasureX(), targetPose.getMeasureY());
-        // Translation2d target = FIELD_CONSTANTS.CENTER_OF_HUB.getTranslation();
+
         // math startes
         // robot's pose
         Pose2d turretPose = translation2dForTurret(drivetrain);
@@ -137,9 +138,16 @@ public final class GeneralUtils {
             rotationAim += 0.5;
         }
 
+        // for blue aliance
+        if (SmartDashboard.getNumber("Polarity chooser", 1) == -1) {
+            rotationAim += 0.5;
+        }
+
+
         Logger.recordOutput("rotationAim", rotationAim);
 
         // math to change numbers so they are within the range of the turret
+        rotationAim = rotationAim % 1;
         if (rotationAim < (0 - TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET)) {
             rotationAim += 1;
         }

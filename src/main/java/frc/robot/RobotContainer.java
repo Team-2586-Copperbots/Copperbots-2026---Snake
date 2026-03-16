@@ -13,18 +13,21 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.FIELD_CONSTANTS;
 import frc.robot.Constants.OPERATOR_CONSTANTS;
 import frc.robot.commands.AimAndShoot;
 import frc.robot.commands.AimAtHub;
@@ -125,6 +128,8 @@ public class RobotContainer {
         private final SendableChooser<Command> bLineChouser;
         private final SendableChooser<Command> characterizationChooser;
 
+        private final SendableChooser<Double> polarityChooser;
+
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
          */
@@ -146,9 +151,7 @@ public class RobotContainer {
                                 shooter = new Shooter(new ShooterIOReal());
                                 // photonSubsystem = new PhotonSubsystem();
                                 vision = new Vision(drive::addVisionMeasurement, new VisionIOPhotonVision(
-                                                VisionConstants.backCamera, VisionConstants.robotToBackCamera),
-                                                new VisionIOPhotonVision(VisionConstants.camera1Name,
-                                                                VisionConstants.robotToSideCamera));
+                                                VisionConstants.backCamera, VisionConstants.robotToBackCamera));
 
                                 turret = new Turret(new TurretIOReal());
 
@@ -157,7 +160,7 @@ public class RobotContainer {
                         case SIM:
                                 // Sim robot, instantiate physics sim IO implementations
                                 driveSimulation = new SwerveDriveSimulation(Drive.getMapleSimConfig(),
-                                                new Pose2d(2, 2, new Rotation2d()));
+                                                new Pose2d(4.378, 0.87, new Rotation2d()));
                                 SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
                                 drive = new Drive(
                                                 new GyroIOSim(driveSimulation.getGyroSimulation()),
@@ -210,7 +213,13 @@ public class RobotContainer {
                                 });
 
                                 break;
+
                 }
+
+                polarityChooser = new SendableChooser<Double>();
+                polarityChooser.addOption("negative", -1.0);
+                polarityChooser.setDefaultOption("pos", 1.0);
+                SmartDashboard.putData("Polarity chooser", polarityChooser);
 
                 // Configure the trigger bindings
                 bLineChouser = new SendableChooser<Command>();
@@ -240,6 +249,38 @@ public class RobotContainer {
 
         private void buildBLineAutos() {
                 bLineChouser.addOption("test", drive.pathFromString("pathv"));
+                // bLineChouser.addOption("8ball", new
+                // SequentialCommandGroup(drive.pathFromString("pathc"),
+                // new ParallelCommandGroup(new AimAndShoot(shooter, turret, drive),
+                // new SequentialCommandGroup(new WaitCommand(.2),
+                // new IndexerSpin(indexer, IndexerStates.UP)))));
+                bLineChouser.setDefaultOption("8ball", new SequentialCommandGroup(drive.resetHearding(),
+                                new ParallelCommandGroup(new AimAndShoot(shooter, turret, drive),
+                                                new SequentialCommandGroup(new WaitCommand(.2),
+                                                                new IndexerSpin(indexer, IndexerStates.UP)))));
+                bLineChouser.addOption("shoot",
+                                new ShootSpeed(shooter, GeneralUtils.shooterSpeedFromDistance(
+                                                GeneralUtils.distanceFromPose(FIELD_CONSTANTS.CENTER_OF_HUB, drive)),
+                                                false));
+                bLineChouser.addOption("8ball then out",
+                                new SequentialCommandGroup(new ParallelDeadlineGroup(new WaitCommand(10),
+                                                new ParallelCommandGroup(new AimAndShoot(shooter, turret, drive),
+                                                                new SequentialCommandGroup(new WaitCommand(.5),
+                                                                                new IndexerSpin(indexer,
+                                                                                                IndexerStates.UP)))),
+                                                drive.pathFromString("b1-1"),
+                                                new IntakePID(intake, IntakePosition.OUT,
+                                                                OPERATOR_CONSTANTS.ROLLER_SPEED).withTimeout(0.05),
+                                                drive.pathFromString("b1-2"),
+                                                new IntakeSpin(intake, 0).withTimeout(0.05),
+                                                drive.pathFromString("b1-3"),
+                                                new ParallelCommandGroup(new AimAndShoot(shooter, turret, drive),
+                                                                new SequentialCommandGroup(new WaitCommand(0.5),
+                                                                                new IndexerSpin(indexer,
+                                                                                                IndexerStates.UP)))));
+                bLineChouser.addOption("drive forwards", new SequentialCommandGroup(drive
+                                .cRunVelocity(new ChassisSpeeds(1, 0, 0)).withTimeout(Time.ofBaseUnits(0.5, Seconds)),
+                                new IntakePID(intake, IntakePosition.OUT, 0)));
 
         }
 
@@ -314,20 +355,22 @@ public class RobotContainer {
                 drive.setDefaultCommand(
                                 DriveCommands.fieldOrientedDrive(
                                                 drive,
-                                                () -> -GeneralUtils.squareNumber(driveController.getLeftY()),
-                                                () -> -GeneralUtils.squareNumber(driveController.getLeftX()),
+                                                () -> -GeneralUtils.squareNumber(driveController.getLeftY()
+                                                                * polarityChooser.getSelected()),
+                                                () -> -GeneralUtils.squareNumber(driveController.getLeftX()
+                                                                * polarityChooser.getSelected()),
                                                 () -> -driveController.getRightX()));
 
                 driveController.triangle().onTrue(drive.resetHearding());
 
-                // // speed up or slow down drivtrain command that overrides the default command
-                // driveController.R1()
-                // .toggleOnTrue(DriveCommands.robotOrientedDrive(drive,
-                // () -> -driveController.getLeftY()
-                // * Constants.ROBOT_PROPERTIES.slowdownSpeed,
-                // () -> -driveController.getLeftX()
-                // * Constants.ROBOT_PROPERTIES.slowdownSpeed,
-                // () -> -driveController.getRightX()));
+                // speed up or slow down drivtrain command that overrides the default command
+                driveController.cross()
+                                .whileTrue(DriveCommands.fieldOrientedDrive(drive,
+                                                () -> -GeneralUtils.squareNumber(driveController.getLeftY())
+                                                                * OPERATOR_CONSTANTS.SLOW_SPEED_LIMITER,
+                                                () -> -GeneralUtils.squareNumber(driveController.getLeftX())
+                                                                * OPERATOR_CONSTANTS.SLOW_SPEED_LIMITER,
+                                                () -> -driveController.getRightX()));
                 // robot centric drive
                 // driveController.povUp()
                 // .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> 1, () -> 0,
@@ -370,7 +413,6 @@ public class RobotContainer {
                                 new ManualTurret(turret, 0)));
                 operatorController.square()
                                 .onTrue(new ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED, false));
-                operatorController.options().onTrue(new ShootSpeed(shooter, 0, false));
 
                 // indexer sudsystem
                 operatorController.circle().whileTrue(new IndexerSpin(indexer, IndexerStates.UP));
@@ -385,6 +427,8 @@ public class RobotContainer {
                                 .onTrue(new IntakePID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED));
                 operatorController.povDown()
                                 .onTrue(new IntakePID(intake, IntakePosition.IN, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                operatorController.share().whileTrue(new IntakePID(intake, 0.2, 0));
+                operatorController.options().whileTrue(new IntakePID(intake, -0.2, 0));
 
                 // roller
                 operatorController.povLeft()
@@ -425,6 +469,10 @@ public class RobotContainer {
                 });
         }
 
+        public void resetIntakePosition() {
+                intake.refreshPosition();
+        }
+
         public Command zeroThings() {
                 return new ParallelCommandGroup(new ZeroTurret(turret),
                                 new ParallelCommandGroup(new ShootSpeed(shooter, 0, false),
@@ -437,16 +485,16 @@ public class RobotContainer {
          * @return the command to run in autonomous
          */
         public Command getAutonomousCommand() {
-                boolean characterization = false;
-                if (characterization) {
-                        return characterizationChooser.getSelected();
-                } else {
-                        if (bLineChouser.getSelected() != null) {
-                                return bLineChouser.getSelected();
-                        } else {
-                                return autoChooser.getSelected();
-                        }
-                }
+                // boolean characterization = false;
+                // if (characterization) {
+                // return characterizationChooser.getSelected();
+                // } else {
+                // if (bLineChouser.getSelected() != null) {
+                return bLineChouser.getSelected();
+                // } else {
+                // return autoChooser.getSelected();
+                // }
+                // }
 
         }
 

@@ -1,5 +1,10 @@
 package frc.robot.commands;
 
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.hal.HAL;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.Intake.IntakePosition;
@@ -28,6 +33,7 @@ public class IntakePID extends Command {
 
     @Override
     public void initialize() {
+        intake.refreshPosition();
 
     }
 
@@ -37,6 +43,9 @@ public class IntakePID extends Command {
             intake.setIntakePositionTarget(position);
         } else if (!wristSpeed.isNaN()) {
             intake.setWristSpeed(wristSpeed);
+            System.out.println("position is null");
+        } else{
+            System.out.println("Wrist speed is Nan");
         }
         intake.setRollerSpeed(rollerSpeed);
     }
@@ -51,6 +60,8 @@ public class IntakePID extends Command {
         if (!wristSpeed.isNaN()) {
             intake.setWristSpeed(0);
         }
+        Logger.recordOutput("intake interupted: ", 0);
+        System.out.println("inatke reset at : " + DriverStation.getMatchTime());
     }
 
 }
