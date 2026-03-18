@@ -35,8 +35,9 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -89,6 +90,8 @@ public class Drive extends SubsystemBase {
   // TunerConstants.FrontLeft.SlipCurrent,
   // 1),
   // getModuleTranslations());
+  private Field2d field = new Field2d();
+
   private static DriveTrainSimulationConfig mapleSimConfig = null;
 
   public static DriveTrainSimulationConfig getMapleSimConfig() {
@@ -177,9 +180,6 @@ public class Drive extends SubsystemBase {
         });
 
     buildBline();
-    Preferences.initDouble("tkP", BLine_PIDs.tkP);
-    Preferences.initDouble("rkP", BLine_PIDs.rkP);
-    Preferences.initDouble("CTkP", BLine_PIDs.CTkP);
 
     // Configure SysId
     sysId = new SysIdRoutine(
@@ -193,9 +193,9 @@ public class Drive extends SubsystemBase {
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
     Logger.processInputs("Drive/Gyro", gyroInputs);
-    Logger.recordOutput("hub angle", GeneralUtils.getAngleToHub(this));
-    Logger.recordOutput("distance to hub",
-        GeneralUtils.distanceFromPose(Constants.FIELD_CONSTANTS.CENTER_OF_HUB, this));
+    Logger.recordOutput("target for turret", GeneralUtils.findTarget(this));
+    field.setRobotPose(getPose());
+    SmartDashboard.putData("field", field);
     for (var module : modules) {
       module.periodic();
     }
@@ -287,6 +287,10 @@ public class Drive extends SubsystemBase {
     FollowPath.setTranslationListLoggingConsumer(pair -> {
       Logger.recordOutput(pair.getFirst(), pair.getSecond());
     });
+  }
+
+  public Command resetHearding() {
+    return runOnce(() -> resetOdometry(new Pose2d(getPose().getTranslation(), Rotation2d.kZero)));
   }
 
   public Command cRunVelocity(ChassisSpeeds speeds) {
@@ -460,8 +464,9 @@ public class Drive extends SubsystemBase {
       Pose2d visionRobotPoseMeters,
       double timestampSeconds,
       Matrix<N3, N1> visionMeasurementStdDevs) {
+    Pose2d robotPOse = new Pose2d(visionRobotPoseMeters.getTranslation(), rawGyroRotation);
     poseEstimator.addVisionMeasurement(
-        visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+        robotPOse, timestampSeconds, visionMeasurementStdDevs);
   }
 
   /** Returns the maximum linear speed in meters per sec. */

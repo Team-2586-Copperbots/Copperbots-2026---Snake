@@ -5,12 +5,13 @@ import org.littletonrobotics.junction.AutoLog;
 public interface TurretIO {
     @AutoLog
     public static class TurretIOInputs {
-        public boolean limitSwitch = false;
-        public boolean isClosedLoop = true;
-        public double ringPositionSetpoint = 0.0;
+        public double ringPositionSetpoint = 0;
         public double ringSpeedSetpoint = 0.0;
-        public double currentRingPose = 0.0;
+
+        public double currentRingPose = 0;
         public double currentRingSpeed = 0.0;
+        public boolean isClosedLoop = false;
+        public boolean limitSwitch = false;
         public boolean isAtPosition = true;
         public double rotationRelitiveToRobotZero = 0;
     }

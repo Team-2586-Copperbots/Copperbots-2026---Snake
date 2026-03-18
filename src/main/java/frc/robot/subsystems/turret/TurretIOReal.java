@@ -50,8 +50,10 @@ public class TurretIOReal implements TurretIO {
         inputs.currentRingPose = getRingRotation();
         inputs.currentRingSpeed = turnMotor.getVelocity().getValueAsDouble();
         inputs.limitSwitch = !limitSwitch.get();
-        inputs.rotationRelitiveToRobotZero = getRobotRelitiveRotation();
         inputs.isAtPosition = isAtPosition;
+
+        inputs.rotationRelitiveToRobotZero = getRobotRelitiveRotation();
+        inputs.ringPositionSetpoint = positionVoltage.Position;
     }
 
     // set comand to set the turning motor to a speed -1 to 1
@@ -62,36 +64,21 @@ public class TurretIOReal implements TurretIO {
 
     // this uses the CTRE motors built-in positionVoltage controler to set the angle
     // of the turret within the limits of 0-320 degreas
+    @Override
     public void setTurretSetpoint(double roations) {
         isClosedLoop = true;
 
-        // limits are typed in as degres
-        if (roations >= (0 - TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET)
-                && roations < TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT) {
+        if ((roations >= 0)
+                && (roations < TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT)) {
             isAtPosition = true;
             turnMotor.setControl(
-                    positionVoltage.withPosition((roations + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET)
-                            * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO));
+                    positionVoltage.withPosition(((roations + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET)
+                            * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO)));
         } else {
-            // says that it did not make it to the desired position
             isAtPosition = false;
-
-            // goes to nearist point relative to desired point
-            double startOfDeadZone = 0;
-            double endOfDeadZone = TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT;
-
-            if (Math.abs((startOfDeadZone - roations)) < Math.abs((endOfDeadZone - roations))) {
-                turnMotor.setControl(positionVoltage.withPosition(
-                        0 * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO));
-            } else if (Math.abs((startOfDeadZone - roations)) >= Math.abs((endOfDeadZone - roations))) {
-                turnMotor.setControl(positionVoltage.withPosition(
-                        TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO));
-            } else {
-                turnMotor.setControl(positionVoltage.withPosition(
-                        0 * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO));
-            }
-
+            turnMotor.setControl(positionVoltage.withPosition(1));
         }
+
     }
 
     // set the turn motors's internal encoder
@@ -102,13 +89,12 @@ public class TurretIOReal implements TurretIO {
 
     @Override
     public double getRingRotation() {
-        return (turnMotor.getPosition().getValueAsDouble() / TURRET_CONSTANTS.MOTOR_TO_RING_RATIO);
+        return turnMotor.getPosition().getValueAsDouble() / TURRET_CONSTANTS.MOTOR_TO_RING_RATIO;
     }
 
     @Override
     public double getRobotRelitiveRotation() {
-        return -0.5 + (turnMotor.getPosition().getValueAsDouble() / TURRET_CONSTANTS.MOTOR_TO_RING_RATIO)
-                + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET;
+        return getRingRotation() + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET;
     }
 
 }

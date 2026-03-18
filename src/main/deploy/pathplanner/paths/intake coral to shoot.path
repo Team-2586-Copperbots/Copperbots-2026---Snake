@@ -12,7 +12,7 @@
         "y": 6.087718900780981
       },
       "isLocked": false,
-      "linkedName": "middle ish point"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -28,7 +28,7 @@
         "y": 1.9996930097758978
       },
       "isLocked": false,
-      "linkedName": "intake coral to shoot midpoint"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -36,12 +36,12 @@
         "y": 1.7254493580599135
       },
       "prevControl": {
-        "x": 1.601646116563256,
-        "y": 0.34470237010810756
+        "x": 1.6016461165632563,
+        "y": 0.34470237010810734
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "shooting"
+      "linkedName": null
     }
   ],
   "rotationTargets": [

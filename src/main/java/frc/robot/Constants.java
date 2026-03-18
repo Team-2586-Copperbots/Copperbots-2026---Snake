@@ -6,7 +6,6 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
-
 import java.io.IOException;
 
 import com.ctre.phoenix6.CANBus;
@@ -16,7 +15,6 @@ import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -69,7 +67,7 @@ public final class Constants {
 
     public static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(3, 4, Units.degreesToRadians(720),
         Units.degreesToRadians(360));
-    public static final double slowdownSpeed = 0.5;
+    public static final double slowdownSpeed = 0.2;
   }
 
   // robotcontainer
@@ -83,10 +81,10 @@ public final class Constants {
 
     // drive speed limiter
     public static final double MAX_SPEED_LIMITER = 1;
-    public static final double SLOW_SPEED_LIMITER = 0.2;
+    public static final double SLOW_SPEED_LIMITER = 0.35;
 
     public static final double IDLE_SHOOTER_SPEED = 45; // RPS
-    public static final double ROLLER_SPEED = 0.6; // percentage
+    public static final double ROLLER_SPEED = 0.8; // percentage
   }
 
   // math
@@ -95,11 +93,19 @@ public final class Constants {
     public static final Distance FIELD_LENGTH = Distance.ofBaseUnits(Units.inchesToMeters(651.22), Meters);
     public static final Distance FIELD_WIDTH = Distance.ofBaseUnits(Units.inchesToMeters(317.69), Meters);
 
-    public static final Pose2d CENTER_OF_HUB = AllianceFlipUtil.apply(
-        new Pose2d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84), Rotation2d.kZero));
-    public static final Pose2d BOTTOM_FULE_STORAGE = AllianceFlipUtil.apply(new Pose2d(2.75, 1.6, Rotation2d.kZero));
-    public static final Pose2d TOP_FULE_STORAGE = AllianceFlipUtil.apply(
-        new Pose2d(BOTTOM_FULE_STORAGE.getX(), AllianceFlipUtil.applyY(BOTTOM_FULE_STORAGE.getY()), Rotation2d.kZero));
+    public static Pose2d CENTER_OF_HUB = new Pose2d();
+    public static Pose2d BOTTOM_FULE_STORAGE = new Pose2d();
+    public static Pose2d TOP_FULE_STORAGE = new Pose2d();
+
+    public static void updatePositions() {
+      CENTER_OF_HUB = AllianceFlipUtil.apply(
+          new Pose2d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84), Rotation2d.kZero));
+      BOTTOM_FULE_STORAGE = AllianceFlipUtil.apply(new Pose2d(2.75, 1.6, Rotation2d.kZero));
+      TOP_FULE_STORAGE = AllianceFlipUtil.apply(
+          new Pose2d(AllianceFlipUtil.applyX(BOTTOM_FULE_STORAGE.getX()),
+              (FIELD_WIDTH.abs(Meters) - BOTTOM_FULE_STORAGE.getY()), Rotation2d.kZero));
+    }
+
   }
 
   public static class DRIVEBASE_TARGET_POSES {
@@ -122,6 +128,7 @@ public final class Constants {
     public static final int TOWER_MOTOR = 25;
     // climb motor
     public static final int CLIMB_MOTOR_1 = 29;
+
     public static final int CLIMB_MOTOR_2 = 30;
     // turret motor
     public static final int TURRET_TURN_MOTOR = 23;
@@ -145,11 +152,9 @@ public final class Constants {
     public static final double MOTOR_TO_RING_RATIO = (66 / 12) * 3 * 3 * 1.105598958;// weried mystery number from the
                                                                                      // ring of oditys
     public static final double TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET = 0.044;
-    public static final double ROTATION_RANGE_IN_ROT = 0.809 + TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET;
+    public static final double ROTATION_RANGE_IN_ROT = 0.79;
     public static final Pose2d TURRET_OFFSET_FROM_ROBOT_CENTER = new Pose2d(Units.inchesToMeters(-7.5),
         Units.inchesToMeters(-8.5), null);
-    public static final double TURRET_DISTANCE_FROM_ROBOT_CENTER = Units.inchesToMeters(Math.sqrt(
-        (Math.pow(TURRET_OFFSET_FROM_ROBOT_CENTER.getX(), 2) + Math.pow(TURRET_OFFSET_FROM_ROBOT_CENTER.getY(), 2))));
   }
 
   public static class INTAKE_CONSTANTS {
@@ -157,7 +162,7 @@ public final class Constants {
   }
 
   public static enum CANDLE_STRIPS {
-    // TODO: fix indexe (plural?) when strips are made
+    // TODO: fix indexe (plural?) when strips are made, for eskey
     BUILT_IN(0, 7),
     FIRST(8, 8 + 21),
     SECOND(78, 147),

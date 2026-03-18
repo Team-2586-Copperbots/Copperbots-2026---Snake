@@ -5,7 +5,7 @@ import frc.robot.subsystems.turret.Turret;;
 
 public class ManualTurret extends Command {
     private Turret Turret;
-    private Double angle;
+    private double angle;
 
     public ManualTurret(Turret TurretSubsystem, double angle) {
         this.Turret = TurretSubsystem;

@@ -2,7 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
+import frc.robot.Constants.OPERATOR_CONSTANTS;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.turret.Turret;
@@ -19,7 +19,8 @@ public class AimAndShoot extends Command {
         this.Shooter = ShooterSubsystem;
         this.Turret = TurretSubsystem;
         this.Drive = Drivetrain;
-        this.target = GeneralUtils.findTarget(Drivetrain);
+        this.target = GeneralUtils.findTarget(Drive);
+        // this.target = FIELD_CONSTANTS.CENTER_OF_HUB;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(ShooterSubsystem);
         addRequirements(TurretSubsystem);
@@ -34,7 +35,8 @@ public class AimAndShoot extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        Turret.setTurretRotationTarget(GeneralUtils.getAngleToHubWithVelocity(Drive));
+        target = GeneralUtils.findTarget(Drive);
+        Turret.setTurretRotationTarget(GeneralUtils.getAngleToTarget(Drive, target));
         Shooter.setShooterSpeedSet(
                 GeneralUtils.shooterSpeedFromDistance(GeneralUtils.distanceFromPose(target, Drive)));
 
@@ -48,8 +50,7 @@ public class AimAndShoot extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        Turret.setTurretRotationTarget(0);
-        Shooter.setShooterSpeedSet(Constants.OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED);
+        Shooter.setShooterSpeedSet(OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED);
     }
 
 }

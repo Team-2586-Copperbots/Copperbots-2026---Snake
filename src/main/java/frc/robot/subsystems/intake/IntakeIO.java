@@ -2,11 +2,6 @@ package frc.robot.subsystems.intake;
 
 import org.littletonrobotics.junction.AutoLog;
 
-import com.ctre.phoenix6.StatusSignal;
-
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.wpilibj2.command.Subsystem;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.intake.Intake.IntakePosition;
 
 public interface IntakeIO {

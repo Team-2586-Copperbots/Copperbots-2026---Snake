@@ -41,9 +41,7 @@ public class Turret extends SubsystemBase {
     }
 
     public void setTurretToZero() {
-        io.setTurretSpeed(0);
         io.setTurretZero();
-        io.setTurretSetpoint(0);
     }
 
 }

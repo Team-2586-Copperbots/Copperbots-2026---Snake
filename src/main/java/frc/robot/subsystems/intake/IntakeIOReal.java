@@ -1,6 +1,5 @@
 package frc.robot.subsystems.intake;
 
-import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -10,7 +9,6 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
-import edu.wpi.first.units.measure.Angle;
 import frc.robot.Constants;
 import frc.robot.Constants.INTAKE_CONSTANTS;
 import frc.robot.subsystems.intake.Intake.IntakePosition;
@@ -43,10 +41,8 @@ public class IntakeIOReal implements IntakeIO {
         coancoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
 
         // wristMotorConfig.Feedback.FeedbackRemoteSensorID = cancoder.getDeviceID();
-        // wristMotorConfig.Feedback.FeedbackSensorSource =
-        // FeedbackSensorSourceValue.RemoteCANcoder;
-        // wristMotorConfig.Feedback.RotorToSensorRatio =
-        // Constants.INTAKE_CONSTANTS.rotorToIntake;
+        // wristMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+        // wristMotorConfig.Feedback.RotorToSensorRatio = Constants.INTAKE_CONSTANTS.rotorToIntake;
         // wristMotorConfig.Feedback.SensorToMechanismRatio = 1;
 
         var motorOutputConfigs = wristMotorConfig.MotorOutput;
@@ -57,7 +53,6 @@ public class IntakeIOReal implements IntakeIO {
         pidConfig.kP = 0.6;
         pidConfig.kI = 0.05;
         pidConfig.kD = 0.00;
-        
 
         wristMotor.getConfigurator().apply(wristMotorConfig);
         rollerMotor.getConfigurator().apply(rollerMotorConfig);
@@ -67,7 +62,6 @@ public class IntakeIOReal implements IntakeIO {
     @Override
     public void updateInputs(IntakeIOInputs inputs) {
         inputs.currentRollerSpeed = rollerMotor.getVelocity().getValueAsDouble();
-        setWristPositionFromCancoder();
         inputs.currentWristPosition = wristMotor.getPosition().getValueAsDouble();
         inputs.currentCancoderPosition = cancoder.getPosition().getValueAsDouble();
 

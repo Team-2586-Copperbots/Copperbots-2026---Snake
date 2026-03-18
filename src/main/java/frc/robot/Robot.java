@@ -17,6 +17,7 @@ import com.pathplanner.lib.commands.PathfindingCommand;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -58,7 +59,7 @@ public class Robot extends LoggedRobot {
     switch (Constants.currentMode) {
       case REAL:
         // Running on a real robot, log to a USB stick ("/U/logs")
-        // Logger.addDataReceiver(new WPILOGWriter());
+        Logger.addDataReceiver(new WPILOGWriter());
         Logger.addDataReceiver(new NT4Publisher());
         break;
 
@@ -83,6 +84,7 @@ public class Robot extends LoggedRobot {
     // and put our
     // autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
+    robotContainer.resetIntakePosition();
 
     FollowPathCommand.warmupCommand().schedule();
     PathfindingCommand.warmupCommand().schedule();
@@ -100,43 +102,32 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotPeriodic() {
+    // Switch thread to high priority to improve loop timing
+    Threads.setCurrentThreadPriority(true, 99);
+
     // Runs the Scheduler. This is responsible for polling buttons, adding
-    // newly-scheduled
-    // commands, running already-scheduled commands, removing finished or
-    // interrupted commands,
-    // and running subsystem periodic() methods. This must be called from the
-    // robot's periodic
-    // block in order for anything in the Command-based framework to work.
+    // newly-scheduled commands, running already-scheduled commands, removing
+    // finished or interrupted commands, and running subsystem periodic() methods.
+    // This must be called from the robot's periodic block in order for anything in
+    // the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
-
+    // Return to normal thread priority
+    Threads.setCurrentThreadPriority(false, 10);
     // vision is now done using a drive supplyer and periodic in vision.java
 
-
-    // TODO spelling?
-    // ------ for manulal use of new vision (file no-longer exists) ------
-    // if (robotContainer.vision.getRobotPose().isPresent()) {
-    // robotContainer.drive.addVisionMeasurement(robotContainer.vision.getRobotPose().get().estimatedPose.toPose2d(),
-    // robotContainer.vision.timestamp,
-    // robotContainer.vision.getEstimationStdDevs());
-    // }
-
-    // ------ for use with old photon subsystem (/subsystems/vision/old) ------
-    // Optional<EstimatedRobotPose> pose = robotContainer.photonSubsystem.getRobotPose();
-    // if (pose.isPresent()) {
-    //   robotContainer.drive.addVisionMeasurement(pose.get().estimatedPose.toPose2d(), pose.get().timestampSeconds,
-    //       robotContainer.photonSubsystem.getAmbiguity());
-    // }
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    robotContainer.resetSimulation();
+    // robotContainer.resetSimulation();
   }
 
   @Override
   public void disabledPeriodic() {
+
+    Constants.FIELD_CONSTANTS.updatePositions();
   }
 
   /**
@@ -147,7 +138,7 @@ public class Robot extends LoggedRobot {
   public void autonomousInit() {
     // schedule the autonomous command (example)
     if (robotContainer.getAutonomousCommand() != null) {
-      m_autonomousCommand = Commands.sequence(/* robotContainer.zeroThings(), */ robotContainer.getAutonomousCommand());
+      m_autonomousCommand = Commands.sequence(robotContainer.zeroThings(), robotContainer.getAutonomousCommand());
     }
     CommandScheduler.getInstance().schedule(m_autonomousCommand);
 
@@ -168,6 +159,7 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+
     CommandScheduler.getInstance().schedule(robotContainer.zeroThings());
 
   }
