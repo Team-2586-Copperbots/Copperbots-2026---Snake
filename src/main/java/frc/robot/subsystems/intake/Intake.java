@@ -65,9 +65,9 @@ public class Intake extends SubsystemBase {
         Logger.processInputs("Intake", inputs);
     }
 
-    public void refreshPosition() {
-        io.setWristPositionFromCancoder();
-    }
+    // public void refreshPosition() {
+    //     io.setWristPositionFromCancoder();
+    // }
 
     public static enum IntakePosition {
         IN(0.95),

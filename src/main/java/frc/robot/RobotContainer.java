@@ -469,10 +469,6 @@ public class RobotContainer {
                 });
         }
 
-        public void resetIntakePosition() {
-                intake.refreshPosition();
-        }
-
         public Command zeroThings() {
                 return new ParallelCommandGroup(new ZeroTurret(turret),
                                 new ParallelCommandGroup(new ShootSpeed(shooter, 0, false),

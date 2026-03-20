@@ -2,7 +2,9 @@ package frc.robot.subsystems.climb;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
@@ -15,6 +17,7 @@ public class ClimbIOReal implements ClimbIO {
     private final TalonFX climbMotor1, climbMotor2;
     private final TalonFXConfiguration climbMotorConfig;
     private final PositionVoltage positionVoltage = new PositionVoltage(0);
+    // private final PositionTorqueCurrentFOC 
 
     public ClimbIOReal() {
         climbMotor1 = new TalonFX(CANIds.CLIMB_MOTOR_1);

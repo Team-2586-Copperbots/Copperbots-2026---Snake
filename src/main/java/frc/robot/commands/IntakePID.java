@@ -33,7 +33,7 @@ public class IntakePID extends Command {
 
     @Override
     public void initialize() {
-        intake.refreshPosition();
+        // intake.refreshPosition();
 
     }
 

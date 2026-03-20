@@ -40,23 +40,23 @@ public class IntakeIOReal implements IntakeIO {
 
         coancoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
 
-        // wristMotorConfig.Feedback.FeedbackRemoteSensorID = cancoder.getDeviceID();
+        wristMotorConfig.Feedback.FeedbackRemoteSensorID = cancoder.getDeviceID();
         // wristMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-        // wristMotorConfig.Feedback.RotorToSensorRatio = Constants.INTAKE_CONSTANTS.rotorToIntake;
-        // wristMotorConfig.Feedback.SensorToMechanismRatio = 1;
+        wristMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+        wristMotorConfig.Feedback.RotorToSensorRatio = Constants.INTAKE_CONSTANTS.rotorToIntake;
+        wristMotorConfig.Feedback.SensorToMechanismRatio = 1;
 
-        var motorOutputConfigs = wristMotorConfig.MotorOutput;
-        motorOutputConfigs.NeutralMode = NeutralModeValue.Brake;
-
+        wristMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        
         var pidConfig = wristMotorConfig.Slot0;
-        // TODO: tune pid at all!?
+        // TODO: tune pid at all?
         pidConfig.kP = 0.6;
         pidConfig.kI = 0.05;
         pidConfig.kD = 0.00;
 
+        cancoder.getConfigurator().apply(coancoderConfig);
         wristMotor.getConfigurator().apply(wristMotorConfig);
         rollerMotor.getConfigurator().apply(rollerMotorConfig);
-        cancoder.getConfigurator().apply(coancoderConfig);
     }
 
     @Override
@@ -83,10 +83,10 @@ public class IntakeIOReal implements IntakeIO {
         wristMotor.setControl(positionVoltage.withPosition(position.value));
     }
 
-    @Override
-    public void setWristPositionFromCancoder() {
-        wristMotor.setPosition(cancoder.getPosition().getValue().in(Rotations) * INTAKE_CONSTANTS.rotorToIntake);
-    }
+    // @Override
+    // public void setWristPositionFromCancoder() {
+    //     wristMotor.setPosition(cancoder.getPosition().getValue().in(Rotations) * INTAKE_CONSTANTS.rotorToIntake);
+    // }
 
     @Override
     public void setWristSpeed(double speed) {
