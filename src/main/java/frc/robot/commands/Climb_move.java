@@ -1,0 +1,56 @@
+package frc.robot.commands;
+
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.climb.Climb;
+import frc.robot.subsystems.climb.Climb.ClimbPosition;
+
+public class Climb_move extends Command {
+    private Climb climb;
+    private double Speed = Double.NaN;
+    private ClimbPosition position = null;
+
+    public Climb_move(Climb climbSubsystem, double speed) {
+        this.climb = climbSubsystem;
+        this.Speed = speed;
+
+        addRequirements(climbSubsystem);
+    }
+
+    public Climb_move(Climb climbSubsystem, ClimbPosition position) {
+        this.climb = climbSubsystem;
+        this.position = position;
+
+        addRequirements(climbSubsystem);
+    }
+
+    // Called when the command is initially scheduled.
+    @Override
+    public void initialize() {
+        if (Speed != Double.NaN) {
+            climb.setClimbSpeed(Speed);
+        } else if (position != null) {
+            climb.setClimbTargetPosition(position);
+        }
+    }
+
+    // Called every time the scheduler runs while the command is scheduled.
+    @Override
+    public void execute() {
+
+    }
+
+    @Override
+    public boolean isFinished() {
+        if (position != null && (Math.abs(climb.getPosition() - position.getPosition()) < 0.05)) {
+            return true;
+        }
+        return false;
+    }
+
+    // Called once the command ends or is interrupted.
+    @Override
+    public void end(boolean interrupted) {
+        climb.setClimbSpeed(0);
+    }
+
+}

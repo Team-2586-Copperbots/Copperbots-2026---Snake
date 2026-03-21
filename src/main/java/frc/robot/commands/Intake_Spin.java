@@ -4,11 +4,11 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.intake.Intake;
 
-public class IntakeSpin extends Command {
+public class Intake_Spin extends Command {
     private Intake intake;
     private double speed;
 
-    public IntakeSpin(Intake IntakeSubsystem, double speed) {
+    public Intake_Spin(Intake IntakeSubsystem, double speed) {
         this.intake = IntakeSubsystem;
         this.speed = speed;
         // Use addRequirements() here to declare subsystem dependencies.

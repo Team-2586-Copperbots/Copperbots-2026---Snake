@@ -3,11 +3,11 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.turret.Turret;;
 
-public class ManualTurret extends Command {
+public class Turret_ManualTurret extends Command {
     private Turret Turret;
     private double angle;
 
-    public ManualTurret(Turret TurretSubsystem, double angle) {
+    public Turret_ManualTurret(Turret TurretSubsystem, double angle) {
         this.Turret = TurretSubsystem;
         this.angle = angle;
         // Use addRequirements() here to declare subsystem dependencies.

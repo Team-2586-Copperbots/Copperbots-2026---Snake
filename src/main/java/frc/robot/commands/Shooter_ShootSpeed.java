@@ -3,13 +3,13 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.shooter.Shooter;
 
-public class ShootSpeed extends Command {
+public class Shooter_ShootSpeed extends Command {
     private Shooter Shooter;
     private Double Speed;
     // true of false to use the setShooterSpeedAjust() command
     private boolean TFAjust;
 
-    public ShootSpeed(Shooter shooterSubsystem, double speed, boolean ajust) {
+    public Shooter_ShootSpeed(Shooter shooterSubsystem, double speed, boolean ajust) {
         this.Shooter = shooterSubsystem;
         this.Speed = speed;
         this.TFAjust = ajust;

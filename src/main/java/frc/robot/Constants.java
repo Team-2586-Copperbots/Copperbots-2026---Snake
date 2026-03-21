@@ -5,6 +5,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import java.io.IOException;
 
@@ -18,6 +19,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.RobotBase;
+import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.AllianceFlipUtil;
 
 /**
@@ -96,6 +98,9 @@ public final class Constants {
     public static Pose2d CENTER_OF_HUB = new Pose2d();
     public static Pose2d BOTTOM_FULE_STORAGE = new Pose2d();
     public static Pose2d TOP_FULE_STORAGE = new Pose2d();
+    public static Pose2d TEST_POSE2D = new Pose2d();
+
+    
 
     public static void updatePositions() {
       CENTER_OF_HUB = AllianceFlipUtil.apply(
@@ -104,12 +109,9 @@ public final class Constants {
       TOP_FULE_STORAGE = AllianceFlipUtil.apply(
           new Pose2d(AllianceFlipUtil.applyX(BOTTOM_FULE_STORAGE.getX()),
               (FIELD_WIDTH.abs(Meters) - BOTTOM_FULE_STORAGE.getY()), Rotation2d.kZero));
+      TEST_POSE2D = AllianceFlipUtil.apply(new Pose2d(2, 2, Rotation2d.kZero));
     }
 
-  }
-
-  public static class DRIVEBASE_TARGET_POSES {
-    public static final Pose2d TEST_POSE2D = AllianceFlipUtil.apply(new Pose2d(2, 2, Rotation2d.kZero));
   }
 
   // hardware

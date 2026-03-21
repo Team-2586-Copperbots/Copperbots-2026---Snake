@@ -132,7 +132,7 @@ public final class GeneralUtils {
         // for this, by now
 
         // factor in drivetrain rotation
-        rotationAim += AllianceFlipUtil.apply(drivetrain.getPose().getRotation()).getRotations();
+        rotationAim += AllianceFlipUtil.applyR(drivetrain.getPose().getRotation()).getRotations();
 
         if (!targetPose.equals(FIELD_CONSTANTS.CENTER_OF_HUB)) {
             rotationAim += 0.5;
@@ -142,7 +142,6 @@ public final class GeneralUtils {
         if (SmartDashboard.getNumber("Polarity chooser", 1) == -1) {
             rotationAim += 0.5;
         }
-
 
         Logger.recordOutput("rotationAim", rotationAim);
 

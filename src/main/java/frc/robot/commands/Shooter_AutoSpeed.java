@@ -1,19 +1,20 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.turret.Turret;
+import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.util.GeneralUtils;
 
-public class AimAtHub extends Command {
-    private Turret Turret;
+public class Shooter_AutoSpeed extends Command {
+    private Shooter Shooter;
     private Drive Drivetrain;
 
-    public AimAtHub(Turret TurretSubsystem, Drive Drivetrain) {
-        this.Turret = TurretSubsystem;
-        this.Drivetrain = Drivetrain;
+    public Shooter_AutoSpeed(Shooter shooterSubsystem, Drive drivetrain) {
+        this.Shooter = shooterSubsystem;
+        this.Drivetrain = drivetrain;
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(TurretSubsystem);
+        addRequirements(shooterSubsystem);
     }
 
     // Called when the command is initially scheduled.
@@ -25,7 +26,9 @@ public class AimAtHub extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        Turret.setTurretRotationTarget(GeneralUtils.getAngleToTarget(Drivetrain, GeneralUtils.findTarget(Drivetrain)));
+        Shooter.setShooterSpeedSet(
+                GeneralUtils.shooterSpeedFromDistance(
+                        GeneralUtils.distanceFromPose(Constants.FIELD_CONSTANTS.CENTER_OF_HUB, Drivetrain)));
     }
 
     @Override
@@ -36,7 +39,7 @@ public class AimAtHub extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        Turret.setTurretRotationTarget(0);
+        Shooter.setShooterSpeedSet(Constants.OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED);
     }
 
 }

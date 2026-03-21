@@ -2,23 +2,24 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.indexer.Indexer;
+import frc.robot.subsystems.indexer.Indexer.IndexerStates;
 
-public class SetIndexer extends Command {
+public class Indexer_Spin extends Command {
     private Indexer Indexer;
-    private Double Speed;
+    private IndexerStates State;
 
-    public SetIndexer(Indexer Indexer, double speed) {
-        this.Indexer = Indexer;
-        this.Speed = speed;
+    public Indexer_Spin(Indexer IndexerSubsystem, IndexerStates state) {
+        this.Indexer = IndexerSubsystem;
+        this.State = state;
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(Indexer);
+        addRequirements(IndexerSubsystem);
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        Indexer.setSpindexerSpeed(Speed);
-        Indexer.setTowerSpeed(Speed);
+        Indexer.setSpindexerSpeed(State.getSpindexer());
+        Indexer.setTowerSpeed(State.getTower());
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -35,8 +36,8 @@ public class SetIndexer extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        Indexer.setSpindexerSpeed(0);
-        Indexer.setTowerSpeed(0);
+        Indexer.setSpindexerSpeed(IndexerStates.OFF.getSpindexer());
+        Indexer.setTowerSpeed(IndexerStates.OFF.getTower());
     }
 
 }

@@ -29,16 +29,16 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.FIELD_CONSTANTS;
 import frc.robot.Constants.OPERATOR_CONSTANTS;
-import frc.robot.commands.AimAndShoot;
-import frc.robot.commands.AimAtHub;
-import frc.robot.commands.ClimbSpeed;
+import frc.robot.commands.Turret_AimAndShoot;
+import frc.robot.commands.Turret_AimAtHub;
+import frc.robot.commands.Climb_move;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.IndexerSpin;
-import frc.robot.commands.IntakeSpin;
-import frc.robot.commands.ManualTurret;
-import frc.robot.commands.IntakePID;
-import frc.robot.commands.ShootSpeed;
-import frc.robot.commands.ZeroTurret;
+import frc.robot.commands.Indexer_Spin;
+import frc.robot.commands.Intake_Spin;
+import frc.robot.commands.Turret_ManualTurret;
+import frc.robot.commands.Intake_PID;
+import frc.robot.commands.Shooter_ShootSpeed;
+import frc.robot.commands.Turret_ZeroTurret;
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.BLine.FollowPath;
 import frc.robot.subsystems.CANDle;
@@ -255,32 +255,32 @@ public class RobotContainer {
                 // new SequentialCommandGroup(new WaitCommand(.2),
                 // new IndexerSpin(indexer, IndexerStates.UP)))));
                 bLineChouser.setDefaultOption("8ball", new SequentialCommandGroup(drive.resetHearding(),
-                                new ParallelCommandGroup(new AimAndShoot(shooter, turret, drive),
+                                new ParallelCommandGroup(new Turret_AimAndShoot(shooter, turret, drive),
                                                 new SequentialCommandGroup(new WaitCommand(.2),
-                                                                new IndexerSpin(indexer, IndexerStates.UP)))));
+                                                                new Indexer_Spin(indexer, IndexerStates.UP)))));
                 bLineChouser.addOption("shoot",
-                                new ShootSpeed(shooter, GeneralUtils.shooterSpeedFromDistance(
+                                new Shooter_ShootSpeed(shooter, GeneralUtils.shooterSpeedFromDistance(
                                                 GeneralUtils.distanceFromPose(FIELD_CONSTANTS.CENTER_OF_HUB, drive)),
                                                 false));
                 bLineChouser.addOption("8ball then out",
                                 new SequentialCommandGroup(new ParallelDeadlineGroup(new WaitCommand(10),
-                                                new ParallelCommandGroup(new AimAndShoot(shooter, turret, drive),
+                                                new ParallelCommandGroup(new Turret_AimAndShoot(shooter, turret, drive),
                                                                 new SequentialCommandGroup(new WaitCommand(.5),
-                                                                                new IndexerSpin(indexer,
+                                                                                new Indexer_Spin(indexer,
                                                                                                 IndexerStates.UP)))),
                                                 drive.pathFromString("b1-1"),
-                                                new IntakePID(intake, IntakePosition.OUT,
+                                                new Intake_PID(intake, IntakePosition.OUT,
                                                                 OPERATOR_CONSTANTS.ROLLER_SPEED).withTimeout(0.05),
                                                 drive.pathFromString("b1-2"),
-                                                new IntakeSpin(intake, 0).withTimeout(0.05),
+                                                new Intake_Spin(intake, 0).withTimeout(0.05),
                                                 drive.pathFromString("b1-3"),
-                                                new ParallelCommandGroup(new AimAndShoot(shooter, turret, drive),
+                                                new ParallelCommandGroup(new Turret_AimAndShoot(shooter, turret, drive),
                                                                 new SequentialCommandGroup(new WaitCommand(0.5),
-                                                                                new IndexerSpin(indexer,
+                                                                                new Indexer_Spin(indexer,
                                                                                                 IndexerStates.UP)))));
                 bLineChouser.addOption("drive forwards", new SequentialCommandGroup(drive
                                 .cRunVelocity(new ChassisSpeeds(1, 0, 0)).withTimeout(Time.ofBaseUnits(0.5, Seconds)),
-                                new IntakePID(intake, IntakePosition.OUT, 0)));
+                                new Intake_PID(intake, IntakePosition.OUT, 0)));
 
         }
 
@@ -306,34 +306,34 @@ public class RobotContainer {
         private void configureAutoCommands() {
 
                 NamedCommands.registerCommand("aim'n'Shoot",
-                                new AimAndShoot(shooter, turret, drive));
-                NamedCommands.registerCommand("shoot", new ShootSpeed(shooter, 20, false));
-                NamedCommands.registerCommand("intake spin", new IntakeSpin(intake, 1));
+                                new Turret_AimAndShoot(shooter, turret, drive));
+                NamedCommands.registerCommand("shoot", new Shooter_ShootSpeed(shooter, 20, false));
+                NamedCommands.registerCommand("intake spin", new Intake_Spin(intake, 1));
                 NamedCommands.registerCommand("intake out",
-                                new IntakePID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                                new Intake_PID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED));
                 NamedCommands.registerCommand("intake in",
-                                new IntakePID(intake, IntakePosition.IN, OPERATOR_CONSTANTS.ROLLER_SPEED));
-                NamedCommands.registerCommand("indexer on", new IndexerSpin(indexer, IndexerStates.UP));
-                NamedCommands.registerCommand("indexer off", new IndexerSpin(indexer, IndexerStates.OFF));
+                                new Intake_PID(intake, IntakePosition.IN, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                NamedCommands.registerCommand("indexer on", new Indexer_Spin(indexer, IndexerStates.UP));
+                NamedCommands.registerCommand("indexer off", new Indexer_Spin(indexer, IndexerStates.OFF));
                 NamedCommands.registerCommand("homeAll",
-                                new SequentialCommandGroup(new ManualTurret(turret, 0),
-                                                new IntakePID(intake, IntakePosition.IN, 0),
-                                                new ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED,
+                                new SequentialCommandGroup(new Turret_ManualTurret(turret, 0),
+                                                new Intake_PID(intake, IntakePosition.IN, 0),
+                                                new Shooter_ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED,
                                                                 false)));
 
                 FollowPath.registerEventTrigger("intake out",
-                                new IntakePID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED)
+                                new Intake_PID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED)
                                                 .withTimeout(0.5));
                 FollowPath.registerEventTrigger("intake in",
-                                new IntakePID(intake, IntakePosition.IN, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                                new Intake_PID(intake, IntakePosition.IN, OPERATOR_CONSTANTS.ROLLER_SPEED));
                 FollowPath.registerEventTrigger("aim n shoot",
-                                new ParallelCommandGroup(new AimAndShoot(shooter, turret, drive),
+                                new ParallelCommandGroup(new Turret_AimAndShoot(shooter, turret, drive),
                                                 new SequentialCommandGroup(
                                                                 new WaitCommand(Time.ofBaseUnits(.5, Seconds)),
-                                                                new IndexerSpin(indexer, IndexerStates.UP))));
+                                                                new Indexer_Spin(indexer, IndexerStates.UP))));
                 FollowPath.registerEventTrigger("stop shooter", new ParallelCommandGroup(
-                                new ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED, false),
-                                new IndexerSpin(indexer, IndexerStates.OFF)));
+                                new Shooter_ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED, false),
+                                new Indexer_Spin(indexer, IndexerStates.OFF)));
         }
 
         /**
@@ -401,40 +401,41 @@ public class RobotContainer {
 
                 // Shooter + turret Subsystems
                 operatorController.L2().onTrue(new ParallelCommandGroup(
-                                new AimAndShoot(shooter, turret, drive)/*
-                                                                        * ,
-                                                                        * new SequentialCommandGroup(new
-                                                                        * WaitCommand(0.5),
-                                                                        * new IndexerSpin(indexer, IndexerStates.UP))
-                                                                        */));
+                                new Turret_AimAndShoot(shooter, turret, drive)/*
+                                                                               * ,
+                                                                               * new SequentialCommandGroup(new
+                                                                               * WaitCommand(0.5),
+                                                                               * new IndexerSpin(indexer,
+                                                                               * IndexerStates.UP))
+                                                                               */));
                 operatorController.touchpad().onTrue(new ParallelCommandGroup(
-                                new IndexerSpin(indexer, IndexerStates.OFF),
-                                new ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED, false),
-                                new ManualTurret(turret, 0)));
+                                new Indexer_Spin(indexer, IndexerStates.OFF),
+                                new Shooter_ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED, false),
+                                new Turret_ManualTurret(turret, 0)));
                 operatorController.square()
-                                .onTrue(new ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED, false));
+                                .onTrue(new Shooter_ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED, false));
 
                 // indexer sudsystem
-                operatorController.circle().whileTrue(new IndexerSpin(indexer, IndexerStates.UP));
-                operatorController.triangle().onTrue(new IndexerSpin(indexer, IndexerStates.OFF));
+                operatorController.circle().whileTrue(new Indexer_Spin(indexer, IndexerStates.UP));
+                operatorController.triangle().onTrue(new Indexer_Spin(indexer, IndexerStates.OFF));
 
                 // climb
-                operatorController.R1().whileTrue(new ClimbSpeed(climb, 0.9));
-                operatorController.R2().whileTrue(new ClimbSpeed(climb, -0.9));
+                operatorController.R1().whileTrue(new Climb_move(climb, 0.9));
+                operatorController.R2().whileTrue(new Climb_move(climb, -0.9));
 
                 // pid intake
                 operatorController.povUp()
-                                .onTrue(new IntakePID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                                .onTrue(new Intake_PID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED));
                 operatorController.povDown()
-                                .onTrue(new IntakePID(intake, IntakePosition.IN, OPERATOR_CONSTANTS.ROLLER_SPEED));
-                operatorController.share().whileTrue(new IntakePID(intake, 0.2, 0));
-                operatorController.options().whileTrue(new IntakePID(intake, -0.2, 0));
+                                .onTrue(new Intake_PID(intake, IntakePosition.IN, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                operatorController.share().whileTrue(new Intake_PID(intake, 0.2, 0));
+                operatorController.options().whileTrue(new Intake_PID(intake, -0.2, 0));
 
                 // roller
                 operatorController.povLeft()
-                                .onTrue(new IntakeSpin(intake, OPERATOR_CONSTANTS.ROLLER_SPEED));
-                operatorController.povRight().onTrue(new IntakeSpin(intake, 0));
-                operatorController.cross().onTrue(new IntakeSpin(intake, -Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
+                                .onTrue(new Intake_Spin(intake, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                operatorController.povRight().onTrue(new Intake_Spin(intake, 0));
+                operatorController.cross().onTrue(new Intake_Spin(intake, -Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
 
                 // ∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
 
@@ -457,10 +458,10 @@ public class RobotContainer {
                 // IntakePosition.HALFWAY, 0));
                 // testController1.touchpad().whileTrue(new IntakeRatle(intake));
 
-                testController1.povLeft().onTrue(new ManualTurret(turret, .25));
-                testController1.povRight().whileTrue(new AimAtHub(turret, drive));
-                testController1.povUp().onTrue(new AimAndShoot(shooter, turret, drive));
-                testController1.R1().whileTrue(new IndexerSpin(indexer, IndexerStates.UP));
+                testController1.povLeft().onTrue(new Turret_ManualTurret(turret, .25));
+                testController1.povRight().whileTrue(new Turret_AimAtHub(turret, drive));
+                testController1.povUp().onTrue(new Turret_AimAndShoot(shooter, turret, drive));
+                testController1.R1().whileTrue(new Indexer_Spin(indexer, IndexerStates.UP));
         }
 
         public Command resetGyro() {
@@ -470,9 +471,10 @@ public class RobotContainer {
         }
 
         public Command zeroThings() {
-                return new ParallelCommandGroup(new ZeroTurret(turret),
-                                new ParallelCommandGroup(new ShootSpeed(shooter, 0, false),
-                                                new IndexerSpin(indexer, IndexerStates.OFF), new IntakeSpin(intake, 0))
+                return new ParallelCommandGroup(new Turret_ZeroTurret(turret),
+                                new ParallelCommandGroup(new Shooter_ShootSpeed(shooter, 0, false),
+                                                new Indexer_Spin(indexer, IndexerStates.OFF),
+                                                new Intake_Spin(intake, 0))
                                                 .withTimeout(1));
         }
 

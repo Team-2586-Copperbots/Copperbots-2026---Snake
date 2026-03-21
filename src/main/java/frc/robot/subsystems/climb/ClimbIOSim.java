@@ -7,17 +7,15 @@ public class ClimbIOSim implements ClimbIO {
     private ClimbPosition position = ClimbPosition.DOWN;
     private boolean positionVoltage = false;
 
-
-
     public ClimbIOSim() {
 
     }
 
     @Override
     public void updateInputs(ClimbIOInputs inputs) {
-        inputs.position = position;
+        inputs.targetPosition = position;
         inputs.speed = speed;
-        inputs.positionVoltage = positionVoltage;
+        inputs.isPositionVoltage = positionVoltage;
     }
 
     @Override
@@ -25,8 +23,9 @@ public class ClimbIOSim implements ClimbIO {
         this.speed = speed;
         this.positionVoltage = false;
     }
+
     @Override
-    public void setPosition(ClimbPosition position) {
+    public void setTargetPosition(ClimbPosition position) {
         this.position = position;
         this.positionVoltage = true;
     }

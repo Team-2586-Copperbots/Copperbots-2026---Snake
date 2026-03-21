@@ -39,17 +39,21 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.MyDriveConstants.BLine_PIDs;
-import frc.robot.Constants.DRIVEBASE_TARGET_POSES;
+import frc.robot.Constants.FIELD_CONSTANTS;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.ROBOT_PROPERTIES;
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.BLine.FollowPath;
 import frc.robot.lib.BLine.Path;
+import frc.robot.lib.BLine.Path.PathConstraints;
+import frc.robot.lib.BLine.Path.Waypoint;
 import frc.robot.util.GeneralUtils;
+import frc.robot.util.driveUtils.ClimbUtils;
 import frc.robot.util.driveUtils.LocalADStarAK;
 
 import java.util.concurrent.locks.Lock;
@@ -297,22 +301,26 @@ public class Drive extends SubsystemBase {
     return run(() -> runVelocity(speeds));
   }
 
-  public Command followPathCommandtoTestPose() {
-    Pose2d target = DRIVEBASE_TARGET_POSES.TEST_POSE2D;
-    return AutoBuilder.pathfindToPose(target, ROBOT_PROPERTIES.PATH_CONSTRAINTS, 0);
-  }
-
   public Command pathFromString(String name) {
     return pathBuilder.build(new Path(name));
   }
 
-  public Command pathFindToHubShot() {
-    return pathBuilder
-        .build(new Path(new Path.Waypoint(Constants.DRIVEBASE_TARGET_POSES.TEST_POSE2D)));
+  public Command pathFromPath(Path path) {
+    return pathBuilder.build(path);
   }
 
-  public Command goTo(Pose2d target) {
-    return pathBuilder.build(new Path(new Path.Waypoint(target)));
+  public Command pathFromPose(Pose2d pose) {
+    return pathBuilder.build(new Path(new Waypoint(pose)));
+  }
+
+  public Command pathFromPose(Path path) {
+    return pathBuilder.build(path);
+  }
+
+  public Path pathFromPoseWithConstraints(Pose2d target, PathConstraints constraints) {
+    Path path = new Path(new Path.Waypoint(target));
+    path.setPathConstraints(constraints);
+    return path;
   }
 
   //

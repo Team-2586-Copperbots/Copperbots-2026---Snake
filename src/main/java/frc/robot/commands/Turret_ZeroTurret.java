@@ -3,10 +3,10 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.turret.Turret;;
 
-public class ZeroTurret extends Command {
+public class Turret_ZeroTurret extends Command {
     private Turret Turret;
 
-    public ZeroTurret(Turret TurretSubsystem) {
+    public Turret_ZeroTurret(Turret TurretSubsystem) {
         this.Turret = TurretSubsystem;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(TurretSubsystem);

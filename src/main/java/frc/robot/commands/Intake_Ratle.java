@@ -5,10 +5,10 @@
 // import frc.robot.Constants;
 // import frc.robot.subsystems.intake.Intake;
 
-// public class IntakeRatle extends Command {
+// public class Intake_Ratle extends Command {
 //     private Intake Intake;
 
-//     public IntakeRatle(Intake Intake) {
+//     public Intake_Ratle(Intake Intake) {
 //         this.Intake = Intake;
 //         // Use addRequirements() here to declare subsystem dependencies.
 //         addRequirements(Intake);

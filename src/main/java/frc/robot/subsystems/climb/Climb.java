@@ -18,12 +18,16 @@ public class Climb extends SubsystemBase {
         Logger.processInputs("Climb", inputs);
     }
 
+    public double getPosition() {
+        return inputs.motorPosition;
+    }
+
     public void setClimbSpeed(double speed) {
         io.setSpeed(speed);
     }
 
-    public void setClimbPosition(ClimbPosition position) {
-        io.setPosition(position);
+    public void setClimbTargetPosition(ClimbPosition position) {
+        io.setTargetPosition(position);
     }
 
     public static enum ClimbPosition {
