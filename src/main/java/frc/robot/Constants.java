@@ -35,8 +35,7 @@ import frc.robot.util.AllianceFlipUtil;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode simMode = Mode.SIM;
-  public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
+  public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -52,6 +51,8 @@ public final class Constants {
   // drive
 
   public static class ROBOT_PROPERTIES {
+    public static double widthOffset = 14;
+    public static double lengthOffset = 13;
     private static RobotConfig ROBOT_CONFIG;
 
     // what on earth does throws exception mean and what are exceptions and what do
@@ -146,7 +147,7 @@ public final class Constants {
 
   public static class SHOOTER_CONSTANTS {
     public static final Distance HEIGHT_OF_WHEEL_OFF_GROUND = Distance.ofBaseUnits(0.64135, Meters); // in meters
-    public static final double SHOOTER_WHEELE_CIRCUMFERENCE = 2 * 2 * Math.PI;
+    public static final Distance SHOOTER_WHEELE_CIRCUMFERENCE = Distance.ofBaseUnits(2 * 2 * Math.PI, Inches);
     public static final Angle SHOOTER_HOOD_ANGLE = Angle.ofBaseUnits(22.165, Degrees);
   }
 

@@ -77,6 +77,7 @@ import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.util.GeneralUtils;
+import frc.robot.util.simsProjectile;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -180,6 +181,9 @@ public class RobotContainer {
                                                                 driveSimulation::getSimulatedDriveTrainPose));
                                 shooter = new Shooter(new ShooterIOSim());
                                 turret = new Turret(new TurretIOSim());
+
+                                simsProjectile.createSimsProjectile(drive::getPose, drive::getChassisSpeeds,
+                                                turret::getRobotRelitiveRotation2D, shooter::getMotor1Speed);
 
                                 break;
 

@@ -1,7 +1,11 @@
 package frc.robot.subsystems.turret;
 
+import static edu.wpi.first.units.Units.Rotation;
+
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 //
@@ -38,6 +42,10 @@ public class Turret extends SubsystemBase {
 
     public double getRobotRelitiveRotation() {
         return inputs.rotationRelitiveToRobotZero;
+    }
+
+    public Rotation2d getRobotRelitiveRotation2D() {
+        return new Rotation2d(Angle.ofBaseUnits(getRobotRelitiveRotation(), Rotation));
     }
 
     public void setTurretToZero() {

@@ -69,7 +69,7 @@ public final class GeneralUtils {
     public static double timeFromDistance(double distance) {
         // should be good
         double speed = shooterSpeedFromDistance(distance);
-        double exitVelocity = (SHOOTER_CONSTANTS.SHOOTER_WHEELE_CIRCUMFERENCE * speed) / 2;
+        double exitVelocity = (SHOOTER_CONSTANTS.SHOOTER_WHEELE_CIRCUMFERENCE.in(Meters) * speed) / 2;
         return distance / (Math.cos(SHOOTER_CONSTANTS.SHOOTER_HOOD_ANGLE.in(Radians)) * exitVelocity);
     }
 
