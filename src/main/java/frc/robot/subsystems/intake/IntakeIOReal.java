@@ -10,10 +10,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import frc.robot.Constants;
-import frc.robot.Constants.INTAKE_CONSTANTS;
 import frc.robot.subsystems.intake.Intake.IntakePosition;
 
-import static edu.wpi.first.units.Units.Rotations;
 import static frc.robot.Constants.CANIds.Canivore;
 
 public class IntakeIOReal implements IntakeIO {

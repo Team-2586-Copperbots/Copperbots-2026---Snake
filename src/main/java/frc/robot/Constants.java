@@ -19,7 +19,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.RobotBase;
-import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.AllianceFlipUtil;
 
 /**
