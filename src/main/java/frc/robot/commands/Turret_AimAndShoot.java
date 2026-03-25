@@ -20,7 +20,7 @@ public class Turret_AimAndShoot extends Command {
         this.Turret = TurretSubsystem;
         this.Drive = Drivetrain;
         this.target = GeneralUtils.findTarget(Drive);
-        // this.target = FIELD_CONSTANTS.CENTER_OF_HUB;
+
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(ShooterSubsystem);
         addRequirements(TurretSubsystem);
@@ -51,6 +51,7 @@ public class Turret_AimAndShoot extends Command {
     @Override
     public void end(boolean interrupted) {
         Shooter.setShooterSpeedSet(OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED);
+        Turret.setTurretRotationTarget(0);
     }
 
 }

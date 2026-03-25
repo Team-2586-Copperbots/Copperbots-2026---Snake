@@ -378,24 +378,16 @@ public class RobotContainer {
                                                 () -> -GeneralUtils.squareNumber(driveController.getLeftX())
                                                                 * OPERATOR_CONSTANTS.SLOW_SPEED_LIMITER,
                                                 () -> -driveController.getRightX()));
-                // robot centric drive
-                // driveController.povUp()
-                // .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> 1, () -> 0,
-                // () -> -driveController.getRightX()));
-                // driveController.povDown()
-                // .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> -1, () -> 0,
-                // () -> -driveController.getRightX()));
-                // driveController.povLeft()
-                // .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> 0, () -> 1, () ->
-                // 0));
-                // driveController.povRight()
-                // .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> 0, () -> -1, () ->
-                // 0));
 
-                driveController.povUp().whileTrue(drive
-                                .sysIdDynamic(edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward));
+                driveController.R2().whileTrue(new Indexer_Spin(indexer, IndexerStates.ON));
+                driveController.R1().toggleOnTrue(new Turret_AimAndShoot(shooter, turret, drive));
+                // add button for indexer
 
-                driveController.circle().onTrue(drive.commandResetOdometry(new Pose2d(2, 2, new Rotation2d())));
+                // driveController.povUp().whileTrue(drive
+                // .sysIdDynamic(edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward));
+
+                // driveController.circle().onTrue(drive.commandResetOdometry(new Pose2d(2, 2,
+                // new Rotation2d())));
 
                 // ∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
 
