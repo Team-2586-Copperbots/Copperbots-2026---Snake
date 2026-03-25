@@ -41,7 +41,7 @@ public class Climb_move extends Command {
 
     @Override
     public boolean isFinished() {
-        if (position != null && (Math.abs(climb.getPosition() - position.getPosition()) < 0.05)) {
+        if (position != null && (Math.abs(climb.getPosition() - position.value) < 0.05)) {
             return true;
         }
         return false;

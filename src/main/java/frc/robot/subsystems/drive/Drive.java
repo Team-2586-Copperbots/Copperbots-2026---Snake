@@ -200,6 +200,7 @@ public class Drive extends SubsystemBase {
     Logger.recordOutput("target for turret", GeneralUtils.findTarget(this));
     field.setRobotPose(getPose());
     SmartDashboard.putData("field", field);
+    resetSimulationPoseCallBack.accept(getPose());
     for (var module : modules) {
       module.periodic();
     }

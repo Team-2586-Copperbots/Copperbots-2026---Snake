@@ -10,7 +10,7 @@ public interface ClimbIO {
         public boolean isPositionVoltage = false;
         public double motorPosition = 0;
 
-        public double speed = 0;
+        public double targetSpeed = 0;
         public ClimbPosition targetPosition = ClimbPosition.DOWN;
     }
 

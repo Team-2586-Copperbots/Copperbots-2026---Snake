@@ -3,7 +3,7 @@ package frc.robot.subsystems.climb;
 import frc.robot.subsystems.climb.Climb.ClimbPosition;
 
 public class ClimbIOSim implements ClimbIO {
-    private Double speed = 0.0;
+    private Double targetSpeed = 0.0;
     private ClimbPosition position = ClimbPosition.DOWN;
     private boolean positionVoltage = false;
 
@@ -13,14 +13,17 @@ public class ClimbIOSim implements ClimbIO {
 
     @Override
     public void updateInputs(ClimbIOInputs inputs) {
-        inputs.targetPosition = position;
-        inputs.speed = speed;
+        inputs.motorPosition = position.value;
         inputs.isPositionVoltage = positionVoltage;
+
+        inputs.targetPosition = position;
+        inputs.targetSpeed = targetSpeed;
+
     }
 
     @Override
     public void setSpeed(double speed) {
-        this.speed = speed;
+        this.targetSpeed = speed;
         this.positionVoltage = false;
     }
 

@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.util.simsProjectile;
 
 /**
  * The methods in this class are called automatically corresponding to each
@@ -183,13 +184,14 @@ public class Robot extends LoggedRobot {
   @Override
   public void simulationInit() {
     SimulatedArena.getInstance();
-    SimulatedArena.getInstance().addGamePiece(new RebuiltFuelOnField(new Translation2d(3, 3)));
+    SimulatedArena.getInstance().placeGamePiecesOnField();
   }
 
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {
     SimulatedArena.getInstance().simulationPeriodic();
+    simsProjectile.logValues();
     // Get the positions of the fuel (both on the field and in the air)
     Pose3d[] fuelPoses = SimulatedArena.getInstance()
         .getGamePiecesArrayByType("Fuel");

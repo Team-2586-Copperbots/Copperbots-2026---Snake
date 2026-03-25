@@ -101,11 +101,9 @@ public final class Constants {
     public static Pose2d TOP_FULE_STORAGE = new Pose2d();
     public static Pose2d TEST_POSE2D = new Pose2d();
 
-    
-
     public static void updatePositions() {
       CENTER_OF_HUB = AllianceFlipUtil.apply(
-          new Pose2d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84), Rotation2d.kZero));
+          new Pose2d(Distance.ofBaseUnits(4.62, Meters), Distance.ofBaseUnits(4.04, Meters), Rotation2d.kZero));
       BOTTOM_FULE_STORAGE = AllianceFlipUtil.apply(new Pose2d(2.75, 1.6, Rotation2d.kZero));
       TOP_FULE_STORAGE = AllianceFlipUtil.apply(
           new Pose2d(AllianceFlipUtil.applyX(BOTTOM_FULE_STORAGE.getX()),
@@ -147,7 +145,8 @@ public final class Constants {
 
   public static class SHOOTER_CONSTANTS {
     public static final Distance HEIGHT_OF_WHEEL_OFF_GROUND = Distance.ofBaseUnits(0.64135, Meters); // in meters
-    public static final Distance SHOOTER_WHEELE_CIRCUMFERENCE = Distance.ofBaseUnits(2 * 2 * Math.PI, Inches);
+    public static final Distance SHOOTER_WHEELE_CIRCUMFERENCE = Distance.ofBaseUnits(Inches.of(4 * Math.PI).in(Meters),
+        Meters);
     public static final Angle SHOOTER_HOOD_ANGLE = Angle.ofBaseUnits(22.165, Degrees);
   }
 

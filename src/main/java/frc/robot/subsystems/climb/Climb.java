@@ -34,14 +34,10 @@ public class Climb extends SubsystemBase {
         UP(10),
         DOWN(0);
 
-        private final double position;
+        public final double value;
 
-        private ClimbPosition(double position) {
-            this.position = position;
-        }
-
-        public double getPosition() {
-            return position;
+        private ClimbPosition(double value) {
+            this.value = value;
         }
     }
 

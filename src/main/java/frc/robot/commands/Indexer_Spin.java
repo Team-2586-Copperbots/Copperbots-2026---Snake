@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import org.littletonrobotics.junction.AutoLogOutput;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.indexer.Indexer;
@@ -11,6 +13,7 @@ public class Indexer_Spin extends Command {
     private IndexerStates State;
     private boolean simPojectil = false;
     private int counter = 0;
+    @AutoLogOutput (key="Indexer/timebetwen")
     private int timeBetwen = 25;
 
     public Indexer_Spin(Indexer IndexerSubsystem, IndexerStates state) {
@@ -26,8 +29,8 @@ public class Indexer_Spin extends Command {
         if (State != IndexerStates.OFF && Constants.currentMode == Constants.Mode.SIM) {
             simPojectil = true;
         }
-        Indexer.setSpindexerSpeed(State.getSpindexer());
-        Indexer.setTowerSpeed(State.getTower());
+        Indexer.setSpindexerSpeed(State.spindexer);
+        Indexer.setTowerSpeed(State.tower);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -51,8 +54,8 @@ public class Indexer_Spin extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        Indexer.setSpindexerSpeed(IndexerStates.OFF.getSpindexer());
-        Indexer.setTowerSpeed(IndexerStates.OFF.getTower());
+        Indexer.setSpindexerSpeed(IndexerStates.OFF.spindexer);
+        Indexer.setTowerSpeed(IndexerStates.OFF.tower);
     }
 
 }

@@ -31,25 +31,17 @@ public class Indexer extends SubsystemBase {
     }
 
     public static enum IndexerStates {
-        UP(-0.45, 0.5),
-        DOWN(0.3, -0.4),
+        ON(-0.45, 0.5),
         OFF(0, 0);
 
-        private final double spindexer;
-        private final double tower;
+        public final double spindexer;
+        public final double tower;
 
         private IndexerStates(double spindexer, double tower) {
             this.spindexer = spindexer;
             this.tower = tower;
         }
 
-        public double getSpindexer() {
-            return spindexer;
-        }
-
-        public double getTower() {
-            return tower;
-        }
     }
 
 }
