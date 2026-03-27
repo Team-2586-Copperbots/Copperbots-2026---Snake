@@ -50,12 +50,17 @@ public final class Constants {
   // drive
 
   public static class ROBOT_PROPERTIES {
-    public static double widthOffset = 14;
-    public static double lengthOffset = 13;
+    public static final double widthOffset = 14;
+    public static final double lengthOffset = 13;
+    public static final double floorOffset = 6.125; // frome the floor to the top of the 1x1 upper rail of the frame
+
     private static RobotConfig ROBOT_CONFIG;
 
     // what on earth does throws exception mean and what are exceptions and what do
     // they do?
+
+    // exceptions are funny ways to throw errors / allow you to pass errors to
+    // othermethouds to let them do something with it
     public static RobotConfig getROBOT_CONFIG() {
       if (ROBOT_CONFIG == null) {
         try {
@@ -85,7 +90,7 @@ public final class Constants {
     public static final double MAX_SPEED_LIMITER = 1;
     public static final double SLOW_SPEED_LIMITER = 0.35;
 
-    public static final double IDLE_SHOOTER_SPEED = 45; // RPS
+    public static final double IDLE_SHOOTER_SPEED = 30; // RPS
     public static final double ROLLER_SPEED = 0.8; // percentage
   }
 
@@ -163,7 +168,7 @@ public final class Constants {
   }
 
   public static enum CANDLE_STRIPS {
-    // TODO: fix indexe (plural?) when strips are made, for eskey
+    // TODO: fix indexe (plural?) when strips are made, for eskey?
     BUILT_IN(0, 7),
     FIRST(8, 8 + 21),
     SECOND(78, 147),

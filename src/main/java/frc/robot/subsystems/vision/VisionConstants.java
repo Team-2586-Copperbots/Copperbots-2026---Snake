@@ -30,41 +30,30 @@ public class VisionConstants {
 
         // Camera names, must match names configured on coprocessor
         public static String backCamera = "backCamera";
-        public static String camera1Name = "sideCamera";
-
-        // Robot to camera transforms
-        // // old transformations for pre angled mounts
-        // public static Transform3d robotToBackCamera = new
-        // Transform3d(Units.inchesToMeters(-12),
-        // Units.inchesToMeters(5.5), Units.inchesToMeters(8),
-        // new Rotation3d(Rotation2d.fromDegrees(180)));
-        // // public static Transform3d robotToSideCamera = new
-        // Transform3d(Units.inchesToMeters(-4.5),
-        // // Units.inchesToMeters(12), Units.inchesToMeters(7.125), new Rotation3d(0.0,
-        // 0.0, -Math.PI));
-        // public static Transform3d robotToSideCamera = new
-        // Transform3d(Units.inchesToMeters(-4.5),
-        // Units.inchesToMeters(12), Units.inchesToMeters(7.125), new
-        // Rotation3d(Rotation2d.fromDegrees(-90)));
+        public static String sideCamera = "sideCamera";
 
         // new transrofms for positions of angled camras
         public static Transform3d robotToBackCamera = new Transform3d(
                         // translation
-                        Distance.ofBaseUnits(Constants.ROBOT_PROPERTIES.lengthOffset - 1.75, Inches),
-                        Distance.ofBaseUnits(ROBOT_PROPERTIES.widthOffset - 12.4, Inches),
-                        Distance.ofBaseUnits(6.227 + 9.042, Inches),
+                        Distance.ofBaseUnits(2.5 - ROBOT_PROPERTIES.lengthOffset, Inches),
+                        Distance.ofBaseUnits(-3.5 + ROBOT_PROPERTIES.widthOffset, Inches),
+                        Distance.ofBaseUnits(10.35 + ROBOT_PROPERTIES.floorOffset, Inches),
                         // rotation
-                        new Rotation3d(Angle.ofBaseUnits(0, Degrees),
-                                        Angle.ofBaseUnits(30, Degrees), Angle.ofBaseUnits(180, Degrees)));
+                        new Rotation3d(
+                                        Angle.ofBaseUnits(0, Degrees),
+                                        Angle.ofBaseUnits(30, Degrees),
+                                        Angle.ofBaseUnits(180, Degrees)));
 
         public static Transform3d robotToSideCamera = new Transform3d(
                         // translation
-                        Distance.ofBaseUnits(Constants.ROBOT_PROPERTIES.lengthOffset - 13.5, Inches),
-                        Distance.ofBaseUnits(ROBOT_PROPERTIES.widthOffset - 0.75, Inches),
-                        Distance.ofBaseUnits(6.227 + 9.042, Inches),
+                        Distance.ofBaseUnits(13.5 + -ROBOT_PROPERTIES.lengthOffset, Inches),
+                        Distance.ofBaseUnits(0.75 + -ROBOT_PROPERTIES.widthOffset, Inches),
+                        Distance.ofBaseUnits(9.042 + ROBOT_PROPERTIES.floorOffset, Inches),
                         // rotation
-                        new Rotation3d(Angle.ofBaseUnits(0, Degrees),
-                                        Angle.ofBaseUnits(30, Degrees), Angle.ofBaseUnits(270, Degrees)));
+                        new Rotation3d(
+                                        Angle.ofBaseUnits(0, Degrees),
+                                        Angle.ofBaseUnits(30, Degrees),
+                                        Angle.ofBaseUnits(270, Degrees)));
 
         // Basic filtering thresholds
         public static double maxAmbiguity = 0.3;

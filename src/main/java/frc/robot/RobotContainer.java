@@ -152,8 +152,11 @@ public class RobotContainer {
                                 intake = new Intake(new IntakeIOReal());
                                 shooter = new Shooter(new ShooterIOReal());
                                 // photonSubsystem = new PhotonSubsystem();
-                                vision = new Vision(drive::addVisionMeasurement, new VisionIOPhotonVision(
-                                                VisionConstants.backCamera, VisionConstants.robotToBackCamera));
+                                vision = new Vision(drive::addVisionMeasurement,
+                                                new VisionIOPhotonVision(VisionConstants.backCamera,
+                                                                VisionConstants.robotToBackCamera),
+                                                new VisionIOPhotonVision(VisionConstants.sideCamera,
+                                                                VisionConstants.robotToSideCamera));
 
                                 turret = new Turret(new TurretIOReal());
 
