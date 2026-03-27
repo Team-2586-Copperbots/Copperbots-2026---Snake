@@ -41,8 +41,9 @@ public class VisionConstants {
                         // rotation
                         new Rotation3d(
                                         Angle.ofBaseUnits(0, Degrees),
-                                        Angle.ofBaseUnits(30, Degrees),
+                                        Angle.ofBaseUnits(-30, Degrees),
                                         Angle.ofBaseUnits(180, Degrees)));
+                                        
 
         public static Transform3d robotToSideCamera = new Transform3d(
                         // translation
@@ -52,12 +53,12 @@ public class VisionConstants {
                         // rotation
                         new Rotation3d(
                                         Angle.ofBaseUnits(0, Degrees),
-                                        Angle.ofBaseUnits(30, Degrees),
+                                        Angle.ofBaseUnits(-30, Degrees),
                                         Angle.ofBaseUnits(270, Degrees)));
 
         // Basic filtering thresholds
         public static double maxAmbiguity = 0.3;
-        public static double maxZError = 0.75;
+        public static double maxZError = 100;
 
         // Standard deviation baselines, for 1 meter distance and 1 tag
         // (Adjusted automatically based on distance and # of tags)
