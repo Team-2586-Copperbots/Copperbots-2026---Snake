@@ -280,6 +280,7 @@ public class Drive extends SubsystemBase {
         new PIDController(BLine_PIDs.rkP, BLine_PIDs.rkI, BLine_PIDs.rkD),
         new PIDController(BLine_PIDs.CTkP, BLine_PIDs.CTkI, BLine_PIDs.CTkD))
         .withDefaultShouldFlip();
+
     FollowPath.setPoseLoggingConsumer(pair -> {
       Logger.recordOutput(pair.getFirst(), pair.getSecond());
     });
@@ -309,14 +310,18 @@ public class Drive extends SubsystemBase {
     return pathBuilder.build(new Path(new Waypoint(pose)));
   }
 
-  public Command pathFromPose(Path path) {
-    return pathBuilder.build(path);
-  }
-
   public Path pathFromPoseWithConstraints(Pose2d target, PathConstraints constraints) {
     Path path = new Path(new Path.Waypoint(target));
     path.setPathConstraints(constraints);
     return path;
+  }
+
+  public Command goToc(Pose2d target) {
+    return pathBuilder.build(new Path(new Path.Waypoint(target)));
+  }
+
+  public void goTo(Pose2d target) {
+    this.run(() -> pathBuilder.build(new Path(new Path.Waypoint(target))));
   }
 
   //
@@ -468,9 +473,8 @@ public class Drive extends SubsystemBase {
       Pose2d visionRobotPoseMeters,
       double timestampSeconds,
       Matrix<N3, N1> visionMeasurementStdDevs) {
-    Pose2d robotPOse = new Pose2d(visionRobotPoseMeters.getTranslation(), rawGyroRotation);
     poseEstimator.addVisionMeasurement(
-        robotPOse, timestampSeconds, visionMeasurementStdDevs);
+        visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
   }
 
   /** Returns the maximum linear speed in meters per sec. */

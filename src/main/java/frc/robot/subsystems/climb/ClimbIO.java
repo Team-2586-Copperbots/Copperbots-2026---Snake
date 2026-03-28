@@ -9,12 +9,16 @@ public interface ClimbIO {
     public static class ClimbIOInputs {
         public boolean isPositionVoltage = false;
         public double motorPosition = 0;
+        public boolean limitSwitch = false;
 
         public double targetSpeed = 0;
         public ClimbPosition targetPosition = ClimbPosition.DOWN;
     }
 
     public default void updateInputs(ClimbIOInputs inputs) {
+    }
+
+    public default void setPosition(double position) {
     }
 
     public default void setSpeed(double speed) {

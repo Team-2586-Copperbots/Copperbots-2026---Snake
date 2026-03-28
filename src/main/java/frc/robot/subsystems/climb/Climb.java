@@ -22,6 +22,14 @@ public class Climb extends SubsystemBase {
         return inputs.motorPosition;
     }
 
+    public boolean getLimitSwitch() {
+        return inputs.limitSwitch;
+    }
+
+    public void setPositionToZero() {
+        io.setPosition(0);
+    }
+
     public void setClimbSpeed(double speed) {
         io.setSpeed(speed);
     }
@@ -31,7 +39,7 @@ public class Climb extends SubsystemBase {
     }
 
     public static enum ClimbPosition {
-        UP(10),
+        UP(198),
         DOWN(0);
 
         public final double value;

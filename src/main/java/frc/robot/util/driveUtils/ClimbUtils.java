@@ -50,7 +50,7 @@ public class ClimbUtils {
         // this method moves the target out so the drive can to the climb in a straight
         // line
         Pose2d finalTarget = getFinalClimbTarget(drive);
-        Distance amountOut = Distance.ofBaseUnits(.5, Meters);
+        Distance amountOut = Distance.ofBaseUnits(-0.5, Meters);
         if (getIsTopClimb(drive)) {
             PRE_CLIMB_TARGET = AllianceFlipUtil.apply(new Pose2d(finalTarget.getMeasureX().plus(amountOut),
                     finalTarget.getMeasureY(), finalTarget.getRotation()));

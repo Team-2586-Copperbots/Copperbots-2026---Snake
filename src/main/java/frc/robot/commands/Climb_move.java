@@ -1,12 +1,14 @@
 package frc.robot.commands;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.Climb.ClimbPosition;
 
 public class Climb_move extends Command {
     private Climb climb;
-    private double Speed = Double.NaN;
+    private double Speed = -2;
     private ClimbPosition position = null;
 
     public Climb_move(Climb climbSubsystem, double speed) {
@@ -26,7 +28,11 @@ public class Climb_move extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        if (Speed != Double.NaN) {
+        Logger.recordOutput("climbthing", true);
+        Logger.recordOutput("cposition", position);
+        Logger.recordOutput("cspeed", Speed);
+        if (Speed != -2) {
+            Logger.recordOutput("cran speed", true);
             climb.setClimbSpeed(Speed);
         } else if (position != null) {
             climb.setClimbTargetPosition(position);

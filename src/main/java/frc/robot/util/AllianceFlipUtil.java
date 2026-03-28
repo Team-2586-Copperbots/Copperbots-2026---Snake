@@ -13,11 +13,15 @@ import edu.wpi.first.wpilibj.DriverStation;
 import static edu.wpi.first.units.Units.Meters;
 import static frc.robot.Constants.FIELD_CONSTANTS;
 
+import org.littletonrobotics.junction.Logger;
+
 public final class AllianceFlipUtil {
 
   public static boolean shouldFlip() {
-    return DriverStation.getAlliance().isPresent()
+    boolean shouldFlip = DriverStation.getAlliance().isPresent()
         && DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
+        Logger.recordOutput("aliance: shouldFlip", shouldFlip);
+    return shouldFlip;
   }
 
   public static double applyX(double x) {

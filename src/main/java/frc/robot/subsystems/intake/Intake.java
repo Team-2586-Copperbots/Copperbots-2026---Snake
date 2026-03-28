@@ -70,8 +70,8 @@ public class Intake extends SubsystemBase {
     // }
 
     public static enum IntakePosition {
-        IN(0.95),
-        OUT(6.15);
+        IN(0.0),
+        OUT(0.245);
         // ,
         // HALFWAY(4);
 

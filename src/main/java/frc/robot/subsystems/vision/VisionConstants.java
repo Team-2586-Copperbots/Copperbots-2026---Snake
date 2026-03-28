@@ -16,11 +16,11 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
-import frc.robot.Constants;
 import frc.robot.Constants.ROBOT_PROPERTIES;
 
 public class VisionConstants {
@@ -32,33 +32,34 @@ public class VisionConstants {
         public static String backCamera = "backCamera";
         public static String sideCamera = "sideCamera";
 
-        // new transrofms for positions of angled camras
+        // new transforms for positions of angled cameras
         public static Transform3d robotToBackCamera = new Transform3d(
                         // translation
-                        Distance.ofBaseUnits(2.5 - ROBOT_PROPERTIES.lengthOffset, Inches),
-                        Distance.ofBaseUnits(-3.5 + ROBOT_PROPERTIES.widthOffset, Inches),
-                        Distance.ofBaseUnits(10.35 + ROBOT_PROPERTIES.floorOffset, Inches),
+                        Inches.of(-ROBOT_PROPERTIES.lengthOffset /* to the back of the robot then forward/in: */ + 2.5),
+                        Inches.of(ROBOT_PROPERTIES.widthOffset /* to the LEFT(+) of the robot then in/right: */ + -3.5),
+                        Inches.of(ROBOT_PROPERTIES.floorOffset + 10.35),
                         // rotation
                         new Rotation3d(
-                                        Angle.ofBaseUnits(0, Degrees),
-                                        Angle.ofBaseUnits(-30, Degrees),
-                                        Angle.ofBaseUnits(180, Degrees)));
-                                        
+                                        Degrees.of(0), // no roll
+                                        Degrees.of(-20), // pitch up 20 degres
+                                        Degrees.of(180) // rotate around z 180 degres
+                        ));
 
         public static Transform3d robotToSideCamera = new Transform3d(
                         // translation
-                        Distance.ofBaseUnits(13.5 + -ROBOT_PROPERTIES.lengthOffset, Inches),
-                        Distance.ofBaseUnits(0.75 + -ROBOT_PROPERTIES.widthOffset, Inches),
-                        Distance.ofBaseUnits(9.042 + ROBOT_PROPERTIES.floorOffset, Inches),
+                        Inches.of(-ROBOT_PROPERTIES.lengthOffset /* to the back of the robot then forward: */ + 13.5),
+                        Inches.of(-ROBOT_PROPERTIES.widthOffset /* to the RIGHT(-) of the robot then in: */ + 0.75),
+                        Inches.of(ROBOT_PROPERTIES.floorOffset + 9.042),
                         // rotation
                         new Rotation3d(
-                                        Angle.ofBaseUnits(0, Degrees),
-                                        Angle.ofBaseUnits(-30, Degrees),
-                                        Angle.ofBaseUnits(270, Degrees)));
+                                        Degrees.of(0), // no roll
+                                        Degrees.of(-30), // pitch up 30 degres
+                                        Degrees.of(270) // rotate around z 180 degres
+                        ));
 
         // Basic filtering thresholds
         public static double maxAmbiguity = 0.3;
-        public static double maxZError = 100;
+        public static double maxZError = 0.75;
 
         // Standard deviation baselines, for 1 meter distance and 1 tag
         // (Adjusted automatically based on distance and # of tags)

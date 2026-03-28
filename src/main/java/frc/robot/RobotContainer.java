@@ -32,6 +32,8 @@ import frc.robot.Constants.FIELD_CONSTANTS;
 import frc.robot.Constants.OPERATOR_CONSTANTS;
 import frc.robot.commands.Turret_AimAndShoot;
 import frc.robot.commands.Turret_AimAtHub;
+import frc.robot.commands.Climb_AutoClimb;
+import frc.robot.commands.Climb_ZeroClimb;
 import frc.robot.commands.Climb_move;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.Indexer_Spin;
@@ -42,11 +44,13 @@ import frc.robot.commands.Shooter_ShootSpeed;
 import frc.robot.commands.Turret_ZeroTurret;
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.BLine.FollowPath;
+import frc.robot.lib.BLine.Path;
 import frc.robot.subsystems.CANDle;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbIO;
 import frc.robot.subsystems.climb.ClimbIOReal;
 import frc.robot.subsystems.climb.ClimbIOSim;
+import frc.robot.subsystems.climb.Climb.ClimbPosition;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -79,6 +83,7 @@ import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.util.GeneralUtils;
 import frc.robot.util.simsProjectile;
+import frc.robot.util.driveUtils.ClimbUtils;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -131,6 +136,8 @@ public class RobotContainer {
         private final SendableChooser<Command> characterizationChooser;
 
         private final SendableChooser<Double> polarityChooser;
+
+        private Command autoClimb;
 
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -232,7 +239,6 @@ public class RobotContainer {
 
                 // Configure the trigger bindings
                 bLineChouser = new SendableChooser<Command>();
-                configureBindings();
                 // make commands for autos
                 configureAutoCommands();
                 // make bline autos
@@ -253,7 +259,21 @@ public class RobotContainer {
                 SmartDashboard.putData("pathplaner chooser", autoChooser);
                 SmartDashboard.putData("bline chooser", bLineChouser);
                 SmartDashboard.putData("characterization Chooset", characterizationChooser);
+                createSequences();
+                configureBindings();
 
+        }
+
+        private void createSequences() {
+                autoClimb = new SequentialCommandGroup(
+                                new ParallelCommandGroup(
+                                                drive.pathFromPose(ClimbUtils.getPreClimbTarget(drive)),
+                                                new Climb_move(climb, ClimbPosition.UP)),
+                                drive.pathFromPath(
+                                                drive.pathFromPoseWithConstraints(ClimbUtils.getFinalClimbTarget(drive),
+                                                                new Path.PathConstraints()
+                                                                                .setMaxVelocityMetersPerSec(0.5))),
+                                new Climb_move(climb, ClimbPosition.DOWN));
         }
 
         private void buildBLineAutos() {
@@ -383,6 +403,7 @@ public class RobotContainer {
 
                 driveController.R2().whileTrue(new Indexer_Spin(indexer, IndexerStates.ON));
                 driveController.R1().toggleOnTrue(new Turret_AimAndShoot(shooter, turret, drive));
+                // driveController.L1().whileTrue(new Climb_AutoClimb(drive, climb));
                 // add button for indexer
 
                 // driveController.povUp().whileTrue(drive
@@ -428,6 +449,7 @@ public class RobotContainer {
                 // climb
                 operatorController.R1().whileTrue(new Climb_move(climb, 0.9));
                 operatorController.R2().whileTrue(new Climb_move(climb, -0.9));
+                operatorController.L1().onTrue(new Climb_ZeroClimb(climb));
 
                 // pid intake
                 operatorController.povUp()
@@ -444,30 +466,14 @@ public class RobotContainer {
                 operatorController.cross().onTrue(new Intake_Spin(intake, -Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
 
                 // ∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
-
-                // testController1.R1().whileTrue(new IndexerSpin(indexer,
-                // IndexerStates.UP));
-
-                // testController1.circle().whileTrue(new ShootSpeed(shooter, 30, false));
-                // testController1.povLeft()
-                // .onTrue(new IntakeSpin(intake, Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
-                // testController1.povRight().onTrue(new IntakeSpin(intake, 0));
-
-                // testController1.options().whileTrue(new IntakePID(intake, 0.1,
-                // OPERATOR_CONSTANTS.ROLLER_SPEED));
-                // testController1.share().whileTrue(new IntakePID(intake, -0.1,
-                // OPERATOR_CONSTANTS.ROLLER_SPEED));
-
-                // // pid intake
-                // testController1.povUp().onTrue(new IntakePID(intake, IntakePosition.OUT, 0));
-                // testController1.povDown().onTrue(new IntakePID(intake,
-                // IntakePosition.HALFWAY, 0));
-                // testController1.touchpad().whileTrue(new IntakeRatle(intake));
-
-                testController1.povLeft().onTrue(new Turret_ManualTurret(turret, .25));
-                testController1.povRight().whileTrue(new Turret_AimAtHub(turret, drive));
-                testController1.povUp().onTrue(new Turret_AimAndShoot(shooter, turret, drive));
-                testController1.R1().whileTrue(new Indexer_Spin(indexer, IndexerStates.ON));
+                testController1.circle().onTrue(new Climb_move(climb, ClimbPosition.UP));
+                testController1.square().onTrue(new Climb_move(climb, ClimbPosition.DOWN));
+                testController1.triangle().whileTrue(new Climb_move(climb, 1));
+                testController1.cross().whileTrue(new Climb_move(climb, -0.6));
+                testController1.options().onTrue(new Climb_ZeroClimb(climb));
+                testController1.povLeft().whileTrue(autoClimb);
+                testController1.povRight().whileTrue(
+                                Commands.deferredProxy(() -> drive.goToc(FIELD_CONSTANTS.TEST_POSE2D)));
         }
 
         public Command resetGyro() {

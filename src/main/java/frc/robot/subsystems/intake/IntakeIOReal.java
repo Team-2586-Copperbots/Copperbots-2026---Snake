@@ -10,6 +10,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import frc.robot.Constants;
+import frc.robot.Constants.CANIds;
 import frc.robot.subsystems.intake.Intake.IntakePosition;
 
 import static frc.robot.Constants.CANIds.Canivore;
@@ -21,38 +22,32 @@ public class IntakeIOReal implements IntakeIO {
 
     private final TalonFXConfiguration wristMotorConfig;
     private final TalonFXConfiguration rollerMotorConfig;
-    private final CANcoderConfiguration coancoderConfig;
 
     private final PositionVoltage positionVoltage = new PositionVoltage(0);
     private IntakePosition targetPosition = IntakePosition.IN;
     private boolean isClosedLoop;
 
     public IntakeIOReal() {
-        wristMotor = new TalonFX(Constants.CANIds.INTAKE_WRIST_MOTOR, Canivore);
-        rollerMotor = new TalonFX(Constants.CANIds.INTAKE_ROLLER_MOTOR, Canivore);
-        cancoder = new CANcoder(Constants.CANIds.INTAKE_CANCODER, Canivore);
+        wristMotor = new TalonFX(CANIds.INTAKE_WRIST_MOTOR, Canivore);
+        rollerMotor = new TalonFX(CANIds.INTAKE_ROLLER_MOTOR, Canivore);
+        cancoder = new CANcoder(CANIds.INTAKE_CANCODER, Canivore);
 
         wristMotorConfig = new TalonFXConfiguration();
         rollerMotorConfig = new TalonFXConfiguration();
-        coancoderConfig = new CANcoderConfiguration();
 
-        coancoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
-
-        wristMotorConfig.Feedback.FeedbackRemoteSensorID = cancoder.getDeviceID();
-        // wristMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-        wristMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
-        wristMotorConfig.Feedback.RotorToSensorRatio = Constants.INTAKE_CONSTANTS.rotorToIntake;
-        wristMotorConfig.Feedback.SensorToMechanismRatio = 1;
+        wristMotorConfig.Feedback.FeedbackRemoteSensorID = CANIds.INTAKE_CANCODER;
+        wristMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+        // wristMotorConfig.Feedback.RotorToSensorRatio = Constants.INTAKE_CONSTANTS.rotorToSensor;
+        // wristMotorConfig.Feedback.SensorToMechanismRatio = 1;
 
         wristMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        
+
         var pidConfig = wristMotorConfig.Slot0;
         // TODO: tune pid at all?
         pidConfig.kP = 0.6;
         pidConfig.kI = 0.05;
         pidConfig.kD = 0.00;
 
-        cancoder.getConfigurator().apply(coancoderConfig);
         wristMotor.getConfigurator().apply(wristMotorConfig);
         rollerMotor.getConfigurator().apply(rollerMotorConfig);
     }
@@ -83,7 +78,8 @@ public class IntakeIOReal implements IntakeIO {
 
     // @Override
     // public void setWristPositionFromCancoder() {
-    //     wristMotor.setPosition(cancoder.getPosition().getValue().in(Rotations) * INTAKE_CONSTANTS.rotorToIntake);
+    // wristMotor.setPosition(cancoder.getPosition().getValue().in(Rotations) *
+    // INTAKE_CONSTANTS.rotorToIntake);
     // }
 
     @Override

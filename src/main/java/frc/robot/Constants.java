@@ -90,7 +90,7 @@ public final class Constants {
     public static final double MAX_SPEED_LIMITER = 1;
     public static final double SLOW_SPEED_LIMITER = 0.35;
 
-    public static final double IDLE_SHOOTER_SPEED = 30; // RPS
+    public static final double IDLE_SHOOTER_SPEED = 45; // RPS
     public static final double ROLLER_SPEED = 0.8; // percentage
   }
 
@@ -133,7 +133,6 @@ public final class Constants {
     public static final int TOWER_MOTOR = 25;
     // climb motor
     public static final int CLIMB_MOTOR_1 = 29;
-
     public static final int CLIMB_MOTOR_2 = 30;
     // turret motor
     public static final int TURRET_TURN_MOTOR = 23;
@@ -143,6 +142,7 @@ public final class Constants {
 
   public static class DIO_IDS {
     public static final int TURRET_LIMIT_SWITCH = 9;
+    public static final int CLIMB_LIMIT_SWITCH = 8;
   }
 
   // subsystems + simpuation
@@ -164,7 +164,7 @@ public final class Constants {
   }
 
   public static class INTAKE_CONSTANTS {
-    public static final double rotorToIntake = (5 / 1) * (59 / 24) * (45 / 20);
+    public static final double rotorToSensor = (5 / 1) * (57 / 24) * (45 / 20);
   }
 
   public static enum CANDLE_STRIPS {

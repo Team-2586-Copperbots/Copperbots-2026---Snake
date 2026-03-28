@@ -32,7 +32,7 @@ public class IntakeIOSim implements IntakeIO {
         inputs.isClosedLoop = closedLoop;
 
         inputs.currentWristPosition = targetPosition.value;
-        inputs.currentCancoderPosition = targetPosition.value/INTAKE_CONSTANTS.rotorToIntake;
+        inputs.currentCancoderPosition = targetPosition.value / INTAKE_CONSTANTS.rotorToSensor;
         inputs.currentRollerSpeed = rollerSpeedSetpoint;
     }
 
