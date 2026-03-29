@@ -7,10 +7,13 @@ import frc.robot.subsystems.intake.Intake.IntakePosition;
 public interface IntakeIO {
     @AutoLog
     public static class IntakeIOInputs {
-        public double rollerSetpoint = 0;
+        public boolean wristIsOK = false;
+        public double wristVolts = 0;
+        public double wristAmps = 0;
         public IntakePosition wristSetpoint = IntakePosition.IN;
-        public double percentageWristSpeed = 0;
-        public boolean isClosedLoop = true;
+        public boolean wristIsClosedLoop = true;
+
+        public double rollerSetpoint = 0;
 
         public double currentWristPosition = 0;
         public double currentCancoderPosition = 0;

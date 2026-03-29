@@ -31,7 +31,6 @@ public class Intake_PID extends Command {
 
     @Override
     public void initialize() {
-        // intake.refreshPosition();
 
     }
 

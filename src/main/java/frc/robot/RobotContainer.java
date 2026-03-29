@@ -403,6 +403,7 @@ public class RobotContainer {
 
                 driveController.R2().whileTrue(new Indexer_Spin(indexer, IndexerStates.ON));
                 driveController.R1().toggleOnTrue(new Turret_AimAndShoot(shooter, turret, drive));
+                driveController.L2().onTrue(DriveCommands.stopWithX(drive));
                 // driveController.L1().whileTrue(new Climb_AutoClimb(drive, climb));
                 // add button for indexer
 
@@ -471,9 +472,13 @@ public class RobotContainer {
                 testController1.triangle().whileTrue(new Climb_move(climb, 1));
                 testController1.cross().whileTrue(new Climb_move(climb, -0.6));
                 testController1.options().onTrue(new Climb_ZeroClimb(climb));
-                testController1.povLeft().whileTrue(autoClimb);
-                testController1.povRight().whileTrue(
-                                Commands.deferredProxy(() -> drive.goToc(FIELD_CONSTANTS.TEST_POSE2D)));
+                // testController1.povLeft().whileTrue(autoClimb);
+                // testController1.povRight().whileTrue(
+                // Commands.deferredProxy(() -> drive.goToc(FIELD_CONSTANTS.TEST_POSE2D)));
+                testController1.povUp().onTrue(new Intake_PID(intake, IntakePosition.OUT, 0));
+                testController1.povDown().onTrue(new Intake_PID(intake, IntakePosition.IN, 0));
+                testController1.povRight().whileTrue(new Intake_PID(intake, 0.05, 0));
+                testController1.povLeft().whileTrue(new Intake_PID(intake, -0.05, 0));
         }
 
         public Command resetGyro() {
@@ -486,7 +491,8 @@ public class RobotContainer {
                 return new ParallelCommandGroup(new Turret_ZeroTurret(turret),
                                 new ParallelCommandGroup(new Shooter_ShootSpeed(shooter, 0, false),
                                                 new Indexer_Spin(indexer, IndexerStates.OFF),
-                                                new Intake_Spin(intake, 0))
+                                                new Intake_Spin(intake, 0), DriveCommands.stopWithX(drive),
+                                                new Climb_ZeroClimb(climb))
                                                 .withTimeout(1));
         }
 

@@ -97,8 +97,8 @@ public final class Constants {
   // math
 
   public static class FIELD_CONSTANTS {
-    public static final Distance FIELD_LENGTH = Distance.ofBaseUnits(Units.inchesToMeters(651.22), Meters);
-    public static final Distance FIELD_WIDTH = Distance.ofBaseUnits(Units.inchesToMeters(317.69), Meters);
+    public static final Distance FIELD_LENGTH = Meters.of(Units.inchesToMeters(651.22));
+    public static final Distance FIELD_WIDTH = Meters.of(Units.inchesToMeters(317.69));
 
     public static Pose2d CENTER_OF_HUB = new Pose2d();
     public static Pose2d BOTTOM_FULE_STORAGE = new Pose2d();
@@ -106,12 +106,10 @@ public final class Constants {
     public static Pose2d TEST_POSE2D = new Pose2d();
 
     public static void updatePositions() {
-      CENTER_OF_HUB = AllianceFlipUtil.apply(
-          new Pose2d(Distance.ofBaseUnits(4.62, Meters), Distance.ofBaseUnits(4.04, Meters), Rotation2d.kZero));
-      BOTTOM_FULE_STORAGE = AllianceFlipUtil.apply(new Pose2d(2.75, 1.6, Rotation2d.kZero));
-      TOP_FULE_STORAGE = AllianceFlipUtil.apply(
-          new Pose2d(AllianceFlipUtil.applyX(BOTTOM_FULE_STORAGE.getX()),
-              (FIELD_WIDTH.abs(Meters) - BOTTOM_FULE_STORAGE.getY()), Rotation2d.kZero));
+      CENTER_OF_HUB = AllianceFlipUtil.apply(new Pose2d(Meters.of(4.62), Meters.of(4.04), Rotation2d.kZero));
+      BOTTOM_FULE_STORAGE = AllianceFlipUtil.apply(new Pose2d(Meters.of(2.75), Meters.of(1.6), Rotation2d.kZero));
+      TOP_FULE_STORAGE = new Pose2d(BOTTOM_FULE_STORAGE.getX(),
+          (FIELD_WIDTH.in(Meters) - BOTTOM_FULE_STORAGE.getY()), Rotation2d.kZero);
       TEST_POSE2D = AllianceFlipUtil.apply(new Pose2d(2, 2, Rotation2d.kZero));
     }
 
@@ -148,10 +146,9 @@ public final class Constants {
   // subsystems + simpuation
 
   public static class SHOOTER_CONSTANTS {
-    public static final Distance HEIGHT_OF_WHEEL_OFF_GROUND = Distance.ofBaseUnits(0.64135, Meters); // in meters
-    public static final Distance SHOOTER_WHEELE_CIRCUMFERENCE = Distance.ofBaseUnits(Inches.of(4 * Math.PI).in(Meters),
-        Meters);
-    public static final Angle SHOOTER_HOOD_ANGLE = Angle.ofBaseUnits(22.165, Degrees);
+    public static final Distance HEIGHT_OF_WHEEL_OFF_GROUND = Meters.of(0.64135); // in meters
+    public static final Distance SHOOTER_WHEELE_CIRCUMFERENCE = Inches.of(4 * Math.PI);
+    public static final Angle SHOOTER_HOOD_ANGLE = Degrees.of(22.165);
   }
 
   public static class TURRET_CONSTANTS {

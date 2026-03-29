@@ -44,7 +44,7 @@ public final class GeneralUtils {
         if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red) {
             if (drive.getPose().getX() > FIELD_CONSTANTS.CENTER_OF_HUB.getX()) {
                 return FIELD_CONSTANTS.CENTER_OF_HUB;
-            } else if (drive.getPose().getY() > FIELD_CONSTANTS.CENTER_OF_HUB.getY()) {
+            } else if (drive.getPose().getY() < FIELD_CONSTANTS.CENTER_OF_HUB.getY()) {
                 return FIELD_CONSTANTS.TOP_FULE_STORAGE;
             } else {
                 return FIELD_CONSTANTS.BOTTOM_FULE_STORAGE;
@@ -111,8 +111,8 @@ public final class GeneralUtils {
         double seconds = timeFromDistance(distanceFromPose(targetPose, drivetrain));
         // find the distance that I need to offset the robot by
         Translation2d velocityDistance = new Translation2d(
-                Distance.ofBaseUnits(-velocity.vxMetersPerSecond * seconds, Meters),
-                Distance.ofBaseUnits(-velocity.vyMetersPerSecond * seconds, Meters));
+                Meters.of(-velocity.vxMetersPerSecond * seconds),
+                Meters.of(-velocity.vyMetersPerSecond * seconds));
 
         // make a pose of where the robot will be when the fule is "scored" (assuming
         // the robot continues to move)

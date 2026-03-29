@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intake;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
 import frc.robot.Constants.INTAKE_CONSTANTS;
 import frc.robot.subsystems.intake.Intake.IntakePosition;
@@ -16,8 +17,8 @@ public class IntakeIOSim implements IntakeIO {
     private double wristSpeedSetpoint = 0;
     private double rollerSpeedSetpoint = 0;
     private IntakeSimulation simulatedIntake;
-    private Distance width = Distance.ofBaseUnits(edu.wpi.first.math.util.Units.inchesToMeters(23), Meter);
-    private Distance length = Distance.ofBaseUnits(edu.wpi.first.math.util.Units.inchesToMeters(9.5), Meter);
+    private Distance width = Meter.of(Units.inchesToMeters(23));
+    private Distance length = Meter.of(Units.inchesToMeters(9.5));
 
     public IntakeIOSim(SwerveDriveSimulation drive) {
         simulatedIntake = IntakeSimulation.OverTheBumperIntake("Fule", drive, width,
@@ -28,8 +29,7 @@ public class IntakeIOSim implements IntakeIO {
     public void updateInputs(IntakeIOInputs inputs) {
         inputs.rollerSetpoint = rollerSpeedSetpoint;
         inputs.wristSetpoint = targetPosition;
-        inputs.percentageWristSpeed = wristSpeedSetpoint;
-        inputs.isClosedLoop = closedLoop;
+        inputs.wristIsClosedLoop = closedLoop;
 
         inputs.currentWristPosition = targetPosition.value;
         inputs.currentCancoderPosition = targetPosition.value / INTAKE_CONSTANTS.rotorToSensor;

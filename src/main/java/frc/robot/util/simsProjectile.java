@@ -2,6 +2,7 @@ package frc.robot.util;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inch;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
@@ -72,13 +73,15 @@ public class simsProjectile {
                                                 / 2,
                                                 MetersPerSecond),
                                 // The angle at which the note is launched
-                                SHOOTER_CONSTANTS.SHOOTER_HOOD_ANGLE.minus(Angle.ofBaseUnits(90, Degrees)));
+                                SHOOTER_CONSTANTS.SHOOTER_HOOD_ANGLE
+                // .minus(Angle.ofBaseUnits(90, Degrees))
+                );
                 fuelOnFly.withTargetPosition(
                                 () -> new Pose3d(Constants.FIELD_CONSTANTS.CENTER_OF_HUB).getTranslation())
                                 .withTargetTolerance(new Translation3d(
-                                                Distance.ofBaseUnits(47, Inch),
-                                                Distance.ofBaseUnits(47, Inch),
-                                                Distance.ofBaseUnits(.4, Meters)));
+                                                Inches.of(47),
+                                                Inches.of(47),
+                                                Meters.of(.4)));
                 fuelOnFly
                                 // Configure callbacks to visualize the flight trajectory of the projectile
                                 .withProjectileTrajectoryDisplayCallBack(

@@ -49,7 +49,7 @@ public class VisionConstants {
                         // translation
                         Inches.of(-ROBOT_PROPERTIES.lengthOffset /* to the back of the robot then forward: */ + 13.5),
                         Inches.of(-ROBOT_PROPERTIES.widthOffset /* to the RIGHT(-) of the robot then in: */ + 0.75),
-                        Inches.of(ROBOT_PROPERTIES.floorOffset + 9.042),
+                        Inches.of(ROBOT_PROPERTIES.floorOffset + 7.6 /* 1x1 to turret ring */ + 1.223 /*3D print z */),
                         // rotation
                         new Rotation3d(
                                         Degrees.of(0), // no roll

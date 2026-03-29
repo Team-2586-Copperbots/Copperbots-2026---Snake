@@ -23,7 +23,7 @@ public class Intake extends SubsystemBase {
     }
 
     public void setRollerSpeed(double speed) {
-        double distanceToStopAt = 0.4;
+        double distanceToStopAt = 0.05;
         if ((Math.abs(inputs.currentWristPosition - IntakePosition.IN.value)) < distanceToStopAt) {
             io.setRollerSpeed(0);
         } else {
@@ -71,7 +71,8 @@ public class Intake extends SubsystemBase {
 
     public static enum IntakePosition {
         IN(0.0),
-        OUT(0.245);
+        OUT(0.251),
+        part(0.2);
         // ,
         // HALFWAY(4);
 
