@@ -57,8 +57,6 @@ public class Intake_PID extends Command {
         if (!wristSpeed.isNaN()) {
             intake.setWristSpeed(0);
         }
-        Logger.recordOutput("intake interupted: ", 0);
-        System.out.println("inatke reset at : " + DriverStation.getMatchTime());
     }
 
 }

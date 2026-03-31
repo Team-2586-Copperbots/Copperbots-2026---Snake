@@ -11,15 +11,12 @@ import frc.robot.util.GeneralUtils;
 public class Turret_AimAndShoot extends Command {
     private Shooter Shooter;
     private Turret Turret;
-    private Drive Drive;
     private Pose2d target;
 
-    public Turret_AimAndShoot(Shooter ShooterSubsystem, Turret TurretSubsystem,
-            Drive Drivetrain) {
+    public Turret_AimAndShoot(Shooter ShooterSubsystem, Turret TurretSubsystem) {
         this.Shooter = ShooterSubsystem;
         this.Turret = TurretSubsystem;
-        this.Drive = Drivetrain;
-        this.target = GeneralUtils.findTarget(Drive);
+        this.target = GeneralUtils.findTarget();
 
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(ShooterSubsystem);
@@ -35,10 +32,10 @@ public class Turret_AimAndShoot extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        target = GeneralUtils.findTarget(Drive);
-        Turret.setTurretRotationTarget(GeneralUtils.getAngleToTarget(Drive, target));
+        target = GeneralUtils.findTarget();
+        Turret.setTurretRotationTarget(GeneralUtils.getAngleToTarget(target));
         Shooter.setShooterSpeedSet(
-                GeneralUtils.shooterSpeedFromDistance(GeneralUtils.distanceFromPose(target, Drive)));
+                GeneralUtils.shooterSpeedFromDistance(GeneralUtils.distanceFromPose(target)));
 
     }
 

@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.simsProjectile;
 
 /**
@@ -195,6 +196,6 @@ public class Robot extends LoggedRobot {
         .getGamePiecesArrayByType("Fuel");
     // Publish to telemetry using AdvantageKit
     Logger.recordOutput("FieldSimulation/FuelPositions", fuelPoses);
-    Logger.recordOutput("FieldSimulation/RobotPosition", robotContainer.driveSimulation.getSimulatedDriveTrainPose());
+    Logger.recordOutput("FieldSimulation/RobotPosition", Drive.driveSimulation.getSimulatedDriveTrainPose());
   }
 }

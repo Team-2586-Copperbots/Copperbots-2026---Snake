@@ -74,7 +74,6 @@ public class simsProjectile {
                                                 MetersPerSecond),
                                 // The angle at which the note is launched
                                 SHOOTER_CONSTANTS.SHOOTER_HOOD_ANGLE
-                // .minus(Angle.ofBaseUnits(90, Degrees))
                 );
                 fuelOnFly.withTargetPosition(
                                 () -> new Pose3d(Constants.FIELD_CONSTANTS.CENTER_OF_HUB).getTranslation())

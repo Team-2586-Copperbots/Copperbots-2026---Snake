@@ -53,7 +53,7 @@ public class IntakeIOReal implements IntakeIO {
         pidConfig.kI = 0.000;
         pidConfig.kD = 0.000;
 
-        pidConfig.kS = 0.325;
+        pidConfig.kS = 0.320;
         pidConfig.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
 
         pidConfig.kG = 0.3750;

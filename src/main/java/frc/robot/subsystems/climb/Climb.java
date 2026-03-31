@@ -1,12 +1,34 @@
 package frc.robot.subsystems.climb;
 
+import java.nio.channels.Pipe;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class Climb extends SubsystemBase {
+    private static Climb instance = null;
     private ClimbIO io;
     private ClimbIOInputsAutoLogged inputs = new ClimbIOInputsAutoLogged();
+
+    public static Climb getInstance() {
+        if (instance == null) {
+            switch (Constants.currentMode) {
+                case REAL:
+                    instance = new Climb(new ClimbIOReal());
+                    break;
+                case SIM:
+                    instance = new Climb(new ClimbIOSim());
+                    break;
+                default:
+                    instance = new Climb(new ClimbIO() {
+                    });
+                    break;
+            }
+        }
+        return instance;
+    }
 
     public Climb(ClimbIO io) {
         this.io = io;

@@ -42,7 +42,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
-import frc.robot.subsystems.drive.MyDriveConstants.BLine_PIDs;
 import frc.robot.Constants.Mode;
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.BLine.FollowPath;
@@ -56,13 +55,16 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
+import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.COTS;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
+  private static Drive instance = null;
   // TunerConstants doesn't include these constants, so they are declared locally
   static final double ODOMETRY_FREQUENCY = TunerConstants.kCANBus.isNetworkFD() ? 250.0 : 100.0;
   public static final double DRIVE_BASE_RADIUS = Math.max(
@@ -90,6 +92,7 @@ public class Drive extends SubsystemBase {
   // TunerConstants.FrontLeft.SlipCurrent,
   // 1),
   // getModuleTranslations());
+  public static SwerveDriveSimulation driveSimulation = null;
   private Field2d field = new Field2d();
 
   private static DriveTrainSimulationConfig mapleSimConfig = null;
@@ -137,7 +140,55 @@ public class Drive extends SubsystemBase {
 
   private final Consumer<Pose2d> resetSimulationPoseCallBack;
 
-  public Drive(
+  // MARK:- getInstance
+  public static Drive getInstance() {
+    if (instance == null) {
+      switch (Constants.currentMode) {
+        case REAL:
+          instance = new Drive(
+              new GyroIOPigeon2(),
+              new ModuleIOTalonFX(TunerConstants.FrontLeft),
+              new ModuleIOTalonFX(TunerConstants.FrontRight),
+              new ModuleIOTalonFX(TunerConstants.BackLeft),
+              new ModuleIOTalonFX(TunerConstants.BackRight),
+              (robotPose) -> {
+              });
+          break;
+        case SIM:
+          // Sim robot, instantiate physics sim IO implementations
+          Pose2d startingPose2d = new Pose2d(2, 2, Rotation2d.kZero);
+          driveSimulation = new SwerveDriveSimulation(Drive.getMapleSimConfig(),
+              startingPose2d);
+          SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
+          instance = new Drive(
+              new GyroIOSim(driveSimulation.getGyroSimulation()),
+              new ModuleIOSim(driveSimulation.getModules()[0]),
+              new ModuleIOSim(driveSimulation.getModules()[1]),
+              new ModuleIOSim(driveSimulation.getModules()[2]),
+              new ModuleIOSim(driveSimulation.getModules()[3]),
+              driveSimulation::setSimulationWorldPose);
+          break;
+        default:// Replayed robot, disable IO implementations
+          instance = new Drive(
+              new GyroIO() {
+              },
+              new ModuleIO() {
+              },
+              new ModuleIO() {
+              },
+              new ModuleIO() {
+              },
+              new ModuleIO() {
+              },
+              (robotPose) -> {
+              });
+          break;
+      }
+    }
+    return instance;
+  }
+
+  private Drive(
       GyroIO gyroIO,
       ModuleIO flModuleIO,
       ModuleIO frModuleIO,
@@ -192,7 +243,7 @@ public class Drive extends SubsystemBase {
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
     Logger.processInputs("Drive/Gyro", gyroInputs);
-    Logger.recordOutput("target for turret", GeneralUtils.findTarget(this));
+    Logger.recordOutput("target for turret", GeneralUtils.findTarget());
     field.setRobotPose(getPose());
     SmartDashboard.putData("field", field);
     resetSimulationPoseCallBack.accept(getPose());
@@ -295,7 +346,7 @@ public class Drive extends SubsystemBase {
   }
 
   public Command cRunVelocity(ChassisSpeeds speeds) {
-    return run(() -> runVelocity(speeds));
+    return runEnd(() -> runVelocity(speeds), () -> runVelocity(new ChassisSpeeds()));
   }
 
   public Command pathFromString(String name) {

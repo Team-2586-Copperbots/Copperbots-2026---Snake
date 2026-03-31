@@ -8,11 +8,9 @@ import frc.robot.util.GeneralUtils;
 
 public class Shooter_AutoSpeed extends Command {
     private Shooter Shooter;
-    private Drive Drivetrain;
 
-    public Shooter_AutoSpeed(Shooter shooterSubsystem, Drive drivetrain) {
+    public Shooter_AutoSpeed(Shooter shooterSubsystem) {
         this.Shooter = shooterSubsystem;
-        this.Drivetrain = drivetrain;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(shooterSubsystem);
     }
@@ -28,7 +26,7 @@ public class Shooter_AutoSpeed extends Command {
     public void execute() {
         Shooter.setShooterSpeedSet(
                 GeneralUtils.shooterSpeedFromDistance(
-                        GeneralUtils.distanceFromPose(Constants.FIELD_CONSTANTS.CENTER_OF_HUB, Drivetrain)));
+                        GeneralUtils.distanceFromPose(Constants.FIELD_CONSTANTS.CENTER_OF_HUB)));
     }
 
     @Override

@@ -7,11 +7,9 @@ import frc.robot.util.GeneralUtils;
 
 public class Turret_AimAtHub extends Command {
     private Turret Turret;
-    private Drive Drivetrain;
 
-    public Turret_AimAtHub(Turret TurretSubsystem, Drive Drivetrain) {
+    public Turret_AimAtHub(Turret TurretSubsystem) {
         this.Turret = TurretSubsystem;
-        this.Drivetrain = Drivetrain;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(TurretSubsystem);
     }
@@ -25,7 +23,7 @@ public class Turret_AimAtHub extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        Turret.setTurretRotationTarget(GeneralUtils.getAngleToTarget(Drivetrain, GeneralUtils.findTarget(Drivetrain)));
+        Turret.setTurretRotationTarget(GeneralUtils.getAngleToTarget(GeneralUtils.findTarget()));
     }
 
     @Override

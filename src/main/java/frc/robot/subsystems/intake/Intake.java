@@ -3,10 +3,33 @@ package frc.robot.subsystems.intake;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.subsystems.drive.Drive;
 
 public class Intake extends SubsystemBase {
+    private static Intake instance = null;
     private IntakeIO io;
     private IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
+
+    public static Intake getInstance() {
+        if (instance == null) {
+            switch (Constants.currentMode) {
+                case REAL:
+                    instance = new Intake(new IntakeIOReal());
+                    break;
+
+                case SIM:
+                    instance = new Intake(new IntakeIOSim(Drive.getInstance().driveSimulation));
+                    break;
+
+                default:
+                    instance = new Intake(new IntakeIO() {
+                    });
+                    break;
+            }
+        }
+        return instance;
+    }
 
     public Intake(IntakeIO io) {
         this.io = io;
@@ -50,13 +73,14 @@ public class Intake extends SubsystemBase {
     }
 
     // public boolean isAtTarget() {
-    //     double tolerence = 0.05;
-    //     if (Math.abs(getWristPosition() - IntakePosition.HALFWAY.value) < tolerence) {
-    //         return true;
-    //     } else {
-    //         return false;
-    //     }
-        
+    // double tolerence = 0.05;
+    // if (Math.abs(getWristPosition() - IntakePosition.HALFWAY.value) < tolerence)
+    // {
+    // return true;
+    // } else {
+    // return false;
+    // }
+
     // }
 
     @Override
@@ -66,12 +90,12 @@ public class Intake extends SubsystemBase {
     }
 
     // public void refreshPosition() {
-    //     io.setWristPositionFromCancoder();
+    // io.setWristPositionFromCancoder();
     // }
 
     public static enum IntakePosition {
         IN(0.0),
-        OUT(0.251),
+        OUT(0.252),
         part(0.2);
         // ,
         // HALFWAY(4);

@@ -26,7 +26,7 @@ public class VisionIOPhotonVision implements VisionIO {
   /**
    * Creates a new VisionIOPhotonVision.
    *
-   * @param name The configured name of the camera.
+   * @param name          The configured name of the camera.
    * @param robotToCamera The 3D position of the camera relative to the robot.
    */
   public VisionIOPhotonVision(String name, Transform3d robotToCamera) {
@@ -41,6 +41,7 @@ public class VisionIOPhotonVision implements VisionIO {
     // Read new camera observations
     Set<Short> tagIds = new HashSet<>();
     List<PoseObservation> poseObservations = new LinkedList<>();
+    List<Double> targetYaws = new LinkedList<>();
     for (var result : camera.getAllUnreadResults()) {
       // Update latest target observation
       if (result.hasTargets()) {
@@ -48,6 +49,7 @@ public class VisionIOPhotonVision implements VisionIO {
             new TargetObservation(
                 Rotation2d.fromDegrees(result.getBestTarget().getYaw()),
                 Rotation2d.fromDegrees(result.getBestTarget().getPitch()));
+        targetYaws.add(result.targets.get(0).yaw);
       } else {
         inputs.latestTargetObservation = new TargetObservation(Rotation2d.kZero, Rotation2d.kZero);
       }
@@ -113,6 +115,12 @@ public class VisionIOPhotonVision implements VisionIO {
     inputs.poseObservations = new PoseObservation[poseObservations.size()];
     for (int i = 0; i < poseObservations.size(); i++) {
       inputs.poseObservations[i] = poseObservations.get(i);
+    }
+
+    // save targets yaws to inputs object
+    inputs.targetYaws = new double[targetYaws.size()];
+    for (int i = 0; i < targetYaws.size(); i++) {
+      inputs.targetYaws[i] = targetYaws.get(i);
     }
 
     // Save tag IDs to inputs objects
