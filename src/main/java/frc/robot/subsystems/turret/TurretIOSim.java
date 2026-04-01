@@ -14,12 +14,7 @@ public class TurretIOSim implements TurretIO {
 
     @Override
     public void updateInputs(TurretIOInputs inputs) {
-        inputs.isClosedLoop = isClosedLoop;
-        inputs.currentRingPose = turretMotorPose;
-        inputs.currentRingSpeed = motorSpeed;
-        inputs.limitSwitch = false;
-        inputs.rotationRelitiveToRobotZero = getRobotRelitiveRotation();
-        inputs.isAtPosition = isAtPosition;
+
     }
 
     @Override
@@ -35,7 +30,6 @@ public class TurretIOSim implements TurretIO {
         } else {
             // says that it did not make it to the desired position
             isAtPosition = false;
-
 
         }
     }

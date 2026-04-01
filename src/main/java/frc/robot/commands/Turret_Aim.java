@@ -1,14 +1,13 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.util.GeneralUtils;
 
-public class Turret_AimAtHub extends Command {
+public class Turret_Aim extends Command {
     private Turret Turret;
 
-    public Turret_AimAtHub(Turret TurretSubsystem) {
+    public Turret_Aim(Turret TurretSubsystem) {
         this.Turret = TurretSubsystem;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(TurretSubsystem);
@@ -23,7 +22,7 @@ public class Turret_AimAtHub extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        Turret.setTurretRotationTarget(GeneralUtils.getAngleToTarget(GeneralUtils.findTarget()));
+        Turret.setTurretRotationTarget(GeneralUtils.getAngleToTarget());
     }
 
     @Override

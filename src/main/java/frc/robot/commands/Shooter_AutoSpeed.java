@@ -26,7 +26,7 @@ public class Shooter_AutoSpeed extends Command {
     public void execute() {
         Shooter.setShooterSpeedSet(
                 GeneralUtils.shooterSpeedFromDistance(
-                        GeneralUtils.distanceFromPose(Constants.FIELD_CONSTANTS.CENTER_OF_HUB)));
+                        GeneralUtils.distanceFromTarget(Constants.FIELD_CONSTANTS.CENTER_OF_HUB)));
     }
 
     @Override

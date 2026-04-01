@@ -152,6 +152,7 @@ public final class Constants {
     public static final Distance HEIGHT_OF_WHEEL_OFF_GROUND = Meters.of(0.64135); // in meters
     public static final Distance SHOOTER_WHEELE_CIRCUMFERENCE = Inches.of(4 * Math.PI);
     public static final Angle SHOOTER_HOOD_ANGLE = Degrees.of(22.165);
+    public static final double TOLERENCE = 3;
   }
 
   public static class TURRET_CONSTANTS {
@@ -161,6 +162,7 @@ public final class Constants {
     public static final double ROTATION_RANGE_IN_ROT = 0.79;
     public static final Pose2d TURRET_OFFSET_FROM_ROBOT_CENTER = new Pose2d(Units.inchesToMeters(-7.5),
         Units.inchesToMeters(-8.5), null);
+    public static final double TOLERENCE = 0.01 * MOTOR_TO_RING_RATIO;
   }
 
   public static class INTAKE_CONSTANTS {

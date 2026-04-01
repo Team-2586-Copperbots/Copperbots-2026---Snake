@@ -2,7 +2,9 @@ package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.SHOOTER_CONSTANTS;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
@@ -47,7 +49,12 @@ public class Shooter extends SubsystemBase {
     }
 
     public double getMotor1Speed() {
-        return inputs.currentMotorSpeed;
+        return inputs.motorSpeed;
+    }
+
+    @AutoLogOutput(key = "Shooter/getAtTarget")
+    public boolean isAtTarget() {
+        return Math.abs(inputs.motorSpeed - inputs.motorSetpoint) < SHOOTER_CONSTANTS.TOLERENCE;
     }
 
     @Override

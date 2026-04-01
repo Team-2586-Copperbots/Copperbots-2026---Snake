@@ -10,7 +10,7 @@ public class ShooterIOSim implements ShooterIO {
     @Override
     public void updateInputs(ShooterIOInputs inputs) {
         inputs.motorSetpoint = velocityVoltagePlaceholder;
-        inputs.currentMotorSpeed = velocityVoltagePlaceholder;
+        inputs.motorSpeed = velocityVoltagePlaceholder;
     }
 
     @Override

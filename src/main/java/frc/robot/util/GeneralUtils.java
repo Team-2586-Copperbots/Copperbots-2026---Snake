@@ -68,6 +68,9 @@ public final class GeneralUtils {
         }
     }
 
+    public static double shooterSpeedFromTarget() {
+        return shooterSpeedFromDistance(distanceFromTarget());
+    }
     public static double shooterSpeedFromDistance(double distance) {
         // regresion equation for shooter
         Logger.recordOutput("Stuff/distancs for shooter", distance);
@@ -84,7 +87,11 @@ public final class GeneralUtils {
         return time;
     }
 
-    public static double distanceFromPose(Pose2d taretPose2d) {
+    public static double distanceFromTarget() {
+        return distanceFromTarget(findTarget());
+    }
+
+    public static double distanceFromTarget(Pose2d taretPose2d) {
 
         // double distance = taretPose3d.getTranslation().
         Pose2d shooterPose2d = translation2dForTurret();
@@ -138,6 +145,10 @@ public final class GeneralUtils {
                 robotPose2d.getRotation());
     }
 
+    public static double getAngleToTarget() {
+        return getAngleToTarget(findTarget());
+    }
+
     public static double getAngleToTarget(Pose2d targetPose) {
         Translation2d target = new Translation2d(targetPose.getMeasureX(), targetPose.getMeasureY());
 
@@ -147,7 +158,7 @@ public final class GeneralUtils {
         // velocity in meters per second
         ChassisSpeeds fieldVelocity = getFieldRelitiveSpeeds();
         // how many seconds it will take for the fule to fly
-        double seconds = timeFromDistance(distanceFromPose(targetPose));
+        double seconds = timeFromDistance(distanceFromTarget(targetPose));
         // find the distance that I need to offset the robot by
         Transform2d transformForVelcity = new Transform2d(
                 Meters.of(fieldVelocity.vxMetersPerSecond * seconds),

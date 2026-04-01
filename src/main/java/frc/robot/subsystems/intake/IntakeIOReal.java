@@ -6,6 +6,7 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.GainSchedBehaviorValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
@@ -46,19 +47,24 @@ public class IntakeIOReal implements IntakeIO {
         wristMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
 
         wristMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        wristMotorConfig.ClosedLoopGeneral.GainSchedErrorThreshold = 0.01;
 
         var pidConfig = wristMotorConfig.Slot0;
         // TODO: tune pid at all?
-        pidConfig.kP = 18.000;
+        pidConfig.kP = 12.000;
         pidConfig.kI = 0.000;
         pidConfig.kD = 0.000;
 
+        // friction
         pidConfig.kS = 0.320;
         pidConfig.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
 
+        // gravity
         pidConfig.kG = 0.3750;
         pidConfig.GravityType = GravityTypeValue.Arm_Cosine;
         pidConfig.GravityArmPositionOffset = 0.131;
+        // when in tolerence no pid
+        pidConfig.GainSchedBehavior = GainSchedBehaviorValue.ZeroOutput;
 
         wristMotor.getConfigurator().apply(wristMotorConfig);
         rollerMotor.getConfigurator().apply(rollerMotorConfig);

@@ -1,22 +1,18 @@
 package frc.robot.commands;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.lib.BLine.FlippingUtil;
-import frc.robot.lib.BLine.Path;
 import frc.robot.subsystems.CANDle;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.indexer.Indexer;
+import frc.robot.subsystems.indexer.Indexer.IndexerStates;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.Intake.IntakePosition;
 import frc.robot.subsystems.shooter.Shooter;
@@ -25,42 +21,66 @@ import frc.robot.subsystems.vision.Vision;
 
 import static edu.wpi.first.units.Units.Seconds;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public final class Autos {
-    private final Climb climb = Climb.getInstance();
-    private final Drive drive = Drive.getInstance();
-    private final Vision vision = Vision.getInstance();
-    private final Intake intake = Intake.getInstance();
-    private final Indexer indexer = Indexer.getInstance();
-    private final Shooter shooter = Shooter.getInstance();
-    private final Turret turret = Turret.getInstance();
+    private static final SendableChooser<Command> chooser = new SendableChooser<>();
+    private static final Climb climb = Climb.getInstance();
+    private static final Drive drive = Drive.getInstance();
+    private static final Vision vision = Vision.getInstance();
+    private static final Intake intake = Intake.getInstance();
+    private static final Indexer indexer = Indexer.getInstance();
+    private static final Shooter shooter = Shooter.getInstance();
+    private static final Turret turret = Turret.getInstance();
     @SuppressWarnings("unused")
-    private final CANDle candle = new CANDle();
+    private static final CANDle candle = new CANDle();
 
     private Autos() {
     }
 
-    public SendableChooser<Command> getChooser() {
-        SendableChooser<Command> chooser = new SendableChooser<>();
+    public static Command getAuto() {
+        return chooser.getSelected();
+    }
+
+    public static void putChouser() {
         chooser.setDefaultOption("Do Nothing", Commands.none());
         for (AutoDefinition autoDefinition : AUTOS) {
             chooser.addOption(autoDefinition.name(), autoDefinition.command());
         }
-
-        return chooser;
     }
 
-    private final List<AutoDefinition> AUTOS = List.of(
-            auto("8ball", new SequentialCommandGroup(drive.pathFromString("b1-1"),
-                    new Intake_PID(intake, IntakePosition.OUT,
-                            0).withTimeout(0.05),
-                    drive.pathFromString("b1-2"),
-                    new Intake_Spin(intake, 0).withTimeout(0.05))),
-            auto("drive forwards", new SequentialCommandGroup(drive
-                    .cRunVelocity(new ChassisSpeeds(1, -1, 0)).withTimeout(Seconds.of(1)),
-                    new Intake_PID(intake, IntakePosition.OUT, 0)))
+    private static final List<AutoDefinition> AUTOS = List.of(
+            auto("8ball then out",
+                    new SequentialCommandGroup(
+                            Shooter_AutoShoot_Sequence.get(shooter, turret, indexer)
+                                    .withDeadline(new WaitCommand(2.5)),
+                            drive.pathFromString("b1-1"),
+                            new Intake_PID(intake, IntakePosition.OUT, 0).withTimeout(0.05),
+                            drive.pathFromString("b1-2"),
+                            new Intake_Spin(intake, 0),
+                            drive.pathFromString("b1-3"),
+                            new ParallelCommandGroup(new Turret_AimAndShoot(shooter, turret),
+                                    new SequentialCommandGroup(
+                                            new WaitCommand(0.5),
+                                            new Indexer_Spin(indexer,
+                                                    IndexerStates.ON))),
+                            drive.pathFromString("b1-1"))),
+            auto("autoclimb", Climb_AutoClimb_Sequence.get(drive, climb)),
+            auto("out",
+                    new SequentialCommandGroup(drive.pathFromString("b1-1"),
+                            new Intake_PID(intake, IntakePosition.OUT, 0).withTimeout(0.05),
+                            drive.pathFromString("b1-2"),
+                            new Intake_Spin(intake, 0).withTimeout(0.05),
+                            drive.pathFromString("b1-3"),
+                            new ParallelCommandGroup(new Turret_AimAndShoot(shooter, turret),
+                                    new SequentialCommandGroup(new WaitCommand(0.5),
+                                            new Indexer_Spin(indexer, IndexerStates.ON)))
+                                    .withTimeout(Seconds.of(9)),
+                            drive.pathFromString("b1-1"))),
+            auto("drive forwards",
+                    new SequentialCommandGroup(
+                            drive.cRunVelocity(new ChassisSpeeds(1, -1, 0)).withTimeout(Seconds.of(1)),
+                            new Intake_PID(intake, IntakePosition.OUT, 0)))
     // auto(
     // "Simple Back",
     // new Pose2d(new Translation2d(0.0, 0.0), new Rotation2d()),

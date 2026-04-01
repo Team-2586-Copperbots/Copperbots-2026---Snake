@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.TURRET_CONSTANTS;
 
 //
 //
@@ -61,12 +62,12 @@ public class Turret extends SubsystemBase {
         return inputs.limitSwitch;
     }
 
-    public double getRobotRelitiveRotation() {
-        return inputs.rotationRelitiveToRobotZero;
+    public boolean canGetToTarget() {
+        return inputs.canMakeItToPosition;
     }
 
-    public Rotation2d getRobotRelitiveRotation2D() {
-        return new Rotation2d(Angle.ofBaseUnits(getRobotRelitiveRotation(), Rotation));
+    public boolean isAtTarget() {
+        return Math.abs(inputs.motorRotation - inputs.motorSetpoint) < TURRET_CONSTANTS.TOLERENCE;
     }
 
     public void setTurretToZero() {

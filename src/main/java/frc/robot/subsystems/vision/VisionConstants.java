@@ -26,7 +26,7 @@ import frc.robot.Constants.ROBOT_PROPERTIES;
 public class VisionConstants {
         // AprilTag layout
         public static AprilTagFieldLayout aprilTagLayout = AprilTagFieldLayout
-                        .loadField(AprilTagFields.k2026RebuiltAndymark);
+                        .loadField(AprilTagFields.k2026RebuiltWelded);
 
         // Camera names, must match names configured on coprocessor
         public static String backCamera = "backCamera";
