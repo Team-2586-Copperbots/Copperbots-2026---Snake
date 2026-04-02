@@ -153,6 +153,7 @@ public final class Constants {
     public static final Distance SHOOTER_WHEELE_CIRCUMFERENCE = Inches.of(4 * Math.PI);
     public static final Angle SHOOTER_HOOD_ANGLE = Degrees.of(22.165);
     public static final double TOLERENCE = 3;
+    public static final double CURRENT_LIMIT = 80;
   }
 
   public static class TURRET_CONSTANTS {

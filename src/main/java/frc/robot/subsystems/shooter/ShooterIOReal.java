@@ -9,6 +9,8 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import frc.robot.Constants;
+import frc.robot.Constants.SHOOTER_CONSTANTS;
+
 import static frc.robot.Constants.CANIds.Canivore;
 
 public class ShooterIOReal implements ShooterIO {
@@ -25,6 +27,7 @@ public class ShooterIOReal implements ShooterIO {
 
         shooterConfig = new TalonFXConfiguration();
 
+        shooterConfig.CurrentLimits.StatorCurrentLimit = SHOOTER_CONSTANTS.CURRENT_LIMIT;
         var motorOutputConfigs = shooterConfig.MotorOutput;
         motorOutputConfigs.NeutralMode = NeutralModeValue.Brake;
         motorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive;
