@@ -1,5 +1,7 @@
 package frc.robot.subsystems.climb;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -52,6 +54,8 @@ public class ClimbIOReal implements ClimbIO {
         inputs.motorPosition = climbMotor1.getPosition().getValueAsDouble();
         inputs.isPositionVoltage = isPositionVoltage;
         inputs.limitSwitch = !limitSwitch.get();
+
+        inputs.folower.update(climbMotor1);
 
         inputs.targetPosition = targetPosition;
         inputs.targetSpeed = climbMotor1.get();

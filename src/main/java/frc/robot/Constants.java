@@ -170,17 +170,17 @@ public final class Constants {
     public static final double rotorToSensor = (5 / 1) * (57 / 24) * (45 / 20);
   }
 
-  public static enum CANDLE_STRIPS {
+  public static enum LED_Strip {
     // TODO: fix indexe (plural?) when strips are made, for eskey?
     BUILT_IN(0, 7),
-    FIRST(8, 8 + 21),
+    FIRST(8, 8 + 2),
     SECOND(78, 147),
     THIRD(148, 217);
 
     public final int start;
     public final int end;
 
-    private CANDLE_STRIPS(int start, int end) {
+    private LED_Strip(int start, int end) {
       this.start = start;
       this.end = end;
     }

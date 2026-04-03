@@ -47,7 +47,7 @@ public class IntakeIOReal implements IntakeIO {
         wristMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
 
         wristMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        wristMotorConfig.ClosedLoopGeneral.GainSchedErrorThreshold = 0.01;
+        wristMotorConfig.ClosedLoopGeneral.GainSchedErrorThreshold = 0.02;
 
         var pidConfig = wristMotorConfig.Slot0;
         // TODO: tune pid at all?

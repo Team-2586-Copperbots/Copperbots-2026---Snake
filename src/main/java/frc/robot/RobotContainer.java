@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.LED_Strip;
 import frc.robot.Constants.OPERATOR_CONSTANTS;
 import frc.robot.commands.Turret_AimAndShoot;
 import frc.robot.commands.Autos;
@@ -39,7 +40,8 @@ import frc.robot.commands.Shooter_ShootSpeed;
 import frc.robot.commands.Turret_Aim;
 import frc.robot.commands.Turret_ZeroTurret;
 import frc.robot.lib.BLine.FollowPath;
-import frc.robot.subsystems.CANDle;
+import frc.robot.subsystems.LED;
+import frc.robot.subsystems.LED.LED_Colour;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.Climb.ClimbPosition;
 import frc.robot.subsystems.drive.Drive;
@@ -67,7 +69,7 @@ public class RobotContainer {
         // simulated objects
         public IntakeSimulation.IntakeSide intakeSimulation = null;
 
-        private Climb climb = Climb.getInstance();
+        private final Climb climb = Climb.getInstance();
         private final Drive drive = Drive.getInstance();
         @SuppressWarnings("unused")
         private final Vision vision = Vision.getInstance();
@@ -76,7 +78,7 @@ public class RobotContainer {
         private final Shooter shooter = Shooter.getInstance();
         private final Turret turret = Turret.getInstance();
         @SuppressWarnings("unused")
-        private final CANDle candle = new CANDle();
+        private final LED led = LED.getInstance();
 
         private final CommandPS4Controller driveController = new CommandPS4Controller(
                         OPERATOR_CONSTANTS.DRIVER_CONTROLER_PORT);
@@ -282,25 +284,16 @@ public class RobotContainer {
 
                 // operatorController.povRight().whileTrue(candle.fire(STRIPS.FIRST));
 
-                // Shooter + turret Subsystems
-                operatorController.L2().onTrue(new ParallelCommandGroup(
-                                new Turret_AimAndShoot(shooter, turret)/*
-                                                                        * ,
-                                                                        * new SequentialCommandGroup(new
-                                                                        * WaitCommand(0.5),
-                                                                        * new IndexerSpin(indexer,
-                                                                        * IndexerStates.UP))
-                                                                        */));
-                operatorController.touchpad().onTrue(new ParallelCommandGroup(
-                                new Indexer_Spin(indexer, IndexerStates.OFF),
-                                new Shooter_ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED, false),
-                                new Turret_ManualTurret(turret, 0)));
+                
                 operatorController.square()
-                                .onTrue(new Shooter_ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED, false));
+                                .onTrue(new Shooter_ShootSpeed(shooter, 0, false));
 
                 // indexer sudsystem
                 operatorController.circle().whileTrue(new Indexer_Spin(indexer, IndexerStates.ON));
                 operatorController.triangle().onTrue(new Indexer_Spin(indexer, IndexerStates.OFF));
+                operatorController.touchpad().onTrue(led.setColor(LED_Strip.FIRST, LED_Colour.BLACK));
+                operatorController.PS().onTrue(led.setColor(LED_Strip.FIRST, LED_Colour.BLUE));
+                
 
                 // climb
                 operatorController.R1().whileTrue(new Climb_move(climb, 0.9));
@@ -361,11 +354,12 @@ public class RobotContainer {
                 if (characterization) {
                         return characterizationChooser.getSelected();
                 } else {
-                        if (Autos.getAuto() != Commands.none()) {
+                        // if (Autos.getAuto() != Commands.none()) {
                                 return Autos.getAuto();
-                        } else {
-                                return bLineChouser.getSelected();
-                        }
+                        // } 
+                        // else {
+                        //         return bLineChouser.getSelected();
+                        // }
                 }
 
         }
