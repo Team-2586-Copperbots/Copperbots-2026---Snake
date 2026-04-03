@@ -55,7 +55,6 @@ public class ClimbIOReal implements ClimbIO {
         inputs.isPositionVoltage = isPositionVoltage;
         inputs.limitSwitch = !limitSwitch.get();
 
-        inputs.folower.update(climbMotor1);
 
         inputs.targetPosition = targetPosition;
         inputs.targetSpeed = climbMotor1.get();

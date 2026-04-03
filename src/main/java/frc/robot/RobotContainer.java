@@ -12,6 +12,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -25,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.LED_Strip;
+import frc.robot.Constants.Mode;
 import frc.robot.Constants.OPERATOR_CONSTANTS;
 import frc.robot.commands.Turret_AimAndShoot;
 import frc.robot.commands.Autos;
@@ -52,6 +54,7 @@ import frc.robot.subsystems.intake.Intake.IntakePosition;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.util.simsProjectile;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -66,9 +69,6 @@ public class RobotContainer {
 
         // MARK: Objects
 
-        // simulated objects
-        public IntakeSimulation.IntakeSide intakeSimulation = null;
-
         private final Climb climb = Climb.getInstance();
         private final Drive drive = Drive.getInstance();
         @SuppressWarnings("unused")
@@ -77,7 +77,6 @@ public class RobotContainer {
         private final Indexer indexer = Indexer.getInstance();
         private final Shooter shooter = Shooter.getInstance();
         private final Turret turret = Turret.getInstance();
-        @SuppressWarnings("unused")
         private final LED led = LED.getInstance();
 
         private final CommandPS4Controller driveController = new CommandPS4Controller(
@@ -100,6 +99,13 @@ public class RobotContainer {
          * The container for the robot. Contains subsystems, OI devices, and commands.
          */
         public RobotContainer() {
+                if (Constants.currentMode == Mode.SIM) {
+                        simsProjectile.createSimsProjectile(drive::getPose, () -> ChassisSpeeds
+                                        .fromRobotRelativeSpeeds(drive.getChassisSpeeds(), drive.getRotation()),
+                                        turret::getRotation, shooter::getMotor1Speed);
+                        IntakeSimulation.IntakeSide intakeSimulation = null;
+
+                }
                 Autos.putChouser();
 
                 polarityChooser = new SendableChooser<Double>();
@@ -284,7 +290,6 @@ public class RobotContainer {
 
                 // operatorController.povRight().whileTrue(candle.fire(STRIPS.FIRST));
 
-                
                 operatorController.square()
                                 .onTrue(new Shooter_ShootSpeed(shooter, 0, false));
 
@@ -293,7 +298,6 @@ public class RobotContainer {
                 operatorController.triangle().onTrue(new Indexer_Spin(indexer, IndexerStates.OFF));
                 operatorController.touchpad().onTrue(led.setColor(LED_Strip.FIRST, LED_Colour.BLACK));
                 operatorController.PS().onTrue(led.setColor(LED_Strip.FIRST, LED_Colour.BLUE));
-                
 
                 // climb
                 operatorController.R1().whileTrue(new Climb_move(climb, 0.9));
@@ -355,10 +359,10 @@ public class RobotContainer {
                         return characterizationChooser.getSelected();
                 } else {
                         // if (Autos.getAuto() != Commands.none()) {
-                                return Autos.getAuto();
-                        // } 
+                        return Autos.getAuto();
+                        // }
                         // else {
-                        //         return bLineChouser.getSelected();
+                        // return bLineChouser.getSelected();
                         // }
                 }
 

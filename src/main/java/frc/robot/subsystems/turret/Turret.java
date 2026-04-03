@@ -1,6 +1,7 @@
 package frc.robot.subsystems.turret;
 
 import static edu.wpi.first.units.Units.Rotation;
+import static edu.wpi.first.units.Units.Rotations;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -56,6 +57,10 @@ public class Turret extends SubsystemBase {
 
     public void setTurretSpeed(double speed) {
         io.setTurretSpeed(speed);
+    }
+    
+    public Rotation2d getRotation() {
+        return new Rotation2d(Rotations.of(inputs.motorRotation));
     }
 
     public boolean getLimitSwitch() {

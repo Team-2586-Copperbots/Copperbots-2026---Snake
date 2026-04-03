@@ -59,6 +59,8 @@ public class TurretIOReal implements TurretIO {
         inputs.motorSetpoint = turnMotor.getClosedLoopReference().getValueAsDouble();
         inputs.motorVolts = turnMotor.getMotorVoltage().getValueAsDouble();
 
+        inputs.turretRotation = getRobotRelitiveRotation();
+
         inputs.canMakeItToPosition = canMakeItToPosition;
         inputs.limitSwitch = !limitSwitch.get();
     }

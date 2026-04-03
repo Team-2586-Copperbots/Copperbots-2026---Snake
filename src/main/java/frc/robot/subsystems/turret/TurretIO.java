@@ -14,7 +14,7 @@ public interface TurretIO {
         public double motorRotation = 0;
         public boolean motorIsClosedLoop = true;
 
-
+        public double turretRotation = 0;
 
         public boolean limitSwitch = false;
         public boolean canMakeItToPosition = true;
