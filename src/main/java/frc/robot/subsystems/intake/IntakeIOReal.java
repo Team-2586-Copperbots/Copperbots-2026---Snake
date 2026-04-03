@@ -41,17 +41,17 @@ public class IntakeIOReal implements IntakeIO {
         wristMotorConfig = new TalonFXConfiguration();
         rollerMotorConfig = new TalonFXConfiguration();
 
-        wristMotorConfig.CurrentLimits.StatorCurrentLimit = 50;
+        // wristMotorConfig.CurrentLimits.StatorCurrentLimit = 70;
 
         wristMotorConfig.Feedback.FeedbackRemoteSensorID = CANIds.INTAKE_CANCODER;
         wristMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
 
         wristMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        wristMotorConfig.ClosedLoopGeneral.GainSchedErrorThreshold = 0.02;
+        wristMotorConfig.ClosedLoopGeneral.GainSchedErrorThreshold = 0.01;
 
         var pidConfig = wristMotorConfig.Slot0;
         // TODO: tune pid at all?
-        pidConfig.kP = 12.000;
+        pidConfig.kP = 13.000;
         pidConfig.kI = 0.000;
         pidConfig.kD = 0.000;
 

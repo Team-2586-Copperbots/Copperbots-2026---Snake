@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants.FIELD_CONSTANTS;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.simsProjectile;
 
@@ -83,8 +84,9 @@ public class Robot extends LoggedRobot {
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our
     // autonomous chooser on the dashboard.
+    Constants.FIELD_CONSTANTS.updateUtilsPositions();
+    Logger.recordOutput("thing5", FIELD_CONSTANTS.TEST_POSE2D);
     robotContainer = new RobotContainer();
-
     FollowPathCommand.warmupCommand().schedule();
     PathfindingCommand.warmupCommand().schedule();
   }
@@ -126,7 +128,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void disabledPeriodic() {
 
-    Constants.FIELD_CONSTANTS.updatePositions();
+    Constants.FIELD_CONSTANTS.updateUtilsPositions();
   }
 
   /**

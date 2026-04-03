@@ -106,14 +106,13 @@ public final class Constants {
     public static Pose2d CENTER_OF_HUB = new Pose2d();
     public static Pose2d BOTTOM_FULE_STORAGE = new Pose2d();
     public static Pose2d TOP_FULE_STORAGE = new Pose2d();
-    public static Pose2d TEST_POSE2D = new Pose2d();
+    public static Pose2d TEST_POSE2D = new Pose2d(Meters.of(2), Meters.of(2), Rotation2d.k180deg);
 
-    public static void updatePositions() {
+    public static void updateUtilsPositions() {
       CENTER_OF_HUB = AllianceFlipUtil.apply(new Pose2d(Meters.of(4.62), Meters.of(4.04), Rotation2d.kZero));
       BOTTOM_FULE_STORAGE = AllianceFlipUtil.apply(new Pose2d(Meters.of(2.75), Meters.of(1.6), Rotation2d.kZero));
       TOP_FULE_STORAGE = new Pose2d(BOTTOM_FULE_STORAGE.getX(),
           (FIELD_WIDTH.in(Meters) - BOTTOM_FULE_STORAGE.getY()), Rotation2d.kZero);
-      TEST_POSE2D = AllianceFlipUtil.apply(new Pose2d(2, 2, Rotation2d.kZero));
     }
 
   }
@@ -173,7 +172,7 @@ public final class Constants {
   public static enum LED_Strip {
     // TODO: fix indexe (plural?) when strips are made, for eskey?
     BUILT_IN(0, 7),
-    FIRST(8, 8 + 2),
+    FIRST(8, 44),
     SECOND(78, 147),
     THIRD(148, 217);
 

@@ -2,12 +2,14 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants.OPERATOR_CONSTANTS;
 import frc.robot.subsystems.LED;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.drive.Drive;
@@ -47,6 +49,7 @@ public final class Autos {
                 for (AutoDefinition autoDefinition : AUTOS) {
                         chooser.addOption(autoDefinition.name(), autoDefinition.command());
                 }
+                SmartDashboard.putData("AUTOS chouser", chooser);
 
         }
 
@@ -54,9 +57,11 @@ public final class Autos {
                         auto("8ball then out",
                                         new SequentialCommandGroup(
                                                         Shooter_AutoShoot_Sequence.get(shooter, turret, indexer)
-                                                                        .withDeadline(new WaitCommand(2.5)),
+                                                                        .withDeadline(new WaitCommand(2)),
                                                         drive.pathFromString("b1-1"),
-                                                        new Intake_PID(intake, IntakePosition.OUT, 0).withTimeout(0.05),
+                                                        new Intake_PID(intake, IntakePosition.OUT,
+                                                                        OPERATOR_CONSTANTS.ROLLER_SPEED)
+                                                                        .withTimeout(0.05),
                                                         drive.pathFromString("b1-2"),
                                                         new Intake_Spin(intake, 0),
                                                         drive.pathFromString("b1-3"),
@@ -83,9 +88,11 @@ public final class Autos {
                                                         drive.pathFromString("b1-1"))),
                         auto("drive forwards",
                                         new SequentialCommandGroup(
-                                                        drive.cRunVelocity(new ChassisSpeeds(1, -1, 0))
+                                                        drive.cRunVelocity(new ChassisSpeeds(-1, 0, 0))
                                                                         .withTimeout(Seconds.of(1)),
-                                                        new Intake_PID(intake, IntakePosition.OUT, 0)))
+                                                        new Intake_PID(intake, IntakePosition.OUT, 0))),
+                        auto("atest for rot speed", new SequentialCommandGroup(drive.pathFromString("example_a"))),
+                        auto("btest", drive.pathFromString("example_b"))
         // auto(
         // "Simple Back",
         // new Pose2d(new Translation2d(0.0, 0.0), new Rotation2d()),

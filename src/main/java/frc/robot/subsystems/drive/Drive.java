@@ -39,9 +39,11 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
+import frc.robot.Constants.FIELD_CONSTANTS;
 import frc.robot.Constants.Mode;
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.BLine.FollowPath;
@@ -243,6 +245,7 @@ public class Drive extends SubsystemBase {
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
     Logger.processInputs("Drive/Gyro", gyroInputs);
+    Logger.recordOutput("testpose", FIELD_CONSTANTS.TEST_POSE2D);
     Logger.recordOutput("target for turret", GeneralUtils.findTarget());
     field.setRobotPose(getPose());
     SmartDashboard.putData("field", field);
@@ -358,7 +361,12 @@ public class Drive extends SubsystemBase {
   }
 
   public Command pathFromPose(Pose2d pose) {
-    return pathBuilder.build(new Path(new Waypoint(pose)));
+    return pathBuilder.build(new Path(new Path.Waypoint(pose)));
+  }
+
+  public Command pathToTest() {
+    // Logger.recordOutput("thing6", FIELD_CONSTANTS.TEST_POSE2D);
+    return pathBuilder.build(new Path(new Path.Waypoint(FIELD_CONSTANTS.TEST_POSE2D)));
   }
 
   public Path pathFromPoseWithConstraints(Pose2d target, PathConstraints constraints) {
@@ -367,11 +375,8 @@ public class Drive extends SubsystemBase {
     return path;
   }
 
-  public Command goToc(Pose2d target) {
-    return pathBuilder.build(new Path(new Path.Waypoint(target)));
-  }
-
   public void goTo(Pose2d target) {
+    Logger.recordOutput("tagget", target);
     this.run(() -> pathBuilder.build(new Path(new Path.Waypoint(target))));
   }
 

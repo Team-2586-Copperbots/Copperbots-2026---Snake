@@ -6,8 +6,12 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Seconds;
 
+import java.util.Set;
+
 import org.ironmaple.simulation.IntakeSimulation;
 import org.ironmaple.simulation.SimulatedArena;
+import org.littletonrobotics.junction.Logger;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -18,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -25,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.FIELD_CONSTANTS;
 import frc.robot.Constants.LED_Strip;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.OPERATOR_CONSTANTS;
@@ -33,6 +39,7 @@ import frc.robot.commands.Autos;
 import frc.robot.commands.Climb_ZeroClimb;
 import frc.robot.commands.Climb_move;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.DriveGoTo;
 import frc.robot.commands.Indexer_Spin;
 import frc.robot.commands.Intake_Spin;
 import frc.robot.commands.Shooter_AutoShoot_Sequence;
@@ -273,8 +280,8 @@ public class RobotContainer {
                 // driveController.povUp().whileTrue(drive
                 // .sysIdDynamic(edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward));
 
-                // driveController.circle().onTrue(drive.commandResetOdometry(new Pose2d(2, 2,
-                // new Rotation2d())));
+                driveController.circle().whileTrue(new DeferredCommand(() -> drive.pathToTest(), Set.of(drive)));
+                driveController.square().whileTrue(new DriveGoTo(drive));
 
                 // MARK: Operator
 

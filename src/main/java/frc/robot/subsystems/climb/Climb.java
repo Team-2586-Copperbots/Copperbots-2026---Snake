@@ -10,42 +10,40 @@ import frc.robot.Constants;
 public class Climb extends SubsystemBase {
     private static Climb instance = null;
     private ClimbIO io;
-    private ClimbIOInputsAutoLogged inputs = new ClimbIOInputsAutoLogged();
 
     public static Climb getInstance() {
         if (instance == null) {
-            switch (Constants.currentMode) {
-                case REAL:
-                    instance = new Climb(new ClimbIOReal());
-                    break;
-                case SIM:
-                    instance = new Climb(new ClimbIOSim());
-                    break;
-                default:
-                    instance = new Climb(new ClimbIO() {
-                    });
-                    break;
-            }
+            instance = new Climb();
         }
         return instance;
     }
 
-    public Climb(ClimbIO io) {
-        this.io = io;
+    public Climb() {
+        switch (Constants.currentMode) {
+            case REAL:
+                io = new ClimbIOReal();
+                break;
+            case SIM:
+                io = new ClimbIOSim();
+                break;
+            default:
+                io = new ClimbIO() {
+                };
+                break;
+        }
     }
 
     @Override
     public void periodic() {
-        io.updateInputs(inputs);
-        Logger.processInputs("Climb", inputs);
+        io.updateAndLogInputs();
     }
 
     public double getPosition() {
-        return inputs.motorPosition;
+        return io.getMotorInputs(1).position;
     }
 
     public boolean getLimitSwitch() {
-        return inputs.limitSwitch;
+        return io.getInputs().limitSwitch;
     }
 
     public void setPositionToZero() {

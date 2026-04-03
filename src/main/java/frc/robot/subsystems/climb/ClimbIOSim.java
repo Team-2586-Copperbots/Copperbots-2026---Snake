@@ -10,17 +10,16 @@ import frc.robot.Constants.CANIds;
 import frc.robot.subsystems.climb.Climb.ClimbPosition;
 
 public class ClimbIOSim implements ClimbIO {
+    private ClimbIOInputsAutoLogged inputs = new ClimbIOInputsAutoLogged();
     private Double targetSpeed = 0.0;
     private ClimbPosition position = ClimbPosition.DOWN;
     private boolean positionVoltage = false;
-    private TalonFX motor = new TalonFX(CANIds.CLIMB_MOTOR_1, Canivore);
 
     public ClimbIOSim() {
-
     }
 
     @Override
-    public void updateInputs(ClimbIOInputs inputs) {
+    public void updateAndLogInputs() {
         inputs.motorPosition = position.value;
         inputs.isPositionVoltage = positionVoltage;
         // inputs.folower.update(motor);

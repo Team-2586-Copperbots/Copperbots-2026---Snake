@@ -15,15 +15,21 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants.CANIds;
 import frc.robot.Constants.DIO_IDS;
 import frc.robot.subsystems.climb.Climb.ClimbPosition;
+import frc.robot.util.auto_loggint_stuff.MotorIOInputsAutoLogged;
+import frc.robot.util.auto_loggint_stuff.MotorIOTalon;
+import frc.robot.util.auto_loggint_stuff.MotorIO.MotorIOInputs;
 
 public class ClimbIOReal implements ClimbIO {
     private final TalonFX climbMotor1, climbMotor2;
     private final DigitalInput limitSwitch;
     private final TalonFXConfiguration climbMotorConfig;
-    private boolean isPositionVoltage = false;
-    private ClimbPosition targetPosition = ClimbPosition.DOWN;
     private final PositionVoltage positionVoltage = new PositionVoltage(0);
     // private final PositionTorqueCurrentFOC
+
+
+    private final MotorIOTalon[] motorio = new MotorIOTalon[2];
+    private final ClimbIOInputsAutoLogged inputs = new ClimbIOInputsAutoLogged();
+    private final MotorIOInputsAutoLogged[] motorInputs = {new MotorIOInputsAutoLogged()};
 
     public ClimbIOReal() {
         climbMotor1 = new TalonFX(CANIds.CLIMB_MOTOR_1);
@@ -47,17 +53,31 @@ public class ClimbIOReal implements ClimbIO {
         climbMotor2.getConfigurator().apply(climbMotorConfig);
 
         climbMotor2.setControl(new Follower(climbMotor1.getDeviceID(), MotorAlignmentValue.Aligned));
+
+        motorio[0] = new MotorIOTalon(climbMotor1);
+        motorio[1] = new MotorIOTalon(climbMotor2);
     }
 
     @Override
-    public void updateInputs(ClimbIOInputs inputs) {
+    public void updateAndLogInputs() {
         inputs.motorPosition = climbMotor1.getPosition().getValueAsDouble();
-        inputs.isPositionVoltage = isPositionVoltage;
         inputs.limitSwitch = !limitSwitch.get();
 
+        // motorio[0].updateInputs(motorInputs[0]);
 
-        inputs.targetPosition = targetPosition;
-        inputs.targetSpeed = climbMotor1.get();
+        // inputs.targetSpeed = climbMotor1.get();
+
+        Logger.processInputs("Climb", inputs);
+        // Logger.processInputs("Climb/Motor1", motorInputs[0]);
+    }
+
+    @Override
+    public ClimbIOInputsAutoLogged getInputs() {
+        return inputs;
+    }
+    @Override
+    public MotorIOInputsAutoLogged getMotorInputs(int i) {
+        return motorInputs[i];
     }
 
     @Override
@@ -68,14 +88,11 @@ public class ClimbIOReal implements ClimbIO {
 
     @Override
     public void setSpeed(double speed) {
-        isPositionVoltage = false;
         climbMotor1.set(speed);
     }
 
     @Override
     public void setTargetPosition(ClimbPosition position) {
-        targetPosition = position;
-        isPositionVoltage = true;
         climbMotor1.setControl(positionVoltage.withPosition(position.value));
     }
 }
