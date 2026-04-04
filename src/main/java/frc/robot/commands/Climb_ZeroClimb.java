@@ -1,9 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.climb.Climb;
-import frc.robot.subsystems.climb.Climb.ClimbPosition;
-import frc.robot.subsystems.turret.Turret;;
+import frc.robot.subsystems.climb.Climb;;
 
 public class Climb_ZeroClimb extends Command {
     private Climb Climb;

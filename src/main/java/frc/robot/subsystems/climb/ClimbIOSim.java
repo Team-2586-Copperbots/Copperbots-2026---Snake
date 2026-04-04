@@ -1,18 +1,15 @@
 package frc.robot.subsystems.climb;
 
-import static frc.robot.Constants.CANIds.Canivore;
-
-import org.ironmaple.simulation.motorsims.SimulatedMotorController;
-
-import com.ctre.phoenix6.hardware.TalonFX;
-
-import frc.robot.Constants.CANIds;
 import frc.robot.subsystems.climb.Climb.ClimbPosition;
 
 public class ClimbIOSim implements ClimbIO {
+    @SuppressWarnings("unused")
     private ClimbIOInputsAutoLogged inputs = new ClimbIOInputsAutoLogged();
+    @SuppressWarnings("unused")
     private Double targetSpeed = 0.0;
+    @SuppressWarnings("unused")
     private ClimbPosition position = ClimbPosition.DOWN;
+    @SuppressWarnings("unused")
     private boolean positionVoltage = false;
 
     public ClimbIOSim() {

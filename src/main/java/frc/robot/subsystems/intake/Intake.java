@@ -11,7 +11,6 @@ import frc.robot.subsystems.drive.Drive;
 public class Intake extends SubsystemBase {
     private static Intake instance = null;
     private IntakeIO io;
-    private IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
     public static Intake getInstance() {
         if (instance == null) {
@@ -60,13 +59,17 @@ public class Intake extends SubsystemBase {
         return io.getMotorInputs(CANIds.INTAKE_WRIST_MOTOR).position;
     }
 
+    public boolean getIsAtTArget() {
+        return Math.abs(getWristPosition() - getWristTarget().value) < INTAKE_CONSTANTS.POSITION_TOLERENCE;
+    }
+
     public IntakePosition getWristTarget() {
-        return inputs.tagertPosition;
+        return io.getInputs().tagertPosition;
     }
 
     public boolean getIsDown() {
-        if (((getWristPosition() - IntakePosition.IN.value) < INTAKE_CONSTANTS.idDownThreshold)
-                || ((getWristPosition() - IntakePosition.OUT.value) < INTAKE_CONSTANTS.idDownThreshold)) {
+        if (((getWristPosition() - IntakePosition.IN.value) < INTAKE_CONSTANTS.POSITION_TOLERENCE)
+                || ((getWristPosition() - IntakePosition.OUT.value) < INTAKE_CONSTANTS.POSITION_TOLERENCE)) {
             return true;
         } else {
             return false;
@@ -81,7 +84,7 @@ public class Intake extends SubsystemBase {
     public static enum IntakePosition {
         IN(0.0),
         OUT(0.251),
-        part(0.2);
+        JUGLE(INTAKE_CONSTANTS.distanceToStopAt + 0.01);
         // ,
         // HALFWAY(4);
 

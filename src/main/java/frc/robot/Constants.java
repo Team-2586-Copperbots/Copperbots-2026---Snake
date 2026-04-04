@@ -88,7 +88,7 @@ public final class Constants {
 
     // drive speed limiter
     public static final double MAX_SPEED_LIMITER = 1;
-    public static final double SLOW_SPEED_LIMITER = 0.2;
+    public static final double SLOW_SPEED_LIMITER = 0.3;
 
     public static final double IDLE_SHOOTER_SPEED = 45; // RPS
     public static final double ROLLER_SPEED = 0.8; // percentage
@@ -106,7 +106,7 @@ public final class Constants {
     public static Pose2d CENTER_OF_HUB = new Pose2d();
     public static Pose2d BOTTOM_FULE_STORAGE = new Pose2d();
     public static Pose2d TOP_FULE_STORAGE = new Pose2d();
-    public static Pose2d TEST_POSE2D = new Pose2d(Meters.of(2), Meters.of(2), Rotation2d.k180deg);
+    public static Pose2d TEST_POSE2D = new Pose2d(Meters.of(4.266), Meters.of(0.622), Rotation2d.kCW_90deg);
 
     public static void updateUtilsPositions() {
       CENTER_OF_HUB = AllianceFlipUtil.apply(new Pose2d(Meters.of(4.62), Meters.of(4.04), Rotation2d.kZero));
@@ -168,7 +168,8 @@ public final class Constants {
   public static class INTAKE_CONSTANTS {
     public static final double rotorToSensor = (5 / 1) * (57 / 24) * (45 / 20);
     public static final double distanceToStopAt = 0.08;
-    public static final double idDownThreshold = 0.01;
+    public static final double POSITION_TOLERENCE = 0.01;
+    public static final double timeBetwenRattaling = 700;
   }
 
   public static enum LED_Strip {

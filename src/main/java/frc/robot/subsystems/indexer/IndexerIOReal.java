@@ -1,7 +1,5 @@
 package frc.robot.subsystems.indexer;
 
-import javax.print.DocFlavor.READER;
-
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -12,7 +10,6 @@ import frc.robot.Constants.CANIds;
 import frc.robot.util.auto_loggint_stuff.MotorIO;
 import frc.robot.util.auto_loggint_stuff.MotorIOInputsAutoLogged;
 import frc.robot.util.auto_loggint_stuff.MotorIOTalon;
-import frc.robot.util.auto_loggint_stuff.MotorIO.MotorIOInputs;
 
 public class IndexerIOReal implements IndexerIO {
 

@@ -17,6 +17,10 @@ public interface IntakeIO {
     public default void updateInputs() {
     }
 
+    public default IntakeIOInputsAutoLogged getInputs() {
+        return null;
+    }
+
     public default MotorIOInputsAutoLogged getMotorInputs(int id) {
         return null;
     }

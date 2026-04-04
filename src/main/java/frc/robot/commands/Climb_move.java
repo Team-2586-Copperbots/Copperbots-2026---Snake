@@ -1,24 +1,22 @@
 package frc.robot.commands;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.Climb.ClimbPosition;
 
-public class Climb_move extends Command {
+public class Climb_Move extends Command {
     private Climb climb;
     private double Speed = -2;
     private ClimbPosition position = null;
 
-    public Climb_move(Climb climbSubsystem, double speed) {
+    public Climb_Move(Climb climbSubsystem, double speed) {
         this.climb = climbSubsystem;
         this.Speed = speed;
 
         addRequirements(climbSubsystem);
     }
 
-    public Climb_move(Climb climbSubsystem, ClimbPosition position) {
+    public Climb_Move(Climb climbSubsystem, ClimbPosition position) {
         this.climb = climbSubsystem;
         this.position = position;
 
@@ -28,11 +26,7 @@ public class Climb_move extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        Logger.recordOutput("climbthing", true);
-        Logger.recordOutput("cposition", position);
-        Logger.recordOutput("cspeed", Speed);
         if (Speed != -2) {
-            Logger.recordOutput("cran speed", true);
             climb.setClimbSpeed(Speed);
         } else if (position != null) {
             climb.setClimbTargetPosition(position);
@@ -47,7 +41,7 @@ public class Climb_move extends Command {
 
     @Override
     public boolean isFinished() {
-        if (position != null && (Math.abs(climb.getPosition() - position.value) < 0.05)) {
+        if (position != null && (Math.abs(climb.getPosition() - position.value) < 0.1)) {
             return true;
         }
         return false;

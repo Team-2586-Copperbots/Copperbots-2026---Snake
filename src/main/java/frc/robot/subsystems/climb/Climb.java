@@ -1,8 +1,6 @@
 package frc.robot.subsystems.climb;
 
-import java.nio.channels.Pipe;
-
-import org.littletonrobotics.junction.Logger;
+import static frc.robot.Constants.CANIds.CLIMB_MOTOR_1;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -39,7 +37,7 @@ public class Climb extends SubsystemBase {
     }
 
     public double getPosition() {
-        return io.getMotorInputs(1).position;
+        return io.getMotorInputs(CLIMB_MOTOR_1).position;
     }
 
     public boolean getLimitSwitch() {

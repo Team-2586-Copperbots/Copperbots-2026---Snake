@@ -7,6 +7,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GainSchedBehaviorValue;
+import com.ctre.phoenix6.signals.GainSchedKpBehaviorValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
@@ -44,17 +45,18 @@ public class IntakeIOReal implements IntakeIO {
         wristMotorConfig = new TalonFXConfiguration();
         rollerMotorConfig = new TalonFXConfiguration();
 
-        // wristMotorConfig.CurrentLimits.StatorCurrentLimit = 70;
+        wristMotorConfig.CurrentLimits.StatorCurrentLimit = 45;
 
         wristMotorConfig.Feedback.FeedbackRemoteSensorID = CANIds.INTAKE_CANCODER;
         wristMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
 
-        wristMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        wristMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast; // TODO: change for comp
         wristMotorConfig.ClosedLoopGeneral.GainSchedErrorThreshold = 0.01;
+        wristMotorConfig.Slot0.GainSchedBehavior = GainSchedBehaviorValue.Inactive; 
 
         var pidConfig = wristMotorConfig.Slot0;
         // TODO: tune pid at all?
-        pidConfig.kP = 13.000;
+        pidConfig.kP = 18.000;
         pidConfig.kI = 0.000;
         pidConfig.kD = 0.000;
 
@@ -85,6 +87,7 @@ public class IntakeIOReal implements IntakeIO {
         wristMotorIO.updateInputs(wristMotorInputs);
         rollerMotorIO.updateInputs(rollerMotorInputs);
 
+        Logger.processInputs("Intake", inputs);
         Logger.processInputs("Intake/WristMotor", wristMotorInputs);
         Logger.processInputs("Intake/RollerMotor", rollerMotorInputs);
         // for (int i = 0; i < motorIOs.length; i++) {
@@ -92,6 +95,11 @@ public class IntakeIOReal implements IntakeIO {
         // }
         // Logger.processInputs("Intake/WristMotor", motorIOInputs[0]);
         // Logger.processInputs("Intake/rollerMotor", motorIOInputs[1]);
+    }
+
+    @Override
+    public IntakeIOInputsAutoLogged getInputs() {
+        return inputs;
     }
 
     @Override
@@ -116,12 +124,6 @@ public class IntakeIOReal implements IntakeIO {
         targetPosition = position;
         wristMotor.setControl(positionVoltage.withPosition(position.value));
     }
-
-    // @Override
-    // public void setWristPositionFromCancoder() {
-    // wristMotor.setPosition(cancoder.getPosition().getValue().in(Rotations) *
-    // INTAKE_CONSTANTS.rotorToIntake);
-    // }
 
     @Override
     public void setWristSpeed(double speed) {

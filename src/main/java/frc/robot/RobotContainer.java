@@ -4,25 +4,16 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Seconds;
-
-import java.util.Set;
-
 import org.ironmaple.simulation.IntakeSimulation;
 import org.ironmaple.simulation.SimulatedArena;
-import org.littletonrobotics.junction.Logger;
-
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -38,9 +29,8 @@ import frc.robot.commands.Turret_AimAndShoot;
 import frc.robot.commands.Autos;
 import frc.robot.commands.Climb_AutoClimb_Sequence;
 import frc.robot.commands.Climb_ZeroClimb;
-import frc.robot.commands.Climb_move;
+import frc.robot.commands.Climb_Move;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.DriveGoTo;
 import frc.robot.commands.Indexer_Spin;
 import frc.robot.commands.Intake_Spin;
 import frc.robot.commands.Shooter_AutoShoot_Sequence;
@@ -49,7 +39,6 @@ import frc.robot.commands.Intake_PID;
 import frc.robot.commands.Shooter_ShootSpeed;
 import frc.robot.commands.Turret_Aim;
 import frc.robot.commands.Turret_ZeroTurret;
-import frc.robot.lib.BLine.FollowPath;
 import frc.robot.subsystems.LED;
 import frc.robot.subsystems.LED.LED_Colour;
 import frc.robot.subsystems.climb.Climb;
@@ -97,7 +86,7 @@ public class RobotContainer {
         private final CommandPS4Controller simControler = new CommandPS4Controller(
                         OPERATOR_CONSTANTS.SIM_CONTROLER_PORT);
 
-        private final SendableChooser<Command> autoChooser;
+        // private final SendableChooser<Command> autoChooser;
         private final SendableChooser<Command> bLineChouser;
         private final SendableChooser<Command> characterizationChooser;
         private final SendableChooser<Double> polarityChooser;
@@ -111,6 +100,7 @@ public class RobotContainer {
                         simsProjectile.createSimsProjectile(drive::getPose, () -> ChassisSpeeds
                                         .fromRobotRelativeSpeeds(drive.getChassisSpeeds(), drive.getRotation()),
                                         turret::getRotation, shooter::getMotor1Speed);
+                        @SuppressWarnings("unused")
                         IntakeSimulation.IntakeSide intakeSimulation = null;
 
                 }
@@ -132,15 +122,15 @@ public class RobotContainer {
                 addOptionsForCharecterization();
 
                 // For convenience a programmer could change this when going to competition.
-                boolean isCompetition = false;
+                // boolean isCompetition = false;
                 // Build an auto chooser. This will use Commands.none() as the default option.
                 // As an example, this will only show autos that start with "comp" while at
                 // competition as defined by the programmer
-                autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier(
-                                (stream) -> isCompetition
-                                                ? stream.filter(auto -> auto.getName().startsWith("comp"))
-                                                : stream);
-                SmartDashboard.putData("pathplaner chooser", autoChooser);
+                // autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier(
+                // (stream) -> isCompetition
+                // ? stream.filter(auto -> auto.getName().startsWith("comp"))
+                // : stream);
+                // SmartDashboard.putData("pathplaner chooser", autoChooser);
                 SmartDashboard.putData("bline chooser", bLineChouser);
                 SmartDashboard.putData("characterization Chooset", characterizationChooser);
                 configureBindings();
@@ -149,38 +139,12 @@ public class RobotContainer {
 
         private void buildBLineAutos() {
                 // MARK: BLine
-                bLineChouser.addOption("test", drive.pathFromString("pathv"));
-                // bLineChouser.addOption("8ball", new
-                // SequentialCommandGroup(drive.pathFromString("pathc"),
-                // new ParallelCommandGroup(new AimAndShoot(shooter, turret, drive),
-                // new SequentialCommandGroup(new WaitCommand(.2),
-                // new IndexerSpin(indexer, IndexerStates.UP)))));
                 bLineChouser.setDefaultOption("8ball", new SequentialCommandGroup(
                                 new ParallelCommandGroup(
                                                 new Turret_AimAndShoot(shooter, turret),
                                                 new SequentialCommandGroup(
                                                                 new WaitCommand(1),
                                                                 new Indexer_Spin(indexer, IndexerStates.ON)))));
-                // bLineChouser.addOption("8ball then out",
-                // new SequentialCommandGroup(new ParallelDeadlineGroup(new WaitCommand(2.5),
-                // new ParallelCommandGroup(new Turret_AimAndShoot(shooter, turret),
-                // new SequentialCommandGroup(new WaitCommand(0.75),
-                // new Indexer_Spin(indexer,
-                // IndexerStates.ON)))),
-                // drive.pathFromString("b1-1"),
-                // new Intake_PID(intake, IntakePosition.OUT,
-                // 0).withTimeout(0.05),
-                // drive.pathFromString("b1-2"),
-                // new Intake_Spin(intake, 0).withTimeout(0.05),
-                // drive.pathFromString("b1-3"),
-                // new ParallelCommandGroup(new Turret_AimAndShoot(shooter, turret),
-                // new SequentialCommandGroup(new WaitCommand(0.5),
-                // new Indexer_Spin(indexer,
-                // IndexerStates.ON))),
-                // drive.pathFromString("b1-1")));
-                // bLineChouser.addOption("drive forwards", new SequentialCommandGroup(drive
-                // .cRunVelocity(new ChassisSpeeds(1, -1, 0)).withTimeout(Seconds.of(1)),
-                // new Intake_PID(intake, IntakePosition.OUT, 0)));
 
         }
 
@@ -221,19 +185,6 @@ public class RobotContainer {
                                                 new Intake_PID(intake, IntakePosition.IN, 0),
                                                 new Shooter_ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED,
                                                                 false)));
-                FollowPath.registerEventTrigger("intake out",
-                                new Intake_PID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED)
-                                                .withTimeout(0.5));
-                FollowPath.registerEventTrigger("intake in",
-                                new Intake_PID(intake, IntakePosition.IN, OPERATOR_CONSTANTS.ROLLER_SPEED));
-                FollowPath.registerEventTrigger("aim n shoot",
-                                new ParallelCommandGroup(new Turret_AimAndShoot(shooter, turret),
-                                                new SequentialCommandGroup(
-                                                                new WaitCommand(Time.ofBaseUnits(.5, Seconds)),
-                                                                new Indexer_Spin(indexer, IndexerStates.ON))));
-                FollowPath.registerEventTrigger("stop shooter", new ParallelCommandGroup(
-                                new Shooter_ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED, false),
-                                new Indexer_Spin(indexer, IndexerStates.OFF)));
         }
 
         /**
@@ -281,8 +232,9 @@ public class RobotContainer {
                 // driveController.povUp().whileTrue(drive
                 // .sysIdDynamic(edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward));
 
-                driveController.circle().whileTrue(new DeferredCommand(() -> drive.pathToTest(), Set.of(drive)));
-                driveController.square().whileTrue(Climb_AutoClimb_Sequence.get(drive, climb));
+                driveController.circle().whileTrue(drive.deferedCommandToPose(FIELD_CONSTANTS.TEST_POSE2D));
+                driveController.square().whileTrue(Autos.getAuto());
+                driveController.cross().whileTrue(Climb_AutoClimb_Sequence.get(drive, climb));
 
                 // MARK: Operator
 
@@ -308,8 +260,8 @@ public class RobotContainer {
                 operatorController.PS().onTrue(led.setColor(LED_Strip.FIRST, LED_Colour.BLUE));
 
                 // climb
-                operatorController.R1().whileTrue(new Climb_move(climb, 0.9));
-                operatorController.R2().whileTrue(new Climb_move(climb, -0.9));
+                operatorController.R1().whileTrue(new Climb_Move(climb, 0.9));
+                operatorController.R2().whileTrue(new Climb_Move(climb, -0.9));
                 operatorController.L1().onTrue(new Climb_ZeroClimb(climb));
 
                 // pid intake
@@ -327,11 +279,13 @@ public class RobotContainer {
                 operatorController.cross().onTrue(new Intake_Spin(intake, -Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
 
                 // MARK: Test1
-                testController1.circle().onTrue(new Climb_move(climb, ClimbPosition.UP));
-                testController1.square().onTrue(new Climb_move(climb, ClimbPosition.DOWN));
-                testController1.triangle().whileTrue(new Climb_move(climb, 1));
-                testController1.cross().whileTrue(new Climb_move(climb, -0.6));
-                testController1.options().onTrue(new Climb_ZeroClimb(climb));
+
+                // climb
+                // testController1.circle().onTrue(new Climb_move(climb, ClimbPosition.UP));
+                // testController1.square().onTrue(new Climb_move(climb, ClimbPosition.DOWN));
+                // testController1.triangle().whileTrue(new Climb_move(climb, 1));
+                // testController1.cross().whileTrue(new Climb_move(climb, -0.6));
+                // testController1.options().onTrue(new Climb_ZeroClimb(climb));
                 // testController1.povLeft().whileTrue(autoClimb);
                 // testController1.povRight().whileTrue(
                 // Commands.deferredProxy(() -> drive.goToc(FIELD_CONSTANTS.TEST_POSE2D)));
@@ -339,6 +293,12 @@ public class RobotContainer {
                 testController1.povDown().onTrue(new Intake_PID(intake, IntakePosition.IN, 0));
                 testController1.povRight().whileTrue(new Intake_PID(intake, 0.05, 0));
                 testController1.povLeft().whileTrue(new Intake_PID(intake, -0.05, 0));
+
+                testController1.L2().whileTrue(DriveCommands.myDrive(drive, testController1,
+                                0.6, polarityChooser::getSelected));
+                testController1.triangle().onTrue(new Climb_ZeroClimb(climb));
+                testController1.square().whileTrue(Climb_AutoClimb_Sequence.get(drive, climb));
+                testController1.circle().onTrue(new Climb_Move(climb, ClimbPosition.UP));
         }
 
         public Command resetGyro() {

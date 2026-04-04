@@ -4,7 +4,6 @@ import org.littletonrobotics.junction.AutoLog;
 
 import frc.robot.subsystems.climb.Climb.ClimbPosition;
 import frc.robot.util.auto_loggint_stuff.MotorIOInputsAutoLogged;
-import frc.robot.util.auto_loggint_stuff.MotorIOTalon;
 
 public interface ClimbIO {
     @AutoLog
