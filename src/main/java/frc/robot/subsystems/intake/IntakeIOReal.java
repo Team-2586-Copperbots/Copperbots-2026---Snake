@@ -15,23 +15,26 @@ import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import frc.robot.Constants;
 import frc.robot.Constants.CANIds;
 import frc.robot.subsystems.intake.Intake.IntakePosition;
+import frc.robot.util.auto_loggint_stuff.MotorIOInputsAutoLogged;
+import frc.robot.util.auto_loggint_stuff.MotorIOTalon;
 
 import static frc.robot.Constants.CANIds.Canivore;
 
 import org.littletonrobotics.junction.Logger;
 
 public class IntakeIOReal implements IntakeIO {
-    private final TalonFX wristMotor;
-    private final TalonFX rollerMotor;
+    private final TalonFX wristMotor, rollerMotor;
     private final CANcoder cancoder;
 
-    private final TalonFXConfiguration wristMotorConfig;
-    private final TalonFXConfiguration rollerMotorConfig;
-    private double applyedVoltsMkS = 0;
+    private final TalonFXConfiguration wristMotorConfig, rollerMotorConfig;
 
     private final PositionVoltage positionVoltage = new PositionVoltage(0);
     private IntakePosition targetPosition = IntakePosition.IN;
-    private boolean isClosedLoop;
+
+    private final MotorIOTalon wristMotorIO, rollerMotorIO;
+    private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
+    private final MotorIOInputsAutoLogged wristMotorInputs = new MotorIOInputsAutoLogged();
+    private final MotorIOInputsAutoLogged rollerMotorInputs = new MotorIOInputsAutoLogged();
 
     public IntakeIOReal() {
         wristMotor = new TalonFX(CANIds.INTAKE_WRIST_MOTOR, Canivore);
@@ -68,26 +71,39 @@ public class IntakeIOReal implements IntakeIO {
 
         wristMotor.getConfigurator().apply(wristMotorConfig);
         rollerMotor.getConfigurator().apply(rollerMotorConfig);
+
+        wristMotorIO = new MotorIOTalon(wristMotor);
+        rollerMotorIO = new MotorIOTalon(rollerMotor);
     }
 
     @Override
-    public void updateInputs(IntakeIOInputs inputs) {
-        inputs.wristIsOK = wristMotor.isAlive();
-        inputs.currentWristPosition = wristMotor.getPosition().getValueAsDouble();
-        inputs.wristSetpoint = targetPosition;
-        if (wristMotor.get() > 0) {
-            applyedVoltsMkS = wristMotor.getMotorVoltage().getValueAsDouble() - wristMotorConfig.Slot0.kS;
-        } else {
-            applyedVoltsMkS = wristMotor.getMotorVoltage().getValueAsDouble() + wristMotorConfig.Slot0.kS;
-        }
-        inputs.wristVolts = applyedVoltsMkS;
-        inputs.wristAmps = wristMotor.getStatorCurrent().getValueAsDouble();
-        inputs.currentRollerSpeed = rollerMotor.getVelocity().getValueAsDouble();
+    public void updateInputs() {
 
         inputs.currentCancoderPosition = cancoder.getPosition().getValueAsDouble();
+        inputs.tagertPosition = targetPosition;
 
-        inputs.rollerSetpoint = rollerMotor.get();
-        inputs.wristIsClosedLoop = isClosedLoop;
+        wristMotorIO.updateInputs(wristMotorInputs);
+        rollerMotorIO.updateInputs(rollerMotorInputs);
+
+        Logger.processInputs("Intake/WristMotor", wristMotorInputs);
+        Logger.processInputs("Intake/RollerMotor", rollerMotorInputs);
+        // for (int i = 0; i < motorIOs.length; i++) {
+        // motorIOs[i].updateInputs(motorIOInputs[i]);
+        // }
+        // Logger.processInputs("Intake/WristMotor", motorIOInputs[0]);
+        // Logger.processInputs("Intake/rollerMotor", motorIOInputs[1]);
+    }
+
+    @Override
+    public MotorIOInputsAutoLogged getMotorInputs(int id) {
+        switch (id) {
+            case CANIds.INTAKE_WRIST_MOTOR:
+                return wristMotorInputs;
+            case CANIds.INTAKE_ROLLER_MOTOR:
+                return rollerMotorInputs;
+            default:
+                return null;
+        }
     }
 
     @Override
@@ -97,7 +113,6 @@ public class IntakeIOReal implements IntakeIO {
 
     @Override
     public void setWristPositionTarget(IntakePosition position) {
-        isClosedLoop = true;
         targetPosition = position;
         wristMotor.setControl(positionVoltage.withPosition(position.value));
     }
@@ -110,7 +125,6 @@ public class IntakeIOReal implements IntakeIO {
 
     @Override
     public void setWristSpeed(double speed) {
-        isClosedLoop = false;
         wristMotor.set(speed);
     }
 }

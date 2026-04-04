@@ -129,8 +129,8 @@ public final class Constants {
     public static final int INTAKE_CANCODER = 28;
     public static final int INTAKE_ROLLER_MOTOR = 27;
     // intake motor
-    public static final int INDEXER_MOTOR = 24;
-    public static final int TOWER_MOTOR = 25;
+    public static final int SPINDEXER_INDEXER_MOTOR = 24;
+    public static final int SPINDEXER_TOWER_MOTOR = 25;
     // climb motor
     public static final int CLIMB_MOTOR_1 = 29;
     public static final int CLIMB_MOTOR_2 = 30;
@@ -167,6 +167,8 @@ public final class Constants {
 
   public static class INTAKE_CONSTANTS {
     public static final double rotorToSensor = (5 / 1) * (57 / 24) * (45 / 20);
+    public static final double distanceToStopAt = 0.08;
+    public static final double idDownThreshold = 0.01;
   }
 
   public static enum LED_Strip {

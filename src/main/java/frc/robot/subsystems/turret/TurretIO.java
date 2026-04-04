@@ -17,7 +17,7 @@ public interface TurretIO {
         public double turretRotation = 0;
 
         public boolean limitSwitch = false;
-        public boolean canMakeItToPosition = true;
+        public boolean canMakeItToTarget = true;
     }
 
     public default void updateInputs(TurretIOInputs inputs) {

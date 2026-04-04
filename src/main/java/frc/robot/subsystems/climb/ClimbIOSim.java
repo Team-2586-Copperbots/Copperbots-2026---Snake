@@ -20,12 +20,6 @@ public class ClimbIOSim implements ClimbIO {
 
     @Override
     public void updateAndLogInputs() {
-        inputs.motorPosition = position.value;
-        inputs.isPositionVoltage = positionVoltage;
-        // inputs.folower.update(motor);
-
-        inputs.targetPosition = position;
-        inputs.targetSpeed = targetSpeed;
 
     }
 

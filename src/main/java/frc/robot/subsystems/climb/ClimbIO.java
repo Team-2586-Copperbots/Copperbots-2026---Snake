@@ -9,11 +9,8 @@ import frc.robot.util.auto_loggint_stuff.MotorIOTalon;
 public interface ClimbIO {
     @AutoLog
     public static class ClimbIOInputs {
-        public boolean isPositionVoltage = false;
-        public double motorPosition = 0;
         public boolean limitSwitch = false;
 
-        public double targetSpeed = 0;
         public ClimbPosition targetPosition = ClimbPosition.DOWN;
     }
 

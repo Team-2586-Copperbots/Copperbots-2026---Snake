@@ -13,12 +13,18 @@ public class MotorIOTalon implements MotorIO {
 
     @Override
     public void updateInputs(MotorIOInputs inputs) {
-        inputs.amps = motor.getStatorCurrent().getValueAsDouble();
-        inputs.isClosedLoop = motor.getControlMode().getValue() == ControlModeValue.PositionVoltage;
+        // inputs.name = motor.toString();
+
         inputs.isOk = motor.isAlive();
-        inputs.position = motor.getPosition().getValueAsDouble();
-        inputs.setpoint = motor.getClosedLoopReference().getValueAsDouble();
+
+        inputs.amps = motor.getStatorCurrent().getValueAsDouble();
         inputs.volts = motor.getMotorVoltage().getValueAsDouble();
+
+        inputs.position = motor.getPosition().getValueAsDouble();
+        inputs.velocity = motor.getVelocity().getValueAsDouble();
+
+        inputs.isClosedLoop = motor.getControlMode().getValue() == ControlModeValue.PositionVoltage;
+        inputs.setpoint = motor.getClosedLoopReference().getValueAsDouble();
     }
 
 }

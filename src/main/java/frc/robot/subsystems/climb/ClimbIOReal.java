@@ -1,5 +1,7 @@
 package frc.robot.subsystems.climb;
 
+import java.io.File;
+
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -10,6 +12,8 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants.CANIds;
@@ -24,12 +28,13 @@ public class ClimbIOReal implements ClimbIO {
     private final DigitalInput limitSwitch;
     private final TalonFXConfiguration climbMotorConfig;
     private final PositionVoltage positionVoltage = new PositionVoltage(0);
+    // private final SparkMax motot = new SparkMax(0, MotorType.kBrushless)
     // private final PositionTorqueCurrentFOC
 
-
-    private final MotorIOTalon[] motorio = new MotorIOTalon[2];
     private final ClimbIOInputsAutoLogged inputs = new ClimbIOInputsAutoLogged();
-    private final MotorIOInputsAutoLogged[] motorInputs = {new MotorIOInputsAutoLogged()};
+    private final MotorIOTalon climbMotor1IO, climbMotor2IO;
+    private final MotorIOInputsAutoLogged climbMotor1Inputs = new MotorIOInputsAutoLogged();
+    private final MotorIOInputsAutoLogged climbMotor2Inputs = new MotorIOInputsAutoLogged();
 
     public ClimbIOReal() {
         climbMotor1 = new TalonFX(CANIds.CLIMB_MOTOR_1);
@@ -54,30 +59,42 @@ public class ClimbIOReal implements ClimbIO {
 
         climbMotor2.setControl(new Follower(climbMotor1.getDeviceID(), MotorAlignmentValue.Aligned));
 
-        motorio[0] = new MotorIOTalon(climbMotor1);
-        motorio[1] = new MotorIOTalon(climbMotor2);
+        climbMotor1IO = new MotorIOTalon(climbMotor1);
+        climbMotor2IO = new MotorIOTalon(climbMotor2);
     }
 
     @Override
     public void updateAndLogInputs() {
-        inputs.motorPosition = climbMotor1.getPosition().getValueAsDouble();
         inputs.limitSwitch = !limitSwitch.get();
 
-        // motorio[0].updateInputs(motorInputs[0]);
-
-        // inputs.targetSpeed = climbMotor1.get();
-
         Logger.processInputs("Climb", inputs);
-        // Logger.processInputs("Climb/Motor1", motorInputs[0]);
+
+        climbMotor1IO.updateInputs(climbMotor1Inputs);
+        climbMotor2IO.updateInputs(climbMotor2Inputs);
+        Logger.processInputs("Climb/Climb Motor 1", climbMotor1Inputs);
+        Logger.processInputs("Climb/Climb Motor 2", climbMotor2Inputs);
+
+        // for (int i = 0; i < motorio.length; i++) {
+        // motorio[i].updateInputs(motorInputs[i]);
+        // Logger.processInputs("Climb/motor"+i, motorInputs[i]);
+        // }
     }
 
     @Override
     public ClimbIOInputsAutoLogged getInputs() {
         return inputs;
     }
+
     @Override
-    public MotorIOInputsAutoLogged getMotorInputs(int i) {
-        return motorInputs[i];
+    public MotorIOInputsAutoLogged getMotorInputs(int id) {
+        switch (id) {
+            case CANIds.CLIMB_MOTOR_1:
+                return climbMotor1Inputs;
+            case CANIds.CLIMB_MOTOR_2:
+                return climbMotor2Inputs;
+            default:
+                return null;
+        }
     }
 
     @Override

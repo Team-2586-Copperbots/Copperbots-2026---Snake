@@ -1,7 +1,9 @@
 package frc.robot.util.driveUtils;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Rotations;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -20,7 +22,7 @@ public class ClimbUtils {
     // true for top climb, false for bottom climb
     public static boolean getIsTopClimb(Drive drive) {
         // upper climb
-        if (AllianceFlipUtil.applyY(climbSideFlipingDistanceFromBottom.in(Meters))
+        if ((climbSideFlipingDistanceFromBottom.in(Meters))
                 - AllianceFlipUtil.applyY(drive.getPose().getY()) > 0) {
             return true;
         } else {
@@ -30,18 +32,15 @@ public class ClimbUtils {
 
     public static Pose2d getFinalClimbTarget(Drive drive) {
         // this method ajusts the final target for the offset of the climb
-        boolean topClimbTrue = getIsTopClimb(drive);
-        Distance climbOffsetFromRobotCenter = Inches.of(3.75);
-        if (topClimbTrue) {
+        Distance climbOffsetFromRobotCenter = Inches.of(3.25);
+        if (getIsTopClimb(drive)) {
             // upper target
-            FINAL_CLIMB_TARGET = AllianceFlipUtil
-                    .apply(new Pose2d(Meters.of(1.01).plus(climbOffsetFromRobotCenter),
-                            Meters.of(4.61), Rotation2d.kCCW_90deg));
+            FINAL_CLIMB_TARGET = new Pose2d(Meters.of(1.01).plus(climbOffsetFromRobotCenter),
+                            Meters.of(4.35), new Rotation2d(Degrees.of(90)));
         } else {
             // lower target
-            FINAL_CLIMB_TARGET = AllianceFlipUtil
-                    .apply(new Pose2d(Meters.of(1.01).minus(climbOffsetFromRobotCenter),
-                            Meters.of(2.88), Rotation2d.kCW_90deg));
+            FINAL_CLIMB_TARGET = new Pose2d(Meters.of(1.01).minus(climbOffsetFromRobotCenter),
+                            Meters.of(3.14), new Rotation2d(Degrees.of(-90)));
         }
         return FINAL_CLIMB_TARGET;
     }
@@ -50,13 +49,13 @@ public class ClimbUtils {
         // this method moves the target out so the drive can to the climb in a straight
         // line
         Pose2d finalTarget = getFinalClimbTarget(drive);
-        Distance amountOut = Meters.of(-0.5);
+        Distance amountOut = Meters.of(1);
         if (getIsTopClimb(drive)) {
-            PRE_CLIMB_TARGET = AllianceFlipUtil.apply(new Pose2d(finalTarget.getMeasureX().plus(amountOut),
-                    finalTarget.getMeasureY(), finalTarget.getRotation()));
+            PRE_CLIMB_TARGET = new Pose2d(finalTarget.getMeasureX(),
+                    finalTarget.getMeasureY().plus(amountOut), finalTarget.getRotation());
         } else {
-            PRE_CLIMB_TARGET = AllianceFlipUtil.apply(new Pose2d(finalTarget.getMeasureX().minus(amountOut),
-                    finalTarget.getMeasureY(), finalTarget.getRotation()));
+            PRE_CLIMB_TARGET = new Pose2d(finalTarget.getMeasureX(),
+                    finalTarget.getMeasureY().minus(amountOut), finalTarget.getRotation());
         }
 
         return PRE_CLIMB_TARGET;

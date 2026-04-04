@@ -9,34 +9,32 @@ import org.littletonrobotics.junction.*;
 public class Indexer extends SubsystemBase {
     private static Indexer instance = null;
     private IndexerIO io;
-    private IndexerIOInputsAutoLogged inputs = new IndexerIOInputsAutoLogged();
 
     public static Indexer getInstance() {
         if (instance == null) {
-            switch (Constants.currentMode) {
-                case REAL:
-                    instance = new Indexer(new IndexerIOReal());
-                    break;
-                case SIM:
-                    instance = new Indexer(new IndexerIOSim());
-                    break;
-                default:
-                    instance = new Indexer(new IndexerIO() {
-                    });
-                    break;
-            }
+            instance = new Indexer();
         }
         return instance;
     }
 
-    public Indexer(IndexerIO io) {
-        this.io = io;
+    public Indexer() {
+        switch (Constants.currentMode) {
+                case REAL:
+                    io = new IndexerIOReal();
+                    break;
+                case SIM:
+                    io = new IndexerIOSim();
+                    break;
+                default:
+                    io = new IndexerIO() {
+                    };
+                    break;
+            }
     }
 
     @Override
     public void periodic() {
-        io.updateInputs(inputs);
-        Logger.processInputs("Indexer", inputs);
+        io.updateInputs();
     }
 
     public Command setSpindexerSpeedCommand(double speed) {

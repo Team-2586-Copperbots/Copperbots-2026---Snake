@@ -36,6 +36,7 @@ import frc.robot.Constants.Mode;
 import frc.robot.Constants.OPERATOR_CONSTANTS;
 import frc.robot.commands.Turret_AimAndShoot;
 import frc.robot.commands.Autos;
+import frc.robot.commands.Climb_AutoClimb_Sequence;
 import frc.robot.commands.Climb_ZeroClimb;
 import frc.robot.commands.Climb_move;
 import frc.robot.commands.DriveCommands;
@@ -281,7 +282,7 @@ public class RobotContainer {
                 // .sysIdDynamic(edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward));
 
                 driveController.circle().whileTrue(new DeferredCommand(() -> drive.pathToTest(), Set.of(drive)));
-                driveController.square().whileTrue(new DriveGoTo(drive));
+                driveController.square().whileTrue(Climb_AutoClimb_Sequence.get(drive, climb));
 
                 // MARK: Operator
 
@@ -349,7 +350,7 @@ public class RobotContainer {
         public Command zeroThings() {
                 return new ParallelCommandGroup(
                                 new Turret_ZeroTurret(turret),
-                                new Climb_ZeroClimb(climb),
+                                // new Climb_ZeroClimb(climb),
                                 new ParallelCommandGroup(new Shooter_ShootSpeed(shooter, 0, false),
                                                 new Indexer_Spin(indexer, IndexerStates.OFF),
                                                 new Intake_Spin(intake, 0), DriveCommands.stopWithX(drive))

@@ -4,6 +4,8 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.CANIds;
+import frc.robot.Constants.INTAKE_CONSTANTS;
 import frc.robot.subsystems.drive.Drive;
 
 public class Intake extends SubsystemBase {
@@ -13,26 +15,26 @@ public class Intake extends SubsystemBase {
 
     public static Intake getInstance() {
         if (instance == null) {
-            switch (Constants.currentMode) {
-                case REAL:
-                    instance = new Intake(new IntakeIOReal());
-                    break;
-
-                case SIM:
-                    instance = new Intake(new IntakeIOSim(Drive.getInstance().driveSimulation));
-                    break;
-
-                default:
-                    instance = new Intake(new IntakeIO() {
-                    });
-                    break;
-            }
+            instance = new Intake();
         }
         return instance;
     }
 
-    public Intake(IntakeIO io) {
-        this.io = io;
+    public Intake() {
+        switch (Constants.currentMode) {
+            case REAL:
+                io = new IntakeIOReal();
+                break;
+
+            case SIM:
+                io = new IntakeIOSim(Drive.getInstance().driveSimulation);
+                break;
+
+            default:
+                io = new IntakeIO() {
+                };
+                break;
+        }
     }
 
     // Constants.IntakePosition
@@ -46,8 +48,8 @@ public class Intake extends SubsystemBase {
     }
 
     public void setRollerSpeed(double speed) {
-        double distanceToStopAt = 0.05;
-        if ((Math.abs(inputs.currentWristPosition - IntakePosition.IN.value)) < distanceToStopAt) {
+        if ((Math.abs(io.getMotorInputs(CANIds.INTAKE_WRIST_MOTOR).position
+                - IntakePosition.IN.value)) < INTAKE_CONSTANTS.distanceToStopAt) {
             io.setRollerSpeed(0);
         } else {
             io.setRollerSpeed(speed);
@@ -55,43 +57,26 @@ public class Intake extends SubsystemBase {
     }
 
     public double getWristPosition() {
-        return inputs.currentWristPosition;
+        return io.getMotorInputs(CANIds.INTAKE_WRIST_MOTOR).position;
     }
 
     public IntakePosition getWristTarget() {
-        return inputs.wristSetpoint;
+        return inputs.tagertPosition;
     }
 
     public boolean getIsDown() {
-        double threshold = 0.05;
-        if (((inputs.currentWristPosition - IntakePosition.IN.value) < threshold)
-                || ((inputs.currentWristPosition - IntakePosition.OUT.value) < threshold)) {
+        if (((getWristPosition() - IntakePosition.IN.value) < INTAKE_CONSTANTS.idDownThreshold)
+                || ((getWristPosition() - IntakePosition.OUT.value) < INTAKE_CONSTANTS.idDownThreshold)) {
             return true;
         } else {
             return false;
         }
     }
 
-    // public boolean isAtTarget() {
-    // double tolerence = 0.05;
-    // if (Math.abs(getWristPosition() - IntakePosition.HALFWAY.value) < tolerence)
-    // {
-    // return true;
-    // } else {
-    // return false;
-    // }
-
-    // }
-
     @Override
     public void periodic() {
-        io.updateInputs(inputs);
-        Logger.processInputs("Intake", inputs);
+        io.updateInputs();
     }
-
-    // public void refreshPosition() {
-    // io.setWristPositionFromCancoder();
-    // }
 
     public static enum IntakePosition {
         IN(0.0),

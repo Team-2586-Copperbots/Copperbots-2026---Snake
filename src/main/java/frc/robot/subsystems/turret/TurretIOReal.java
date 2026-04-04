@@ -25,7 +25,7 @@ public class TurretIOReal implements TurretIO {
     private final DigitalInput limitSwitch;
     private final PositionVoltage positionVoltage = new PositionVoltage(0);
     private boolean isClosedLoop = true;
-    private boolean canMakeItToPosition = true;
+    private boolean canMakeItToTarget = true;
 
     public TurretIOReal() {
         turnMotor = new TalonFX(CANIds.TURRET_TURN_MOTOR, Canivore);
@@ -42,10 +42,10 @@ public class TurretIOReal implements TurretIO {
         pidConfig.kI = 0.000;
         pidConfig.kD = 0.000;
 
-        pidConfig.kS = 0.250;
+        pidConfig.kS = 0.245;
         pidConfig.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
 
-        
+        turnMotorConfig.ClosedLoopGeneral.GainSchedErrorThreshold = 0.002 * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO;
 
         turnMotor.getConfigurator().apply(turnMotorConfig);
     }
@@ -61,7 +61,7 @@ public class TurretIOReal implements TurretIO {
 
         inputs.turretRotation = getRobotRelitiveRotation();
 
-        inputs.canMakeItToPosition = canMakeItToPosition;
+        inputs.canMakeItToTarget = canMakeItToTarget;
         inputs.limitSwitch = !limitSwitch.get();
     }
 
@@ -79,12 +79,12 @@ public class TurretIOReal implements TurretIO {
 
         if ((roations >= 0)
                 && (roations < TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT)) {
-            canMakeItToPosition = true;
+            canMakeItToTarget = true;
             turnMotor.setControl(
                     positionVoltage.withPosition(((roations + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET)
                             * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO)));
         } else {
-            canMakeItToPosition = false;
+            canMakeItToTarget = false;
             turnMotor.setControl(positionVoltage.withPosition(1));
         }
 

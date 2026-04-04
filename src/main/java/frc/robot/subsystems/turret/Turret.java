@@ -58,7 +58,7 @@ public class Turret extends SubsystemBase {
     public void setTurretSpeed(double speed) {
         io.setTurretSpeed(speed);
     }
-    
+
     public Rotation2d getRotation() {
         return new Rotation2d(Rotations.of(inputs.motorRotation));
     }
@@ -68,11 +68,11 @@ public class Turret extends SubsystemBase {
     }
 
     public boolean canGetToTarget() {
-        return inputs.canMakeItToPosition;
+        return inputs.canMakeItToTarget;
     }
 
     public boolean isAtTarget() {
-        return Math.abs(inputs.motorRotation - inputs.motorSetpoint) < TURRET_CONSTANTS.TOLERENCE;
+        return (Math.abs(inputs.motorRotation - inputs.motorSetpoint) < TURRET_CONSTANTS.TOLERENCE) && canGetToTarget();
     }
 
     public void setTurretToZero() {

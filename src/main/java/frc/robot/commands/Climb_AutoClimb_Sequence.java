@@ -13,12 +13,14 @@ public class Climb_AutoClimb_Sequence {
         public static Command get(Drive drive, Climb climb) {
                 return new SequentialCommandGroup(
                                 new ParallelCommandGroup(
-                                                drive.pathFromPose(ClimbUtils.getPreClimbTarget(drive)),
-                                                new Climb_move(climb, ClimbPosition.UP)),
+                                                drive.pathFromPose(ClimbUtils.getPreClimbTarget(drive))
+                                // ,new Climb_move(climb, ClimbPosition.UP)
+                                ),
                                 drive.pathFromPath(
                                                 drive.pathFromPoseWithConstraints(ClimbUtils.getFinalClimbTarget(drive),
                                                                 new Path.PathConstraints()
-                                                                                .setMaxVelocityMetersPerSec(0.5))),
-                                new Climb_move(climb, ClimbPosition.DOWN));
+                                                                                .setMaxVelocityMetersPerSec(0.5)))
+                // , new Climb_move(climb, ClimbPosition.DOWN)
+                );
         }
 }

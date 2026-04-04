@@ -35,9 +35,9 @@ public class VisionConstants {
         // new transforms for positions of angled cameras
         public static Transform3d robotToBackCamera = new Transform3d(
                         // translation
-                        Inches.of(-ROBOT_PROPERTIES.lengthOffset /* to the back of the robot then forward/in: */ + 2.5),
-                        Inches.of(ROBOT_PROPERTIES.widthOffset /* to the LEFT(+) of the robot then in/right: */ + -3.5),
-                        Inches.of(ROBOT_PROPERTIES.floorOffset + 10.35),
+                        Inches.of(-ROBOT_PROPERTIES.lengthOffset /* to the back of the robot then forward/in: */ + 0.5),
+                        Inches.of(ROBOT_PROPERTIES.widthOffset /* to the LEFT(+) of the robot then in/right: */ + -2.5),
+                        Inches.of(ROBOT_PROPERTIES.floorOffset + 11.75),
                         // rotation
                         new Rotation3d(
                                         Degrees.of(0), // no roll
@@ -53,7 +53,7 @@ public class VisionConstants {
                         // rotation
                         new Rotation3d(
                                         Degrees.of(0), // no roll
-                                        Degrees.of(-30), // pitch up 30 degres
+                                        Degrees.of(-20), // pitch up 30 degres
                                         Degrees.of(270) // rotate around z 180 degres
                         ));
 
