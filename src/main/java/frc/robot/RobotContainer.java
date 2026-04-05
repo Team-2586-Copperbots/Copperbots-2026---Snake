@@ -9,6 +9,7 @@ import org.ironmaple.simulation.SimulatedArena;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -43,6 +44,7 @@ import frc.robot.subsystems.LED;
 import frc.robot.subsystems.LED.LED_Colour;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.Climb.ClimbPosition;
+import frc.robot.subsystems.drive.BLine_Constants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.indexer.Indexer.IndexerStates;
@@ -52,6 +54,7 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.simsProjectile;
+import frc.robot.util.driveUtils.ClimbUtils;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -151,6 +154,7 @@ public class RobotContainer {
         private void addOptionsForCharecterization() {
                 // MARK: Drive Sysid
                 // Set up SysId routines
+                characterizationChooser.setDefaultOption("Not in use", Commands.none());
                 characterizationChooser.addOption("Drive Wheel Radius Characterization",
                                 DriveCommands.wheelRadiusCharacterization(drive));
                 characterizationChooser.addOption("Drive Simple FF Characterization",
@@ -289,13 +293,19 @@ public class RobotContainer {
                 // testController1.povLeft().whileTrue(autoClimb);
                 // testController1.povRight().whileTrue(
                 // Commands.deferredProxy(() -> drive.goToc(FIELD_CONSTANTS.TEST_POSE2D)));
-                testController1.povUp().onTrue(new Intake_PID(intake, IntakePosition.OUT, 0));
-                testController1.povDown().onTrue(new Intake_PID(intake, IntakePosition.IN, 0));
-                testController1.povRight().whileTrue(new Intake_PID(intake, 0.05, 0));
-                testController1.povLeft().whileTrue(new Intake_PID(intake, -0.05, 0));
+                // testController1.povUp().onTrue(new Intake_PID(intake, IntakePosition.OUT,
+                // 0));
+                // testController1.povDown().onTrue(new Intake_PID(intake, IntakePosition.IN,
+                // 0));
+                // testController1.povRight().whileTrue(new Intake_PID(intake, 0.05, 0));
+                // testController1.povLeft().whileTrue(new Intake_PID(intake, -0.05, 0));
 
+                testController1.povUp()
+                                .whileTrue(drive.commandFromPath(drive.pathFromPoseWithConstraints(
+                                                new Pose2d(ClimbUtils.centerOfClimbPose, Rotation2d.kCCW_90deg),
+                                                BLine_Constants.highTolerence)));
                 testController1.L2().whileTrue(DriveCommands.myDrive(drive, testController1,
-                                0.6, polarityChooser::getSelected));
+                                1.0, polarityChooser::getSelected));
                 testController1.triangle().onTrue(new Climb_ZeroClimb(climb));
                 testController1.square().whileTrue(Climb_AutoClimb_Sequence.get(drive, climb));
                 testController1.circle().onTrue(new Climb_Move(climb, ClimbPosition.UP));
@@ -322,8 +332,7 @@ public class RobotContainer {
          * @return the command to run in autonomous
          */
         public Command getAutonomousCommand() {
-                boolean characterization = false;
-                if (characterization) {
+                if (characterizationChooser.getSelected() == Commands.none()) {
                         return characterizationChooser.getSelected();
                 } else {
                         // if (Autos.getAuto() != Commands.none()) {

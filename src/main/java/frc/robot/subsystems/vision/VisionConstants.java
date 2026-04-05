@@ -36,8 +36,8 @@ public class VisionConstants {
         public static Transform3d robotToBackCamera = new Transform3d(
                         // translation
                         Inches.of(-ROBOT_PROPERTIES.lengthOffset /* to the back of the robot then forward/in: */ + 0.5),
-                        Inches.of(ROBOT_PROPERTIES.widthOffset /* to the LEFT(+) of the robot then in/right: */ + -2.5),
-                        Inches.of(ROBOT_PROPERTIES.floorOffset + 11.75),
+                        Inches.of(ROBOT_PROPERTIES.widthOffset /* to the LEFT(+) of the robot then in/right: */ + -2.75),
+                        Inches.of(ROBOT_PROPERTIES.floorOffset + 11.5),
                         // rotation
                         new Rotation3d(
                                         Degrees.of(0), // no roll

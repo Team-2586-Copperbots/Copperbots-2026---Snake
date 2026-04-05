@@ -6,10 +6,14 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
 
 import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.LogFileUtil;
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
+import frc.robot.Constants.ROBOT_PROPERTIES;
 import frc.robot.lib.BLine.Path;
 import frc.robot.lib.BLine.Path.PathConstraints;
 import frc.robot.subsystems.drive.BLine_Constants;
@@ -18,7 +22,24 @@ import frc.robot.util.AllianceFlipUtil;
 
 public class ClimbUtils {
 
-    public static final PathConstraints finalConstraings = BLine_Constants.highTolerence.setMaxVelocityMetersPerSec(0.25);
+    private static final PathConstraints finalConstraings = BLine_Constants.highTolerence
+            .setMaxVelocityMetersPerSec(0.25);
+    /*
+     * Changables
+     */
+    private static final Distance climbWidth = Inches.of(35 + (3 / 8));
+    private static final Distance uprightFaceWidth = Inches.of(3.51);
+    private static final Distance lengthOfClimbFromWallX = Inches
+            .of(43.75 - /* distance from front of upright to aliance wall */1.75);
+
+    private static final Distance centerForClimbY = Inches
+            .of(/* 0,0 to face of upright/base */130 + (climbWidth.in(Inches) / 2) - 6.25);
+
+    public static final Translation2d centerOfClimbPose = new Translation2d(lengthOfClimbFromWallX, centerForClimbY);
+
+    private static final Distance robotOffsetY = Inches
+            .of((climbWidth.in(Inches) / 2) + ROBOT_PROPERTIES.lengthOffset /* tolererence off */ );
+    private static final Distance robotOffsetX = Inches.of((uprightFaceWidth.in(Inches) / 2));
 
     private static Pose2d FINAL_CLIMB_TARGET = new Pose2d();
     private static Pose2d PRE_CLIMB_TARGET = new Pose2d();
@@ -26,10 +47,13 @@ public class ClimbUtils {
     // climb target specific math
     private static Distance climbSideFlipingDistanceFromBottom = Meters.of(3.9747);
 
-    @AutoLogOutput
+    
     // true for top climb, false for bottom climb
     private static boolean getIsTopClimb() {
         // upper climb
+        Logger.recordOutput("a2", climbSideFlipingDistanceFromBottom.in(Meters));
+        
+        Logger.recordOutput("a1", AllianceFlipUtil.applyY(Drive.getInstance().getPose().getY()));
         if ((climbSideFlipingDistanceFromBottom.in(Meters))
                 - AllianceFlipUtil.applyY(Drive.getInstance().getPose().getY()) > 0) {
             return true;
@@ -40,15 +64,14 @@ public class ClimbUtils {
 
     public static Path getFinalClimbTarget(Drive drive) {
         // this method ajusts the final target for the offset of the climb
-        Distance climbOffsetFromRobotCenter = Inches.of(3.75);
         if (getIsTopClimb()) {
             // upper target
-            FINAL_CLIMB_TARGET = new Pose2d(Meters.of(1.01).plus(climbOffsetFromRobotCenter),
-                            Meters.of(4.37), new Rotation2d(Degrees.of(90)));
+            FINAL_CLIMB_TARGET = new Pose2d(centerOfClimbPose.getMeasureX().plus(robotOffsetX),
+                    centerOfClimbPose.getMeasureY().plus(robotOffsetY), new Rotation2d(Degrees.of(90)));
         } else {
             // lower target
-            FINAL_CLIMB_TARGET = new Pose2d(Meters.of(1.01).minus(climbOffsetFromRobotCenter),
-                            Meters.of(2.89), new Rotation2d(Degrees.of(-90)));
+            FINAL_CLIMB_TARGET = new Pose2d(centerOfClimbPose.getMeasureX().minus(robotOffsetX),
+                    centerOfClimbPose.getMeasureY().minus(robotOffsetY), new Rotation2d(Degrees.of(-90)));
         }
         return drive.pathFromPoseWithConstraints(FINAL_CLIMB_TARGET, finalConstraings);
     }
@@ -58,7 +81,7 @@ public class ClimbUtils {
         // line
         getFinalClimbTarget(drive);
 
-        Distance amountOut = Meters.of(0.5);
+        Distance amountOut = Meters.of(1);
 
         if (getIsTopClimb()) {
             PRE_CLIMB_TARGET = new Pose2d(FINAL_CLIMB_TARGET.getMeasureX(),
@@ -72,5 +95,4 @@ public class ClimbUtils {
 
     }
 
-    
 }

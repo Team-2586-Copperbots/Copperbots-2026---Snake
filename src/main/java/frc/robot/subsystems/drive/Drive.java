@@ -45,6 +45,8 @@ import frc.robot.lib.BLine.Path;
 import frc.robot.lib.BLine.Path.PathConstraints;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.GeneralUtils;
+import frc.robot.util.driveUtils.ClimbUtils;
+
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -241,6 +243,7 @@ public class Drive extends SubsystemBase {
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
     Logger.processInputs("Drive/Gyro", gyroInputs);
+    Logger.recordOutput("climb pose", ClimbUtils.centerOfClimbPose);
     Logger.recordOutput("auto flip",
         AllianceFlipUtil.applyY(getPose().getY()) > AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY()));
     Logger.recordOutput("target for turret", GeneralUtils.findTarget());
