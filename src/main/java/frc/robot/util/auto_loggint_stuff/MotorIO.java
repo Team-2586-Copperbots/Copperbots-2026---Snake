@@ -4,6 +4,8 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface MotorIO {
 
+    
+
     // AdvantageKit reads this and generates the Struct code automatically!
     @AutoLog
     public static class MotorIOInputs {
@@ -22,5 +24,6 @@ public interface MotorIO {
 
     // A method to actually read the motor and fill the variables
     public default void updateInputs(MotorIOInputs inputs) {
+
     }
 }

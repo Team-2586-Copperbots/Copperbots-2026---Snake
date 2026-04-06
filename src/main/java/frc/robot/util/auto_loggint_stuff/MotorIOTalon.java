@@ -1,6 +1,5 @@
 package frc.robot.util.auto_loggint_stuff;
 
-import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.ControlModeValue;
 
