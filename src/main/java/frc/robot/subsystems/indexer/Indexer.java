@@ -2,20 +2,38 @@ package frc.robot.subsystems.indexer;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import org.littletonrobotics.junction.*;
+import frc.robot.Constants;
+
 
 public class Indexer extends SubsystemBase {
+    private static Indexer instance = null;
     private IndexerIO io;
-    private IndexerIOInputsAutoLogged inputs = new IndexerIOInputsAutoLogged();
 
-    public Indexer(IndexerIO io) {
-        this.io = io;
+    public static Indexer getInstance() {
+        if (instance == null) {
+            instance = new Indexer();
+        }
+        return instance;
+    }
+
+    public Indexer() {
+        switch (Constants.currentMode) {
+                case REAL:
+                    io = new IndexerIOReal();
+                    break;
+                case SIM:
+                    io = new IndexerIOSim();
+                    break;
+                default:
+                    io = new IndexerIO() {
+                    };
+                    break;
+            }
     }
 
     @Override
     public void periodic() {
-        io.updateInputs(inputs);
-        Logger.processInputs("Indexer", inputs);
+        io.updateInputs();
     }
 
     public Command setSpindexerSpeedCommand(double speed) {
@@ -31,25 +49,17 @@ public class Indexer extends SubsystemBase {
     }
 
     public static enum IndexerStates {
-        UP(-0.45, 0.5),
-        DOWN(0.3, -0.4),
+        ON(-0.45, 0.5),
         OFF(0, 0);
 
-        private final double spindexer;
-        private final double tower;
+        public final double spindexer;
+        public final double tower;
 
         private IndexerStates(double spindexer, double tower) {
             this.spindexer = spindexer;
             this.tower = tower;
         }
 
-        public double getSpindexer() {
-            return spindexer;
-        }
-
-        public double getTower() {
-            return tower;
-        }
     }
 
 }

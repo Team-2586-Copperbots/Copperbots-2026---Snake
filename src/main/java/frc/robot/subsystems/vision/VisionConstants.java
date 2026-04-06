@@ -7,39 +7,60 @@
 
 package frc.robot.subsystems.vision;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
+import frc.robot.Constants.ROBOT_PROPERTIES;
 
 public class VisionConstants {
         // AprilTag layout
         public static AprilTagFieldLayout aprilTagLayout = AprilTagFieldLayout
-                        .loadField(AprilTagFields.k2026RebuiltAndymark);
+                        .loadField(AprilTagFields.k2026RebuiltWelded);
 
         // Camera names, must match names configured on coprocessor
         public static String backCamera = "backCamera";
-        public static String camera1Name = "sideCamera";
+        public static String sideCamera = "sideCamera";
 
-        // Robot to camera transforms
-        // (Not used by Limelight, configure in web UI instead)
-        public static Transform3d robotToBackCamera = new Transform3d(Units.inchesToMeters(-12),
-                        Units.inchesToMeters(5.5), Units.inchesToMeters(8),
-                        new Rotation3d(Rotation2d.fromDegrees(180)));
-        // public static Transform3d robotToSideCamera = new Transform3d(Units.inchesToMeters(-4.5),
-        //                 Units.inchesToMeters(12), Units.inchesToMeters(7.125), new Rotation3d(0.0, 0.0, -Math.PI));
-        public static Transform3d robotToSideCamera = new Transform3d(Units.inchesToMeters(-4.5),
-                        Units.inchesToMeters(12), Units.inchesToMeters(7.125), new Rotation3d(Rotation2d.fromDegrees(-90)));
+        // new transforms for positions of angled cameras
+        public static Transform3d robotToBackCamera = new Transform3d(
+                        // translation
+                        Inches.of(-ROBOT_PROPERTIES.lengthOffset /* to the back of the robot then forward/in: */ + 0.5),
+                        Inches.of(ROBOT_PROPERTIES.widthOffset /* to the LEFT(+) of the robot then in/right: */ + -2.75),
+                        Inches.of(ROBOT_PROPERTIES.floorOffset + 11.5),
+                        // rotation
+                        new Rotation3d(
+                                        Degrees.of(0), // no roll
+                                        Degrees.of(-20), // pitch up 20 degres
+                                        Degrees.of(180) // rotate around z 180 degres
+                        ));
+
+        public static Transform3d robotToSideCamera = new Transform3d(
+                        // translation
+                        Inches.of(-ROBOT_PROPERTIES.lengthOffset /* to the back of the robot then forward: */ + 13.5),
+                        Inches.of(-ROBOT_PROPERTIES.widthOffset /* to the RIGHT(-) of the robot then in: */ + 0.75),
+                        Inches.of(ROBOT_PROPERTIES.floorOffset + 7.6 /* 1x1 to turret ring */ + 1.223 /*3D print z */),
+                        // rotation
+                        new Rotation3d(
+                                        Degrees.of(0), // no roll
+                                        Degrees.of(-20), // pitch up 30 degres
+                                        Degrees.of(270) // rotate around z 180 degres
+                        ));
 
         // Basic filtering thresholds
         public static double maxAmbiguity = 0.3;
         public static double maxZError = 0.75;
+        public static double maxYAngle = 30;
 
         // Standard deviation baselines, for 1 meter distance and 1 tag
         // (Adjusted automatically based on distance and # of tags)

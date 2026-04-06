@@ -1,6 +1,8 @@
 package frc.robot.subsystems.intake;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
+import frc.robot.Constants.INTAKE_CONSTANTS;
 import frc.robot.subsystems.intake.Intake.IntakePosition;
 
 import static edu.wpi.first.units.Units.Meter;
@@ -11,9 +13,9 @@ import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 public class IntakeIOSim implements IntakeIO {
 
     private IntakePosition targetPosition = IntakePosition.IN;
-    private IntakeSimulation simulatedIntake;
-    private Distance width = Distance.ofBaseUnits(edu.wpi.first.math.util.Units.inchesToMeters(23), Meter);
-    private Distance length = Distance.ofBaseUnits(edu.wpi.first.math.util.Units.inchesToMeters(9.5), Meter);
+    public static IntakeSimulation simulatedIntake = null;
+    private Distance width = Meter.of(Units.inchesToMeters(23));
+    private Distance length = Meter.of(Units.inchesToMeters(9.5));
 
     public IntakeIOSim(SwerveDriveSimulation drive) {
         simulatedIntake = IntakeSimulation.OverTheBumperIntake("Fule", drive, width,
@@ -21,14 +23,18 @@ public class IntakeIOSim implements IntakeIO {
     }
 
     @Override
-    public void updateInputs(IntakeIOInputs inputs) {
+    public void updateInputs() {
+        // inputs.rollerSetpoint = rollerSpeedSetpoint;
+        // inputs.wristSetpoint = targetPosition;
+        // inputs.wristIsClosedLoop = closedLoop;
 
-        inputs.wristSetpoint = targetPosition;
+        // inputs.currentWristPosition = targetPosition.value;
+        // inputs.currentCancoderPosition = targetPosition.value / INTAKE_CONSTANTS.rotorToSensor;
+        // inputs.currentRollerSpeed = rollerSpeedSetpoint;
     }
 
     @Override
     public void setRollerSpeed(double speed) {
-
     }
 
     @Override
@@ -43,6 +49,5 @@ public class IntakeIOSim implements IntakeIO {
 
     @Override
     public void setWristSpeed(double speed) {
-
     }
 }

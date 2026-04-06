@@ -2,18 +2,22 @@ package frc.robot.subsystems.turret;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import frc.robot.subsystems.intake.Intake.IntakePosition;
+
 public interface TurretIO {
     @AutoLog
     public static class TurretIOInputs {
-        public double ringPositionSetpoint = 0;
-        public double ringSpeedSetpoint = 0.0;
+        public boolean motorIsOK = false;
+        public double motorVolts = 0;
+        public double motorAmps = 0;
+        public double motorSetpoint = 0;
+        public double motorRotation = 0;
+        public boolean motorIsClosedLoop = true;
 
-        public double currentRingPose = 0;
-        public double currentRingSpeed = 0.0;
-        public boolean isClosedLoop = false;
+        public double turretRotation = 0;
+
         public boolean limitSwitch = false;
-        public boolean isAtPosition = true;
-        public double rotationRelitiveToRobotZero = 0;
+        public boolean canMakeItToTarget = true;
     }
 
     public default void updateInputs(TurretIOInputs inputs) {
@@ -28,8 +32,12 @@ public interface TurretIO {
     public default void setTurretZero() {
     }
 
-    public default double getRingRotation() {return 0;}
+    public default double getRingRotation() {
+        return 0;
+    }
 
-    public default double getRobotRelitiveRotation() {return 0;}
+    public default double getRobotRelitiveRotation() {
+        return 0;
+    }
 
 }

@@ -6,69 +6,112 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.GainSchedBehaviorValue;
+import com.ctre.phoenix6.signals.GainSchedKpBehaviorValue;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
 import frc.robot.Constants;
-import frc.robot.Constants.INTAKE_CONSTANTS;
+import frc.robot.Constants.CANIds;
 import frc.robot.subsystems.intake.Intake.IntakePosition;
+import frc.robot.util.auto_loggint_stuff.MotorIOInputsAutoLogged;
+import frc.robot.util.auto_loggint_stuff.MotorIOTalon;
 
-import static edu.wpi.first.units.Units.Rotations;
 import static frc.robot.Constants.CANIds.Canivore;
 
+import org.littletonrobotics.junction.Logger;
+
 public class IntakeIOReal implements IntakeIO {
-    private final TalonFX wristMotor;
-    private final TalonFX rollerMotor;
+    private final TalonFX wristMotor, rollerMotor;
     private final CANcoder cancoder;
 
-    private final TalonFXConfiguration wristMotorConfig;
-    private final TalonFXConfiguration rollerMotorConfig;
-    private final CANcoderConfiguration coancoderConfig;
+    private final TalonFXConfiguration wristMotorConfig, rollerMotorConfig;
 
     private final PositionVoltage positionVoltage = new PositionVoltage(0);
     private IntakePosition targetPosition = IntakePosition.IN;
-    private boolean isClosedLoop;
+
+    private final MotorIOTalon wristMotorIO, rollerMotorIO;
+    private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
+    private final MotorIOInputsAutoLogged wristMotorInputs = new MotorIOInputsAutoLogged();
+    private final MotorIOInputsAutoLogged rollerMotorInputs = new MotorIOInputsAutoLogged();
 
     public IntakeIOReal() {
-        wristMotor = new TalonFX(Constants.CANIds.INTAKE_WRIST_MOTOR, Canivore);
-        rollerMotor = new TalonFX(Constants.CANIds.INTAKE_ROLLER_MOTOR, Canivore);
-        cancoder = new CANcoder(Constants.CANIds.INTAKE_CANCODER, Canivore);
+        wristMotor = new TalonFX(CANIds.INTAKE_WRIST_MOTOR, Canivore);
+        rollerMotor = new TalonFX(CANIds.INTAKE_ROLLER_MOTOR, Canivore);
+        cancoder = new CANcoder(CANIds.INTAKE_CANCODER, Canivore);
 
         wristMotorConfig = new TalonFXConfiguration();
         rollerMotorConfig = new TalonFXConfiguration();
-        coancoderConfig = new CANcoderConfiguration();
 
-        coancoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
+        wristMotorConfig.CurrentLimits.StatorCurrentLimit = 45;
 
-        // wristMotorConfig.Feedback.FeedbackRemoteSensorID = cancoder.getDeviceID();
-        // wristMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-        // wristMotorConfig.Feedback.RotorToSensorRatio = Constants.INTAKE_CONSTANTS.rotorToIntake;
-        // wristMotorConfig.Feedback.SensorToMechanismRatio = 1;
+        wristMotorConfig.Feedback.FeedbackRemoteSensorID = CANIds.INTAKE_CANCODER;
+        wristMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
 
-        var motorOutputConfigs = wristMotorConfig.MotorOutput;
-        motorOutputConfigs.NeutralMode = NeutralModeValue.Brake;
+        wristMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast; // TODO: change for comp
+        wristMotorConfig.ClosedLoopGeneral.GainSchedErrorThreshold = 0.01;
+        wristMotorConfig.Slot0.GainSchedBehavior = GainSchedBehaviorValue.Inactive; 
 
         var pidConfig = wristMotorConfig.Slot0;
-        // TODO: tune pid at all!?
-        pidConfig.kP = 0.6;
-        pidConfig.kI = 0.05;
-        pidConfig.kD = 0.00;
+        // TODO: tune pid at all?
+        pidConfig.kP = 18.000;
+        pidConfig.kI = 0.000;
+        pidConfig.kD = 0.000;
+
+        // friction
+        pidConfig.kS = 0.320;
+        pidConfig.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
+
+        // gravity
+        pidConfig.kG = 0.3750;
+        pidConfig.GravityType = GravityTypeValue.Arm_Cosine;
+        pidConfig.GravityArmPositionOffset = 0.131;
+        // when in tolerence no pid
+        pidConfig.GainSchedBehavior = GainSchedBehaviorValue.ZeroOutput;
 
         wristMotor.getConfigurator().apply(wristMotorConfig);
         rollerMotor.getConfigurator().apply(rollerMotorConfig);
-        cancoder.getConfigurator().apply(coancoderConfig);
+
+        wristMotorIO = new MotorIOTalon(wristMotor);
+        rollerMotorIO = new MotorIOTalon(rollerMotor);
     }
 
     @Override
-    public void updateInputs(IntakeIOInputs inputs) {
-        inputs.currentRollerSpeed = rollerMotor.getVelocity().getValueAsDouble();
-        inputs.currentWristPosition = wristMotor.getPosition().getValueAsDouble();
-        inputs.currentCancoderPosition = cancoder.getPosition().getValueAsDouble();
+    public void updateInputs() {
 
-        inputs.wristSetpoint = targetPosition;
-        inputs.percentageWristSpeed = wristMotor.get();
-        inputs.rollerSetpoint = rollerMotor.get();
-        inputs.isClosedLoop = isClosedLoop;
+        inputs.currentCancoderPosition = cancoder.getPosition().getValueAsDouble();
+        inputs.tagertPosition = targetPosition;
+
+        wristMotorIO.updateInputs(wristMotorInputs);
+        rollerMotorIO.updateInputs(rollerMotorInputs);
+
+        Logger.processInputs("Intake", inputs);
+        Logger.processInputs("Intake/WristMotor", wristMotorInputs);
+        Logger.processInputs("Intake/RollerMotor", rollerMotorInputs);
+        // for (int i = 0; i < motorIOs.length; i++) {
+        // motorIOs[i].updateInputs(motorIOInputs[i]);
+        // }
+        // Logger.processInputs("Intake/WristMotor", motorIOInputs[0]);
+        // Logger.processInputs("Intake/rollerMotor", motorIOInputs[1]);
+    }
+
+    @Override
+    public IntakeIOInputsAutoLogged getInputs() {
+        return inputs;
+    }
+
+    @Override
+    public MotorIOInputsAutoLogged getMotorInputs(int id) {
+        switch (id) {
+            case CANIds.INTAKE_WRIST_MOTOR:
+                return wristMotorInputs;
+            case CANIds.INTAKE_ROLLER_MOTOR:
+                return rollerMotorInputs;
+            default:
+                return null;
+        }
     }
 
     @Override
@@ -78,19 +121,12 @@ public class IntakeIOReal implements IntakeIO {
 
     @Override
     public void setWristPositionTarget(IntakePosition position) {
-        isClosedLoop = true;
         targetPosition = position;
         wristMotor.setControl(positionVoltage.withPosition(position.value));
     }
 
     @Override
-    public void setWristPositionFromCancoder() {
-        wristMotor.setPosition(cancoder.getPosition().getValue().in(Rotations) * INTAKE_CONSTANTS.rotorToIntake);
-    }
-
-    @Override
     public void setWristSpeed(double speed) {
-        isClosedLoop = false;
         wristMotor.set(speed);
     }
 }

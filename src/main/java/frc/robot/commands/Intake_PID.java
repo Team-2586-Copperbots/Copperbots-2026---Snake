@@ -1,21 +1,16 @@
 package frc.robot.commands;
 
-import org.littletonrobotics.junction.Logger;
-
-import edu.wpi.first.hal.HAL;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.Intake.IntakePosition;
 
-public class IntakePID extends Command {
+public class Intake_PID extends Command {
     private Intake intake;
     private Intake.IntakePosition position = null;
     private Double wristSpeed = Double.NaN;
     private double rollerSpeed;
 
-    public IntakePID(Intake intake, IntakePosition position, double rollerSpeed) {
+    public Intake_PID(Intake intake, IntakePosition position, double rollerSpeed) {
         this.intake = intake;
         this.position = position;
         this.rollerSpeed = rollerSpeed;
@@ -23,7 +18,7 @@ public class IntakePID extends Command {
         addRequirements(intake);
     }
 
-    public IntakePID(Intake intake, double wristSpeed, double rollerSpeed) {
+    public Intake_PID(Intake intake, double wristSpeed, double rollerSpeed) {
         this.intake = intake;
         this.wristSpeed = wristSpeed;
         this.rollerSpeed = rollerSpeed;
@@ -33,7 +28,6 @@ public class IntakePID extends Command {
 
     @Override
     public void initialize() {
-        intake.refreshPosition();
 
     }
 
@@ -44,7 +38,7 @@ public class IntakePID extends Command {
         } else if (!wristSpeed.isNaN()) {
             intake.setWristSpeed(wristSpeed);
             System.out.println("position is null");
-        } else{
+        } else {
             System.out.println("Wrist speed is Nan");
         }
         intake.setRollerSpeed(rollerSpeed);
@@ -60,8 +54,6 @@ public class IntakePID extends Command {
         if (!wristSpeed.isNaN()) {
             intake.setWristSpeed(0);
         }
-        Logger.recordOutput("intake interupted: ", 0);
-        System.out.println("inatke reset at : " + DriverStation.getMatchTime());
     }
 
 }

@@ -5,7 +5,6 @@
 package frc.robot;
 
 import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnField;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -16,11 +15,13 @@ import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.commands.PathfindingCommand;
 
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants.FIELD_CONSTANTS;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.util.simsProjectile;
 
 /**
  * The methods in this class are called automatically corresponding to each
@@ -83,9 +84,9 @@ public class Robot extends LoggedRobot {
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our
     // autonomous chooser on the dashboard.
+    Constants.FIELD_CONSTANTS.updateUtilsPositions();
+    Logger.recordOutput("thing5", FIELD_CONSTANTS.TEST_POSE2D);
     robotContainer = new RobotContainer();
-    robotContainer.resetIntakePosition();
-
     FollowPathCommand.warmupCommand().schedule();
     PathfindingCommand.warmupCommand().schedule();
   }
@@ -127,7 +128,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void disabledPeriodic() {
 
-    Constants.FIELD_CONSTANTS.updatePositions();
+    Constants.FIELD_CONSTANTS.updateUtilsPositions();
   }
 
   /**
@@ -184,18 +185,19 @@ public class Robot extends LoggedRobot {
   @Override
   public void simulationInit() {
     SimulatedArena.getInstance();
-    SimulatedArena.getInstance().addGamePiece(new RebuiltFuelOnField(new Translation2d(3, 3)));
+    SimulatedArena.getInstance().placeGamePiecesOnField();
   }
 
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {
     SimulatedArena.getInstance().simulationPeriodic();
+    simsProjectile.logValues();
     // Get the positions of the fuel (both on the field and in the air)
     Pose3d[] fuelPoses = SimulatedArena.getInstance()
         .getGamePiecesArrayByType("Fuel");
     // Publish to telemetry using AdvantageKit
     Logger.recordOutput("FieldSimulation/FuelPositions", fuelPoses);
-    Logger.recordOutput("FieldSimulation/RobotPosition", robotContainer.driveSimulation.getSimulatedDriveTrainPose());
+    Logger.recordOutput("FieldSimulation/RobotPosition", Drive.driveSimulation.getSimulatedDriveTrainPose());
   }
 }

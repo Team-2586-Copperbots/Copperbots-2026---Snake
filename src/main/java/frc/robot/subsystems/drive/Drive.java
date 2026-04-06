@@ -9,12 +9,7 @@ package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.*;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.pathfinding.Pathfinding;
-import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
@@ -35,34 +30,38 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
-import frc.robot.subsystems.drive.MyDriveConstants.BLine_PIDs;
-import frc.robot.Constants.DRIVEBASE_TARGET_POSES;
+import frc.robot.Constants.FIELD_CONSTANTS;
 import frc.robot.Constants.Mode;
-import frc.robot.Constants.ROBOT_PROPERTIES;
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.BLine.FollowPath;
 import frc.robot.lib.BLine.Path;
+import frc.robot.lib.BLine.Path.PathConstraints;
+import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.GeneralUtils;
-import frc.robot.util.driveUtils.LocalADStarAK;
+import frc.robot.util.driveUtils.ClimbUtils;
 
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
+import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.COTS;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
+  private static Drive instance = null;
   // TunerConstants doesn't include these constants, so they are declared locally
   static final double ODOMETRY_FREQUENCY = TunerConstants.kCANBus.isNetworkFD() ? 250.0 : 100.0;
   public static final double DRIVE_BASE_RADIUS = Math.max(
@@ -77,6 +76,7 @@ public class Drive extends SubsystemBase {
   private static final double ROBOT_MASS_KG = Constants.ROBOT_PROPERTIES.getROBOT_CONFIG().massKG;
   // private static final double ROBOT_MOI = 6.883;
   private static final double WHEEL_COF = Constants.ROBOT_PROPERTIES.getROBOT_CONFIG().moduleConfig.wheelCOF;
+  @SuppressWarnings("unused")
   private static final RobotConfig PP_CONFIG = Constants.ROBOT_PROPERTIES.getROBOT_CONFIG();
   // new RobotConfig(
   // ROBOT_MASS_KG,
@@ -90,6 +90,7 @@ public class Drive extends SubsystemBase {
   // TunerConstants.FrontLeft.SlipCurrent,
   // 1),
   // getModuleTranslations());
+  public static SwerveDriveSimulation driveSimulation = null;
   private Field2d field = new Field2d();
 
   private static DriveTrainSimulationConfig mapleSimConfig = null;
@@ -135,10 +136,57 @@ public class Drive extends SubsystemBase {
   private SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation,
       lastModulePositions, Pose2d.kZero);
 
-  @SuppressWarnings("unused")
   private final Consumer<Pose2d> resetSimulationPoseCallBack;
 
-  public Drive(
+  // MARK:- getInstance
+  public static Drive getInstance() {
+    if (instance == null) {
+      switch (Constants.currentMode) {
+        case REAL:
+          instance = new Drive(
+              new GyroIOPigeon2(),
+              new ModuleIOTalonFX(TunerConstants.FrontLeft),
+              new ModuleIOTalonFX(TunerConstants.FrontRight),
+              new ModuleIOTalonFX(TunerConstants.BackLeft),
+              new ModuleIOTalonFX(TunerConstants.BackRight),
+              (robotPose) -> {
+              });
+          break;
+        case SIM:
+          // Sim robot, instantiate physics sim IO implementations
+          Pose2d startingPose2d = new Pose2d(2, 2, Rotation2d.kZero);
+          driveSimulation = new SwerveDriveSimulation(Drive.getMapleSimConfig(),
+              startingPose2d);
+          SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
+          instance = new Drive(
+              new GyroIOSim(driveSimulation.getGyroSimulation()),
+              new ModuleIOSim(driveSimulation.getModules()[0]),
+              new ModuleIOSim(driveSimulation.getModules()[1]),
+              new ModuleIOSim(driveSimulation.getModules()[2]),
+              new ModuleIOSim(driveSimulation.getModules()[3]),
+              driveSimulation::setSimulationWorldPose);
+          break;
+        default:// Replayed robot, disable IO implementations
+          instance = new Drive(
+              new GyroIO() {
+              },
+              new ModuleIO() {
+              },
+              new ModuleIO() {
+              },
+              new ModuleIO() {
+              },
+              new ModuleIO() {
+              },
+              (robotPose) -> {
+              });
+          break;
+      }
+    }
+    return instance;
+  }
+
+  private Drive(
       GyroIO gyroIO,
       ModuleIO flModuleIO,
       ModuleIO frModuleIO,
@@ -158,26 +206,27 @@ public class Drive extends SubsystemBase {
     // Start odometry thread
     PhoenixOdometryThread.getInstance().start();
 
-    // Configure AutoBuilder for PathPlanner
-    AutoBuilder.configure(
-        this::getPose,
-        this::resetOdometry,
-        this::getChassisSpeeds,
-        this::runVelocity,
-        new PPHolonomicDriveController(
-            new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
-        PP_CONFIG,
-        () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
-        this);
-    Pathfinding.setPathfinder(new LocalADStarAK());
-    PathPlannerLogging.setLogActivePathCallback(
-        (activePath) -> {
-          Logger.recordOutput("Odometry/Trajectory", activePath.toArray(new Pose2d[0]));
-        });
-    PathPlannerLogging.setLogTargetPoseCallback(
-        (targetPose) -> {
-          Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
-        });
+    // // Configure AutoBuilder for PathPlanner
+    // AutoBuilder.configure(
+    // this::getPose,
+    // this::resetOdometry,
+    // this::getChassisSpeeds,
+    // this::runVelocity,
+    // new PPHolonomicDriveController(
+    // new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
+    // PP_CONFIG,
+    // () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
+    // this);
+    // Pathfinding.setPathfinder(new LocalADStarAK());
+    // PathPlannerLogging.setLogActivePathCallback(
+    // (activePath) -> {
+    // Logger.recordOutput("Odometry/Trajectory", activePath.toArray(new
+    // Pose2d[0]));
+    // });
+    // PathPlannerLogging.setLogTargetPoseCallback(
+    // (targetPose) -> {
+    // Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
+    // });
 
     buildBline();
 
@@ -188,14 +237,19 @@ public class Drive extends SubsystemBase {
         new SysIdRoutine.Mechanism((voltage) -> runCharacterization(voltage.in(Volts)), null, this));
   }
 
+  // MARK:- periodic
   @Override
   public void periodic() {
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
     Logger.processInputs("Drive/Gyro", gyroInputs);
-    Logger.recordOutput("target for turret", GeneralUtils.findTarget(this));
+    Logger.recordOutput("climb pose", ClimbUtils.centerOfClimbPose);
+    Logger.recordOutput("auto flip",
+        AllianceFlipUtil.applyY(getPose().getY()) > AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY()));
+    Logger.recordOutput("target for turret", GeneralUtils.findTarget());
     field.setRobotPose(getPose());
     SmartDashboard.putData("field", field);
+    resetSimulationPoseCallBack.accept(getPose());
     for (var module : modules) {
       module.periodic();
     }
@@ -276,10 +330,11 @@ public class Drive extends SubsystemBase {
         this::getPose,
         this::getChassisSpeeds,
         (speeds) -> this.runVelocity(speeds),
-        new PIDController(BLine_PIDs.tkP, BLine_PIDs.tkI, BLine_PIDs.tkD),
-        new PIDController(BLine_PIDs.rkP, BLine_PIDs.rkI, BLine_PIDs.rkD),
-        new PIDController(BLine_PIDs.CTkP, BLine_PIDs.CTkI, BLine_PIDs.CTkD))
+        new PIDController(BLine_Constants.tkP, BLine_Constants.tkI, BLine_Constants.tkD),
+        new PIDController(BLine_Constants.rkP, BLine_Constants.rkI, BLine_Constants.rkD),
+        new PIDController(BLine_Constants.CTkP, BLine_Constants.CTkI, BLine_Constants.CTkD))
         .withDefaultShouldFlip();
+
     FollowPath.setPoseLoggingConsumer(pair -> {
       Logger.recordOutput(pair.getFirst(), pair.getSecond());
     });
@@ -289,30 +344,65 @@ public class Drive extends SubsystemBase {
     });
   }
 
+  public Command commandFromPath(Path path) {
+    return pathBuilder.build(path);
+  }
+
+  public Path changeConstrains(Path path, PathConstraints constraints) {
+    path.setPathConstraints(constraints);
+    return path;
+  }
+
+  
+
+  public DeferredCommand deferedCommandToPose(Pose2d pose) {
+    return new DeferredCommand(() -> this.commandFromPath(pathFromPose(pose)), Set.of(this));
+  }
+
+  public Path pathFromString(String name) {
+    return new Path(name);
+  }
+
+  public Path pathFromPose(Pose2d pose) {
+    return new Path(new Path.Waypoint(pose));
+  }
+
+  public Command autoPathFromString(String name) {
+    if (AllianceFlipUtil.applyY(getPose().getY()) > AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY())) {
+      return pathFromStringFlipable(name, false);
+    } else {
+      return pathFromStringFlipable(name, true);
+    }
+  }
+
+  public Command pathFromStringFlipable(String name, boolean mirror) {
+    Path path = new Path(name);
+    if (mirror) {
+      path.mirror();
+    }
+    return pathBuilder.build(path);
+  }
+
+  public Path setHighTolerence(Pose2d pose) {
+    Path path = new Path(new Path.Waypoint(pose));
+    path.setPathConstraints(
+        new PathConstraints().setEndRotationToleranceDeg(BLine_Constants.highTolerenceRot)
+            .setEndTranslationToleranceMeters(BLine_Constants.highTolerenceTranlation));
+    return path;
+  }
+
+  public Path pathFromPoseWithConstraints(Pose2d target, PathConstraints constraints) {
+    Path path = new Path(new Path.Waypoint(target));
+    path.setPathConstraints(constraints);
+    return path;
+  }
+
   public Command resetHearding() {
     return runOnce(() -> resetOdometry(new Pose2d(getPose().getTranslation(), Rotation2d.kZero)));
   }
 
   public Command cRunVelocity(ChassisSpeeds speeds) {
-    return run(() -> runVelocity(speeds));
-  }
-
-  public Command followPathCommandtoTestPose() {
-    Pose2d target = DRIVEBASE_TARGET_POSES.TEST_POSE2D;
-    return AutoBuilder.pathfindToPose(target, ROBOT_PROPERTIES.PATH_CONSTRAINTS, 0);
-  }
-
-  public Command pathFromString(String name) {
-    return pathBuilder.build(new Path(name));
-  }
-
-  public Command pathFindToHubShot() {
-    return pathBuilder
-        .build(new Path(new Path.Waypoint(Constants.DRIVEBASE_TARGET_POSES.TEST_POSE2D)));
-  }
-
-  public Command goTo(Pose2d target) {
-    return pathBuilder.build(new Path(new Path.Waypoint(target)));
+    return runEnd(() -> runVelocity(speeds), () -> runVelocity(new ChassisSpeeds()));
   }
 
   //
@@ -464,9 +554,8 @@ public class Drive extends SubsystemBase {
       Pose2d visionRobotPoseMeters,
       double timestampSeconds,
       Matrix<N3, N1> visionMeasurementStdDevs) {
-    Pose2d robotPOse = new Pose2d(visionRobotPoseMeters.getTranslation(), rawGyroRotation);
     poseEstimator.addVisionMeasurement(
-        robotPOse, timestampSeconds, visionMeasurementStdDevs);
+        visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
   }
 
   /** Returns the maximum linear speed in meters per sec. */

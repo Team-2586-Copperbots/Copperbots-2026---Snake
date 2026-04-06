@@ -1,24 +1,30 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.indexer.Indexer;
+import frc.robot.subsystems.shooter.Shooter;
 
-public class SetIndexer extends Command {
-    private Indexer Indexer;
+public class Shooter_ShootSpeed extends Command {
+    private Shooter Shooter;
     private Double Speed;
+    // true of false to use the setShooterSpeedAjust() command
+    private boolean TFAjust;
 
-    public SetIndexer(Indexer Indexer, double speed) {
-        this.Indexer = Indexer;
+    public Shooter_ShootSpeed(Shooter shooterSubsystem, double speed, boolean ajust) {
+        this.Shooter = shooterSubsystem;
         this.Speed = speed;
+        this.TFAjust = ajust;
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(Indexer);
+        addRequirements(shooterSubsystem);
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        Indexer.setSpindexerSpeed(Speed);
-        Indexer.setTowerSpeed(Speed);
+        if (TFAjust == true) {
+            Shooter.setShooterSpeedAjust(Speed);
+        } else if (TFAjust == false) {
+            Shooter.setShooterSpeedSet(Speed);
+        }
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -29,14 +35,12 @@ public class SetIndexer extends Command {
 
     @Override
     public boolean isFinished() {
-        return false;
+        return true;
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        Indexer.setSpindexerSpeed(0);
-        Indexer.setTowerSpeed(0);
     }
 
 }

@@ -9,6 +9,8 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import frc.robot.Constants;
+import frc.robot.Constants.SHOOTER_CONSTANTS;
+
 import static frc.robot.Constants.CANIds.Canivore;
 
 public class ShooterIOReal implements ShooterIO {
@@ -25,6 +27,7 @@ public class ShooterIOReal implements ShooterIO {
 
         shooterConfig = new TalonFXConfiguration();
 
+        shooterConfig.CurrentLimits.StatorCurrentLimit = SHOOTER_CONSTANTS.CURRENT_LIMIT;
         var motorOutputConfigs = shooterConfig.MotorOutput;
         motorOutputConfigs.NeutralMode = NeutralModeValue.Brake;
         motorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive;
@@ -44,12 +47,17 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void updateInputs(ShooterIOInputs inputs) {
-        inputs.currentMotorSpeed = shooterMotor1.getVelocity().getValueAsDouble();
-        inputs.motorCurents = new double[] { shooterMotor1.getSupplyCurrent().getValueAsDouble(),
+        inputs.motorAmps = new double[] { shooterMotor1.getSupplyCurrent().getValueAsDouble(),
                 shooterMotor2.getSupplyCurrent().getValueAsDouble() };
-        inputs.motorSetpoint = velocityVoltage.Velocity;
-        inputs.motorTemps = new double[] { shooterMotor1.getDeviceTemp().getValueAsDouble(),
-                shooterMotor2.getDeviceTemp().getValueAsDouble() };
+        inputs.motorIsOK = new boolean[] { shooterMotor1.isAlive(), shooterMotor1.isAlive() };
+        inputs.motorTemps = new double[] { shooterMotor1.getStatorCurrent().getValueAsDouble(),
+                shooterMotor2.getStatorCurrent().getValueAsDouble() };
+        inputs.motorVolts = new double[] { shooterMotor1.getMotorVoltage().getValueAsDouble(),
+                shooterMotor2.getMotorVoltage().getValueAsDouble() };
+
+        inputs.motorSetpoint = shooterMotor1.getClosedLoopReference().getValueAsDouble();
+        inputs.motorSpeed = shooterMotor1.getVelocity().getValueAsDouble();
+
     }
 
     @Override

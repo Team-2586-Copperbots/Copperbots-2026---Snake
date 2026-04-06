@@ -4,23 +4,18 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Seconds;
-
 import org.ironmaple.simulation.IntakeSimulation;
 import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
@@ -28,55 +23,38 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.FIELD_CONSTANTS;
+import frc.robot.Constants.LED_Strip;
+import frc.robot.Constants.Mode;
 import frc.robot.Constants.OPERATOR_CONSTANTS;
-import frc.robot.commands.AimAndShoot;
-import frc.robot.commands.AimAtHub;
-import frc.robot.commands.ClimbSpeed;
+import frc.robot.commands.Turret_AimAndShoot;
+import frc.robot.commands.Autos;
+import frc.robot.commands.Climb_AutoClimb_Sequence;
+import frc.robot.commands.Climb_ZeroClimb;
+import frc.robot.commands.Climb_Move;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.IndexerSpin;
-import frc.robot.commands.IntakeSpin;
-import frc.robot.commands.ManualTurret;
-import frc.robot.commands.IntakePID;
-import frc.robot.commands.ShootSpeed;
-import frc.robot.commands.ZeroTurret;
-import frc.robot.generated.TunerConstants;
-import frc.robot.lib.BLine.FollowPath;
-import frc.robot.subsystems.CANDle;
+import frc.robot.commands.Indexer_Spin;
+import frc.robot.commands.Intake_Spin;
+import frc.robot.commands.Shooter_AutoShoot_Sequence;
+import frc.robot.commands.Turret_ManualTurret;
+import frc.robot.commands.Intake_PID;
+import frc.robot.commands.Shooter_ShootSpeed;
+import frc.robot.commands.Turret_Aim;
+import frc.robot.commands.Turret_ZeroTurret;
+import frc.robot.subsystems.LED;
+import frc.robot.subsystems.LED.LED_Colour;
 import frc.robot.subsystems.climb.Climb;
-import frc.robot.subsystems.climb.ClimbIO;
-import frc.robot.subsystems.climb.ClimbIOReal;
-import frc.robot.subsystems.climb.ClimbIOSim;
+import frc.robot.subsystems.climb.Climb.ClimbPosition;
+import frc.robot.subsystems.drive.BLine_Constants;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.GyroIOPigeon2;
-import frc.robot.subsystems.drive.GyroIOSim;
-import frc.robot.subsystems.drive.ModuleIO;
-import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.indexer.Indexer.IndexerStates;
-import frc.robot.subsystems.indexer.IndexerIO;
-import frc.robot.subsystems.indexer.IndexerIOReal;
-import frc.robot.subsystems.indexer.IndexerIOSim;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.Intake.IntakePosition;
-import frc.robot.subsystems.intake.IntakeIO;
-import frc.robot.subsystems.intake.IntakeIOReal;
-import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.ShooterIO;
-import frc.robot.subsystems.shooter.ShooterIOReal;
-import frc.robot.subsystems.shooter.ShooterIOSim;
 import frc.robot.subsystems.turret.Turret;
-import frc.robot.subsystems.turret.TurretIO;
-import frc.robot.subsystems.turret.TurretIOReal;
-import frc.robot.subsystems.turret.TurretIOSim;
 import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.VisionConstants;
-import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIOPhotonVision;
-import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
-import frc.robot.util.GeneralUtils;
+import frc.robot.util.simsProjectile;
+import frc.robot.util.driveUtils.ClimbUtils;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -88,31 +66,18 @@ import frc.robot.util.GeneralUtils;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-        // private double MaxSpeed = OPERATOR_CONSTANTS.MAX_SPEED_LIMITER
-        // * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts
-        // // desired
-        // // top
-        // // speed
-        // private double MaxAngularRate =
-        // RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per
-        // // second
-        // // max
-        // // angular velocity
 
-        // simulated objects
-        public SwerveDriveSimulation driveSimulation = null;
-        public IntakeSimulation.IntakeSide intakeSimulation = null;
+        // MARK: Objects
 
-        public Climb climb;
-        // public final PhotonSubsystem photonSubsystem;
-        public final Drive drive;
-        public final Vision vision;
-        private final Intake intake;
-        private final Indexer indexer;
-        private final Shooter shooter;
-        private final Turret turret;
+        private final Climb climb = Climb.getInstance();
+        private final Drive drive = Drive.getInstance();
         @SuppressWarnings("unused")
-        private final CANDle candle = new CANDle();
+        private final Vision vision = Vision.getInstance();
+        private final Intake intake = Intake.getInstance();
+        private final Indexer indexer = Indexer.getInstance();
+        private final Shooter shooter = Shooter.getInstance();
+        private final Turret turret = Turret.getInstance();
+        private final LED led = LED.getInstance();
 
         private final CommandPS4Controller driveController = new CommandPS4Controller(
                         OPERATOR_CONSTANTS.DRIVER_CONTROLER_PORT);
@@ -124,97 +89,25 @@ public class RobotContainer {
         private final CommandPS4Controller simControler = new CommandPS4Controller(
                         OPERATOR_CONSTANTS.SIM_CONTROLER_PORT);
 
-        private final SendableChooser<Command> autoChooser;
+        // private final SendableChooser<Command> autoChooser;
         private final SendableChooser<Command> bLineChouser;
         private final SendableChooser<Command> characterizationChooser;
-
         private final SendableChooser<Double> polarityChooser;
 
         /**
+         * MARK: Init
          * The container for the robot. Contains subsystems, OI devices, and commands.
          */
         public RobotContainer() {
-                switch (Constants.currentMode) {
-                        case REAL:
-                                // Real robot, instantiate hardware IO implementations
-                                climb = new Climb(new ClimbIOReal());
-                                drive = new Drive(
-                                                new GyroIOPigeon2(),
-                                                new ModuleIOTalonFX(TunerConstants.FrontLeft),
-                                                new ModuleIOTalonFX(TunerConstants.FrontRight),
-                                                new ModuleIOTalonFX(TunerConstants.BackLeft),
-                                                new ModuleIOTalonFX(TunerConstants.BackRight),
-                                                (robotPose) -> {
-                                                });
-                                indexer = new Indexer(new IndexerIOReal());
-                                intake = new Intake(new IntakeIOReal());
-                                shooter = new Shooter(new ShooterIOReal());
-                                // photonSubsystem = new PhotonSubsystem();
-                                vision = new Vision(drive::addVisionMeasurement, new VisionIOPhotonVision(
-                                                VisionConstants.backCamera, VisionConstants.robotToBackCamera));
-
-                                turret = new Turret(new TurretIOReal());
-
-                                break;
-
-                        case SIM:
-                                // Sim robot, instantiate physics sim IO implementations
-                                driveSimulation = new SwerveDriveSimulation(Drive.getMapleSimConfig(),
-                                                new Pose2d(4.378, 0.87, new Rotation2d()));
-                                SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
-                                drive = new Drive(
-                                                new GyroIOSim(driveSimulation.getGyroSimulation()),
-                                                new ModuleIOSim(driveSimulation.getModules()[0]),
-                                                new ModuleIOSim(driveSimulation.getModules()[1]),
-                                                new ModuleIOSim(driveSimulation.getModules()[2]),
-                                                new ModuleIOSim(driveSimulation.getModules()[3]),
-                                                driveSimulation::setSimulationWorldPose);
-
-                                intake = new Intake(new IntakeIOSim(driveSimulation));
-                                indexer = new Indexer(new IndexerIOSim());
-                                climb = new Climb(new ClimbIOSim());
-                                // photonSubsystem = new PhotonSubsystem();
-                                vision = new Vision(drive::addVisionMeasurement,
-                                                new VisionIOPhotonVisionSim(VisionConstants.backCamera,
-                                                                VisionConstants.robotToBackCamera,
-                                                                driveSimulation::getSimulatedDriveTrainPose));
-                                shooter = new Shooter(new ShooterIOSim());
-                                turret = new Turret(new TurretIOSim());
-
-                                break;
-
-                        default:
-                                // Replayed robot, disable IO implementations
-                                drive = new Drive(
-                                                new GyroIO() {
-                                                },
-                                                new ModuleIO() {
-                                                },
-                                                new ModuleIO() {
-                                                },
-                                                new ModuleIO() {
-                                                },
-                                                new ModuleIO() {
-                                                },
-                                                (robotPose) -> {
-                                                });
-                                intake = new Intake(new IntakeIO() {
-                                });
-                                indexer = new Indexer(new IndexerIO() {
-                                });
-                                climb = new Climb(new ClimbIO() {
-                                });
-                                // photonSubsystem = new PhotonSubsystem();
-                                vision = new Vision(drive::addVisionMeasurement, new VisionIO() {
-                                });
-                                shooter = new Shooter(new ShooterIO() {
-                                });
-                                turret = new Turret(new TurretIO() {
-                                });
-
-                                break;
+                if (Constants.currentMode == Mode.SIM) {
+                        simsProjectile.createSimsProjectile(drive::getPose, () -> ChassisSpeeds
+                                        .fromRobotRelativeSpeeds(drive.getChassisSpeeds(), drive.getRotation()),
+                                        turret::getRotation, shooter::getMotor1Speed);
+                        @SuppressWarnings("unused")
+                        IntakeSimulation.IntakeSide intakeSimulation = null;
 
                 }
+                Autos.putChouser();
 
                 polarityChooser = new SendableChooser<Double>();
                 polarityChooser.addOption("negative", -1.0);
@@ -223,7 +116,6 @@ public class RobotContainer {
 
                 // Configure the trigger bindings
                 bLineChouser = new SendableChooser<Command>();
-                configureBindings();
                 // make commands for autos
                 configureAutoCommands();
                 // make bline autos
@@ -233,59 +125,36 @@ public class RobotContainer {
                 addOptionsForCharecterization();
 
                 // For convenience a programmer could change this when going to competition.
-                boolean isCompetition = false;
+                // boolean isCompetition = false;
                 // Build an auto chooser. This will use Commands.none() as the default option.
                 // As an example, this will only show autos that start with "comp" while at
                 // competition as defined by the programmer
-                autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier(
-                                (stream) -> isCompetition
-                                                ? stream.filter(auto -> auto.getName().startsWith("comp"))
-                                                : stream);
-                SmartDashboard.putData("pathplaner chooser", autoChooser);
+                // autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier(
+                // (stream) -> isCompetition
+                // ? stream.filter(auto -> auto.getName().startsWith("comp"))
+                // : stream);
+                // SmartDashboard.putData("pathplaner chooser", autoChooser);
                 SmartDashboard.putData("bline chooser", bLineChouser);
                 SmartDashboard.putData("characterization Chooset", characterizationChooser);
+                configureBindings();
 
         }
 
         private void buildBLineAutos() {
-                bLineChouser.addOption("test", drive.pathFromString("pathv"));
-                // bLineChouser.addOption("8ball", new
-                // SequentialCommandGroup(drive.pathFromString("pathc"),
-                // new ParallelCommandGroup(new AimAndShoot(shooter, turret, drive),
-                // new SequentialCommandGroup(new WaitCommand(.2),
-                // new IndexerSpin(indexer, IndexerStates.UP)))));
-                bLineChouser.setDefaultOption("8ball", new SequentialCommandGroup(drive.resetHearding(),
-                                new ParallelCommandGroup(new AimAndShoot(shooter, turret, drive),
-                                                new SequentialCommandGroup(new WaitCommand(.2),
-                                                                new IndexerSpin(indexer, IndexerStates.UP)))));
-                bLineChouser.addOption("shoot",
-                                new ShootSpeed(shooter, GeneralUtils.shooterSpeedFromDistance(
-                                                GeneralUtils.distanceFromPose(FIELD_CONSTANTS.CENTER_OF_HUB, drive)),
-                                                false));
-                bLineChouser.addOption("8ball then out",
-                                new SequentialCommandGroup(new ParallelDeadlineGroup(new WaitCommand(10),
-                                                new ParallelCommandGroup(new AimAndShoot(shooter, turret, drive),
-                                                                new SequentialCommandGroup(new WaitCommand(.5),
-                                                                                new IndexerSpin(indexer,
-                                                                                                IndexerStates.UP)))),
-                                                drive.pathFromString("b1-1"),
-                                                new IntakePID(intake, IntakePosition.OUT,
-                                                                OPERATOR_CONSTANTS.ROLLER_SPEED).withTimeout(0.05),
-                                                drive.pathFromString("b1-2"),
-                                                new IntakeSpin(intake, 0).withTimeout(0.05),
-                                                drive.pathFromString("b1-3"),
-                                                new ParallelCommandGroup(new AimAndShoot(shooter, turret, drive),
-                                                                new SequentialCommandGroup(new WaitCommand(0.5),
-                                                                                new IndexerSpin(indexer,
-                                                                                                IndexerStates.UP)))));
-                bLineChouser.addOption("drive forwards", new SequentialCommandGroup(drive
-                                .cRunVelocity(new ChassisSpeeds(1, 0, 0)).withTimeout(Time.ofBaseUnits(0.5, Seconds)),
-                                new IntakePID(intake, IntakePosition.OUT, 0)));
+                // MARK: BLine
+                bLineChouser.setDefaultOption("8ball", new SequentialCommandGroup(
+                                new ParallelCommandGroup(
+                                                new Turret_AimAndShoot(shooter, turret),
+                                                new SequentialCommandGroup(
+                                                                new WaitCommand(1),
+                                                                new Indexer_Spin(indexer, IndexerStates.ON)))));
 
         }
 
         private void addOptionsForCharecterization() {
+                // MARK: Drive Sysid
                 // Set up SysId routines
+                characterizationChooser.setDefaultOption("Not in use", Commands.none());
                 characterizationChooser.addOption("Drive Wheel Radius Characterization",
                                 DriveCommands.wheelRadiusCharacterization(drive));
                 characterizationChooser.addOption("Drive Simple FF Characterization",
@@ -304,36 +173,22 @@ public class RobotContainer {
         }
 
         private void configureAutoCommands() {
-
+                // MARK: BLine commands
                 NamedCommands.registerCommand("aim'n'Shoot",
-                                new AimAndShoot(shooter, turret, drive));
-                NamedCommands.registerCommand("shoot", new ShootSpeed(shooter, 20, false));
-                NamedCommands.registerCommand("intake spin", new IntakeSpin(intake, 1));
+                                new Turret_AimAndShoot(shooter, turret));
+                NamedCommands.registerCommand("shoot", new Shooter_ShootSpeed(shooter, 20, false));
+                NamedCommands.registerCommand("intake spin", new Intake_Spin(intake, 1));
                 NamedCommands.registerCommand("intake out",
-                                new IntakePID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                                new Intake_PID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED));
                 NamedCommands.registerCommand("intake in",
-                                new IntakePID(intake, IntakePosition.IN, OPERATOR_CONSTANTS.ROLLER_SPEED));
-                NamedCommands.registerCommand("indexer on", new IndexerSpin(indexer, IndexerStates.UP));
-                NamedCommands.registerCommand("indexer off", new IndexerSpin(indexer, IndexerStates.OFF));
+                                new Intake_PID(intake, IntakePosition.IN, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                NamedCommands.registerCommand("indexer on", new Indexer_Spin(indexer, IndexerStates.ON));
+                NamedCommands.registerCommand("indexer off", new Indexer_Spin(indexer, IndexerStates.OFF));
                 NamedCommands.registerCommand("homeAll",
-                                new SequentialCommandGroup(new ManualTurret(turret, 0),
-                                                new IntakePID(intake, IntakePosition.IN, 0),
-                                                new ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED,
+                                new SequentialCommandGroup(new Turret_ManualTurret(turret, 0),
+                                                new Intake_PID(intake, IntakePosition.IN, 0),
+                                                new Shooter_ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED,
                                                                 false)));
-
-                FollowPath.registerEventTrigger("intake out",
-                                new IntakePID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED)
-                                                .withTimeout(0.5));
-                FollowPath.registerEventTrigger("intake in",
-                                new IntakePID(intake, IntakePosition.IN, OPERATOR_CONSTANTS.ROLLER_SPEED));
-                FollowPath.registerEventTrigger("aim n shoot",
-                                new ParallelCommandGroup(new AimAndShoot(shooter, turret, drive),
-                                                new SequentialCommandGroup(
-                                                                new WaitCommand(Time.ofBaseUnits(.5, Seconds)),
-                                                                new IndexerSpin(indexer, IndexerStates.UP))));
-                FollowPath.registerEventTrigger("stop shooter", new ParallelCommandGroup(
-                                new ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED, false),
-                                new IndexerSpin(indexer, IndexerStates.OFF)));
         }
 
         /**
@@ -352,40 +207,40 @@ public class RobotContainer {
          */
         private void configureBindings() {
 
-                drive.setDefaultCommand(
-                                DriveCommands.fieldOrientedDrive(
-                                                drive,
-                                                () -> -GeneralUtils.squareNumber(driveController.getLeftY()
-                                                                * polarityChooser.getSelected()),
-                                                () -> -GeneralUtils.squareNumber(driveController.getLeftX()
-                                                                * polarityChooser.getSelected()),
-                                                () -> -driveController.getRightX()));
+                // MARK: Driver
+                // drive.setDefaultCommand(
+                // DriveCommands.fieldOrientedDrive(
+                // drive,
+                // () -> -GeneralUtils.squareNumber(driveController.getLeftY()
+                // * polarityChooser.getSelected()),
+                // () -> -GeneralUtils.squareNumber(driveController.getLeftX()
+                // * polarityChooser.getSelected()),
+                // () -> -driveController.getRightX()));
+                drive.setDefaultCommand(DriveCommands.myDrive(drive, driveController,
+                                OPERATOR_CONSTANTS.MAX_SPEED_LIMITER, polarityChooser::getSelected));
 
-                driveController.triangle().onTrue(drive.resetHearding());
+                // driveController.triangle().onTrue(drive.resetHearding());
 
                 // speed up or slow down drivtrain command that overrides the default command
-                driveController.cross()
-                                .whileTrue(DriveCommands.fieldOrientedDrive(drive,
-                                                () -> -GeneralUtils.squareNumber(driveController.getLeftY())
-                                                                * OPERATOR_CONSTANTS.SLOW_SPEED_LIMITER,
-                                                () -> -GeneralUtils.squareNumber(driveController.getLeftX())
-                                                                * OPERATOR_CONSTANTS.SLOW_SPEED_LIMITER,
-                                                () -> -driveController.getRightX()));
-                // robot centric drive
-                // driveController.povUp()
-                // .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> 1, () -> 0,
-                // () -> -driveController.getRightX()));
-                // driveController.povDown()
-                // .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> -1, () -> 0,
-                // () -> -driveController.getRightX()));
-                // driveController.povLeft()
-                // .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> 0, () -> 1, () ->
-                // 0));
-                // driveController.povRight()
-                // .whileTrue(DriveCommands.robotOrientedDrive(drive, () -> 0, () -> -1, () ->
-                // 0));
+                driveController.cross().whileTrue(DriveCommands.myDrive(drive, driveController,
+                                OPERATOR_CONSTANTS.SLOW_SPEED_LIMITER, polarityChooser::getSelected));
 
-                // ∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
+                driveController.R2().whileTrue(new ParallelCommandGroup(
+                                Shooter_AutoShoot_Sequence.get(shooter, turret, indexer),
+                                DriveCommands.myDrive(drive, driveController, .4, polarityChooser::getSelected)));
+                driveController.R1().toggleOnTrue(new Turret_Aim(turret));
+                driveController.L2().onTrue(DriveCommands.stopWithX(drive));
+                // driveController.L1().whileTrue(new Climb_AutoClimb(drive, climb));
+                // add button for indexer
+
+                // driveController.povUp().whileTrue(drive
+                // .sysIdDynamic(edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward));
+
+                driveController.circle().whileTrue(drive.deferedCommandToPose(FIELD_CONSTANTS.TEST_POSE2D));
+                driveController.square().whileTrue(Autos.getAuto());
+                driveController.cross().whileTrue(Climb_AutoClimb_Sequence.get(drive, climb));
+
+                // MARK: Operator
 
                 // CANDle subsystem
                 // operatorController.povUp()
@@ -399,68 +254,61 @@ public class RobotContainer {
 
                 // operatorController.povRight().whileTrue(candle.fire(STRIPS.FIRST));
 
-                // Shooter + turret Subsystems
-                operatorController.L2().onTrue(new ParallelCommandGroup(
-                                new AimAndShoot(shooter, turret, drive)/*
-                                                                        * ,
-                                                                        * new SequentialCommandGroup(new
-                                                                        * WaitCommand(0.5),
-                                                                        * new IndexerSpin(indexer, IndexerStates.UP))
-                                                                        */));
-                operatorController.touchpad().onTrue(new ParallelCommandGroup(
-                                new IndexerSpin(indexer, IndexerStates.OFF),
-                                new ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED, false),
-                                new ManualTurret(turret, 0)));
                 operatorController.square()
-                                .onTrue(new ShootSpeed(shooter, OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED, false));
+                                .onTrue(new Shooter_ShootSpeed(shooter, 0, false));
 
                 // indexer sudsystem
-                operatorController.circle().whileTrue(new IndexerSpin(indexer, IndexerStates.UP));
-                operatorController.triangle().onTrue(new IndexerSpin(indexer, IndexerStates.OFF));
+                operatorController.circle().whileTrue(new Indexer_Spin(indexer, IndexerStates.ON));
+                operatorController.triangle().onTrue(new Indexer_Spin(indexer, IndexerStates.OFF));
+                operatorController.touchpad().onTrue(led.setColor(LED_Strip.FIRST, LED_Colour.BLACK));
+                operatorController.PS().onTrue(led.setColor(LED_Strip.FIRST, LED_Colour.BLUE));
 
                 // climb
-                operatorController.R1().whileTrue(new ClimbSpeed(climb, 0.9));
-                operatorController.R2().whileTrue(new ClimbSpeed(climb, -0.9));
+                operatorController.R1().whileTrue(new Climb_Move(climb, 0.9));
+                operatorController.R2().whileTrue(new Climb_Move(climb, -0.9));
+                operatorController.L1().onTrue(new Climb_ZeroClimb(climb));
 
                 // pid intake
                 operatorController.povUp()
-                                .onTrue(new IntakePID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                                .onTrue(new Intake_PID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED));
                 operatorController.povDown()
-                                .onTrue(new IntakePID(intake, IntakePosition.IN, OPERATOR_CONSTANTS.ROLLER_SPEED));
-                operatorController.share().whileTrue(new IntakePID(intake, 0.2, 0));
-                operatorController.options().whileTrue(new IntakePID(intake, -0.2, 0));
+                                .onTrue(new Intake_PID(intake, IntakePosition.IN, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                operatorController.share().whileTrue(new Intake_PID(intake, 0.2, 0));
+                operatorController.options().whileTrue(new Intake_PID(intake, -0.2, 0));
 
                 // roller
                 operatorController.povLeft()
-                                .onTrue(new IntakeSpin(intake, OPERATOR_CONSTANTS.ROLLER_SPEED));
-                operatorController.povRight().onTrue(new IntakeSpin(intake, 0));
-                operatorController.cross().onTrue(new IntakeSpin(intake, -Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
+                                .onTrue(new Intake_Spin(intake, OPERATOR_CONSTANTS.ROLLER_SPEED));
+                operatorController.povRight().onTrue(new Intake_Spin(intake, 0));
+                operatorController.cross().onTrue(new Intake_Spin(intake, -Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
 
-                // ∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
+                // MARK: Test1
 
-                // testController1.R1().whileTrue(new IndexerSpin(indexer,
-                // IndexerStates.UP));
+                // climb
+                // testController1.circle().onTrue(new Climb_move(climb, ClimbPosition.UP));
+                // testController1.square().onTrue(new Climb_move(climb, ClimbPosition.DOWN));
+                // testController1.triangle().whileTrue(new Climb_move(climb, 1));
+                // testController1.cross().whileTrue(new Climb_move(climb, -0.6));
+                // testController1.options().onTrue(new Climb_ZeroClimb(climb));
+                // testController1.povLeft().whileTrue(autoClimb);
+                // testController1.povRight().whileTrue(
+                // Commands.deferredProxy(() -> drive.goToc(FIELD_CONSTANTS.TEST_POSE2D)));
+                // testController1.povUp().onTrue(new Intake_PID(intake, IntakePosition.OUT,
+                // 0));
+                // testController1.povDown().onTrue(new Intake_PID(intake, IntakePosition.IN,
+                // 0));
+                // testController1.povRight().whileTrue(new Intake_PID(intake, 0.05, 0));
+                // testController1.povLeft().whileTrue(new Intake_PID(intake, -0.05, 0));
 
-                // testController1.circle().whileTrue(new ShootSpeed(shooter, 30, false));
-                // testController1.povLeft()
-                // .onTrue(new IntakeSpin(intake, Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
-                // testController1.povRight().onTrue(new IntakeSpin(intake, 0));
-
-                // testController1.options().whileTrue(new IntakePID(intake, 0.1,
-                // OPERATOR_CONSTANTS.ROLLER_SPEED));
-                // testController1.share().whileTrue(new IntakePID(intake, -0.1,
-                // OPERATOR_CONSTANTS.ROLLER_SPEED));
-
-                // // pid intake
-                // testController1.povUp().onTrue(new IntakePID(intake, IntakePosition.OUT, 0));
-                // testController1.povDown().onTrue(new IntakePID(intake,
-                // IntakePosition.HALFWAY, 0));
-                // testController1.touchpad().whileTrue(new IntakeRatle(intake));
-
-                testController1.povLeft().onTrue(new ManualTurret(turret, .25));
-                testController1.povRight().whileTrue(new AimAtHub(turret, drive));
-                testController1.povUp().onTrue(new AimAndShoot(shooter, turret, drive));
-                testController1.R1().whileTrue(new IndexerSpin(indexer, IndexerStates.UP));
+                testController1.povUp()
+                                .whileTrue(drive.commandFromPath(drive.pathFromPoseWithConstraints(
+                                                new Pose2d(ClimbUtils.centerOfClimbPose, Rotation2d.kCCW_90deg),
+                                                BLine_Constants.highTolerence)));
+                testController1.L2().whileTrue(DriveCommands.myDrive(drive, testController1,
+                                1.0, polarityChooser::getSelected));
+                testController1.triangle().onTrue(new Climb_ZeroClimb(climb));
+                testController1.square().whileTrue(Climb_AutoClimb_Sequence.get(drive, climb));
+                testController1.circle().onTrue(new Climb_Move(climb, ClimbPosition.UP));
         }
 
         public Command resetGyro() {
@@ -469,14 +317,13 @@ public class RobotContainer {
                 });
         }
 
-        public void resetIntakePosition() {
-                intake.refreshPosition();
-        }
-
         public Command zeroThings() {
-                return new ParallelCommandGroup(new ZeroTurret(turret),
-                                new ParallelCommandGroup(new ShootSpeed(shooter, 0, false),
-                                                new IndexerSpin(indexer, IndexerStates.OFF), new IntakeSpin(intake, 0))
+                return new ParallelCommandGroup(
+                                new Turret_ZeroTurret(turret),
+                                // new Climb_ZeroClimb(climb),
+                                new ParallelCommandGroup(new Shooter_ShootSpeed(shooter, 0, false),
+                                                new Indexer_Spin(indexer, IndexerStates.OFF),
+                                                new Intake_Spin(intake, 0), DriveCommands.stopWithX(drive))
                                                 .withTimeout(1));
         }
 
@@ -485,16 +332,16 @@ public class RobotContainer {
          * @return the command to run in autonomous
          */
         public Command getAutonomousCommand() {
-                // boolean characterization = false;
-                // if (characterization) {
-                // return characterizationChooser.getSelected();
-                // } else {
-                // if (bLineChouser.getSelected() != null) {
-                return bLineChouser.getSelected();
-                // } else {
-                // return autoChooser.getSelected();
-                // }
-                // }
+                if (characterizationChooser.getSelected() == Commands.none()) {
+                        return characterizationChooser.getSelected();
+                } else {
+                        // if (Autos.getAuto() != Commands.none()) {
+                        return Autos.getAuto();
+                        // }
+                        // else {
+                        // return bLineChouser.getSelected();
+                        // }
+                }
 
         }
 

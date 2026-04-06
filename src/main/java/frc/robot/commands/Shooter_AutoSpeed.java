@@ -1,18 +1,15 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.util.GeneralUtils;
 
-public class ShootSpeed extends Command {
+public class Shooter_AutoSpeed extends Command {
     private Shooter Shooter;
-    private Double Speed;
-    // true of false to use the setShooterSpeedAjust() command
-    private boolean TFAjust;
 
-    public ShootSpeed(Shooter shooterSubsystem, double speed, boolean ajust) {
+    public Shooter_AutoSpeed(Shooter shooterSubsystem) {
         this.Shooter = shooterSubsystem;
-        this.Speed = speed;
-        this.TFAjust = ajust;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(shooterSubsystem);
     }
@@ -20,27 +17,26 @@ public class ShootSpeed extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        if (TFAjust == true) {
-            Shooter.setShooterSpeedAjust(Speed);
-        } else if (TFAjust == false) {
-            Shooter.setShooterSpeedSet(Speed);
-        }
+
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-
+        Shooter.setShooterSpeedSet(
+                GeneralUtils.shooterSpeedFromDistance(
+                        GeneralUtils.distanceFromTarget(Constants.FIELD_CONSTANTS.CENTER_OF_HUB)));
     }
 
     @Override
     public boolean isFinished() {
-        return true;
+        return false;
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
+        Shooter.setShooterSpeedSet(Constants.OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED);
     }
 
 }

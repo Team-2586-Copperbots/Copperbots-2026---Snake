@@ -5,6 +5,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import java.io.IOException;
 
@@ -33,8 +34,7 @@ import frc.robot.util.AllianceFlipUtil;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode simMode = Mode.SIM;
-  public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
+  public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -50,10 +50,17 @@ public final class Constants {
   // drive
 
   public static class ROBOT_PROPERTIES {
+    public static final double widthOffset = 14;
+    public static final double lengthOffset = 13;
+    public static final double floorOffset = 6.125; // frome the floor to the top of the 1x1 upper rail of the frame
+
     private static RobotConfig ROBOT_CONFIG;
 
     // what on earth does throws exception mean and what are exceptions and what do
     // they do?
+
+    // exceptions are funny ways to throw errors / allow you to pass errors to
+    // othermethouds to let them do something with it
     public static RobotConfig getROBOT_CONFIG() {
       if (ROBOT_CONFIG == null) {
         try {
@@ -81,35 +88,33 @@ public final class Constants {
 
     // drive speed limiter
     public static final double MAX_SPEED_LIMITER = 1;
-    public static final double SLOW_SPEED_LIMITER = 0.35;
+    public static final double SLOW_SPEED_LIMITER = 0.3;
 
     public static final double IDLE_SHOOTER_SPEED = 45; // RPS
     public static final double ROLLER_SPEED = 0.8; // percentage
+
+    // stollen from 857
+    public static final double LOOP_TIME = 0.15;
   }
 
   // math
 
   public static class FIELD_CONSTANTS {
-    public static final Distance FIELD_LENGTH = Distance.ofBaseUnits(Units.inchesToMeters(651.22), Meters);
-    public static final Distance FIELD_WIDTH = Distance.ofBaseUnits(Units.inchesToMeters(317.69), Meters);
+    public static final Distance FIELD_LENGTH = Meters.of(Units.inchesToMeters(651.22));
+    public static final Distance FIELD_WIDTH = Meters.of(Units.inchesToMeters(317.69));
 
     public static Pose2d CENTER_OF_HUB = new Pose2d();
     public static Pose2d BOTTOM_FULE_STORAGE = new Pose2d();
     public static Pose2d TOP_FULE_STORAGE = new Pose2d();
+    public static Pose2d TEST_POSE2D = new Pose2d(Meters.of(4.266), Meters.of(0.622), Rotation2d.kCW_90deg);
 
-    public static void updatePositions() {
-      CENTER_OF_HUB = AllianceFlipUtil.apply(
-          new Pose2d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84), Rotation2d.kZero));
-      BOTTOM_FULE_STORAGE = AllianceFlipUtil.apply(new Pose2d(2.75, 1.6, Rotation2d.kZero));
-      TOP_FULE_STORAGE = AllianceFlipUtil.apply(
-          new Pose2d(AllianceFlipUtil.applyX(BOTTOM_FULE_STORAGE.getX()),
-              (FIELD_WIDTH.abs(Meters) - BOTTOM_FULE_STORAGE.getY()), Rotation2d.kZero));
+    public static void updateUtilsPositions() {
+      CENTER_OF_HUB = AllianceFlipUtil.apply(new Pose2d(Meters.of(4.62), Meters.of(4.04), Rotation2d.kZero));
+      BOTTOM_FULE_STORAGE = AllianceFlipUtil.apply(new Pose2d(Meters.of(2.75), Meters.of(1.6), Rotation2d.kZero));
+      TOP_FULE_STORAGE = new Pose2d(BOTTOM_FULE_STORAGE.getX(),
+          (FIELD_WIDTH.in(Meters) - BOTTOM_FULE_STORAGE.getY()), Rotation2d.kZero);
     }
 
-  }
-
-  public static class DRIVEBASE_TARGET_POSES {
-    public static final Pose2d TEST_POSE2D = AllianceFlipUtil.apply(new Pose2d(2, 2, Rotation2d.kZero));
   }
 
   // hardware
@@ -124,11 +129,10 @@ public final class Constants {
     public static final int INTAKE_CANCODER = 28;
     public static final int INTAKE_ROLLER_MOTOR = 27;
     // intake motor
-    public static final int INDEXER_MOTOR = 24;
-    public static final int TOWER_MOTOR = 25;
+    public static final int SPINDEXER_INDEXER_MOTOR = 24;
+    public static final int SPINDEXER_TOWER_MOTOR = 25;
     // climb motor
     public static final int CLIMB_MOTOR_1 = 29;
-
     public static final int CLIMB_MOTOR_2 = 30;
     // turret motor
     public static final int TURRET_TURN_MOTOR = 23;
@@ -138,14 +142,17 @@ public final class Constants {
 
   public static class DIO_IDS {
     public static final int TURRET_LIMIT_SWITCH = 9;
+    public static final int CLIMB_LIMIT_SWITCH = 8;
   }
 
   // subsystems + simpuation
 
   public static class SHOOTER_CONSTANTS {
-    public static final Distance HEIGHT_OF_WHEEL_OFF_GROUND = Distance.ofBaseUnits(0.64135, Meters); // in meters
-    public static final double SHOOTER_WHEELE_CIRCUMFERENCE = 2 * 2 * Math.PI;
-    public static final Angle SHOOTER_HOOD_ANGLE = Angle.ofBaseUnits(22.165, Degrees);
+    public static final Distance HEIGHT_OF_WHEEL_OFF_GROUND = Meters.of(0.64135); // in meters
+    public static final Distance SHOOTER_WHEELE_CIRCUMFERENCE = Inches.of(4 * Math.PI);
+    public static final Angle SHOOTER_HOOD_ANGLE = Degrees.of(22.165);
+    public static final double TOLERENCE = 3;
+    public static final double CURRENT_LIMIT = 80;
   }
 
   public static class TURRET_CONSTANTS {
@@ -155,23 +162,27 @@ public final class Constants {
     public static final double ROTATION_RANGE_IN_ROT = 0.79;
     public static final Pose2d TURRET_OFFSET_FROM_ROBOT_CENTER = new Pose2d(Units.inchesToMeters(-7.5),
         Units.inchesToMeters(-8.5), null);
+    public static final double TOLERENCE = 0.01 * MOTOR_TO_RING_RATIO;
   }
 
   public static class INTAKE_CONSTANTS {
-    public static final double rotorToIntake = (5 / 1) * (59 / 24) * (45 / 20);
+    public static final double rotorToSensor = (5 / 1) * (57 / 24) * (45 / 20);
+    public static final double distanceToStopAt = 0.08;
+    public static final double POSITION_TOLERENCE = 0.01;
+    public static final double timeBetwenRattaling = 700;
   }
 
-  public static enum CANDLE_STRIPS {
-    // TODO: fix indexe (plural?) when strips are made, for eskey
+  public static enum LED_Strip {
+    // TODO: fix indexe (plural?) when strips are made, for eskey?
     BUILT_IN(0, 7),
-    FIRST(8, 8 + 21),
+    FIRST(8, 44),
     SECOND(78, 147),
     THIRD(148, 217);
 
     public final int start;
     public final int end;
 
-    private CANDLE_STRIPS(int start, int end) {
+    private LED_Strip(int start, int end) {
       this.start = start;
       this.end = end;
     }

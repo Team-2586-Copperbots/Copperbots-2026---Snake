@@ -1,24 +1,21 @@
-
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.climb.Climb;;
 
-public class IntakeSpin extends Command {
-    private Intake intake;
-    private double speed;
+public class Climb_ZeroClimb extends Command {
+    private Climb Climb;
 
-    public IntakeSpin(Intake IntakeSubsystem, double speed) {
-        this.intake = IntakeSubsystem;
-        this.speed = speed;
+    public Climb_ZeroClimb(Climb ClimbSubsystem) {
+        this.Climb = ClimbSubsystem;
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(IntakeSubsystem);
+        addRequirements(ClimbSubsystem);
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        intake.setRollerSpeed(speed);
+        Climb.setClimbSpeed(-0.5);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -29,13 +26,18 @@ public class IntakeSpin extends Command {
 
     @Override
     public boolean isFinished() {
-        return true;
+        if (Climb.getLimitSwitch()) {
+            return true;
+        }
+        return false;
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-
+        Climb.setClimbSpeed(0);
+        Climb.setPositionToZero();
+        // Climb.setClimbTargetPosition(ClimbPosition.DOWN);
     }
 
 }
