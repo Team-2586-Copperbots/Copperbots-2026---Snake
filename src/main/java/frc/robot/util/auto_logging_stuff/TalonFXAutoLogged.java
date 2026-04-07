@@ -1,4 +1,4 @@
-package frc.robot.util.auto_loggint_stuff;
+package frc.robot.util.auto_logging_stuff;
 
 import org.littletonrobotics.junction.AutoLog;
 
@@ -6,11 +6,11 @@ import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.ControlModeValue;
 
-public class LoggedTalonFX extends TalonFX {
-    public TalonFXIOInputsAutoLogged inputs;
+public class TalonFXAutoLogged extends TalonFX {
+    private TalonFXInputsAutoLogged inputs;
 
     @AutoLog
-    public static class TalonFXIOInputs {
+    public static class TalonFXInputs {
         // public String name = "";
         public boolean isOk = false;
 
@@ -25,17 +25,17 @@ public class LoggedTalonFX extends TalonFX {
         public double setpoint = 0.0;
     }
 
-    public LoggedTalonFX(int id, CANBus canbus) {
+    public TalonFXAutoLogged(int id, CANBus canbus) {
         super(id, canbus);
-        inputs = new TalonFXIOInputsAutoLogged();
+        inputs = new TalonFXInputsAutoLogged();
         updateInputs();
     }
 
-    public LoggedTalonFX(int id) {
+    public TalonFXAutoLogged(int id) {
         this(id, new CANBus());
     }
 
-    public LoggedTalonFX(int id, String canbus) {
+    public TalonFXAutoLogged(int id, String canbus) {
         this(id, new CANBus(canbus));
     }
 
@@ -55,7 +55,7 @@ public class LoggedTalonFX extends TalonFX {
         inputs.setpoint = this.getClosedLoopReference().getValueAsDouble();
     }
 
-    public TalonFXIOInputsAutoLogged getInputs() {
+    public TalonFXInputsAutoLogged getInputs() {
         updateInputs();
         return inputs;
     }

@@ -3,36 +3,26 @@ package frc.robot.subsystems.indexer;
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.hardware.TalonFX;
-
 import frc.robot.Constants;
 import frc.robot.Constants.CANIds;
-import frc.robot.util.auto_loggint_stuff.MotorIO;
-import frc.robot.util.auto_loggint_stuff.MotorIOInputsAutoLogged;
-import frc.robot.util.auto_loggint_stuff.MotorIOTalon;
+import frc.robot.util.auto_logging_stuff.TalonFXAutoLogged;
+import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
 
 public class IndexerIOReal implements IndexerIO {
 
     // hardware objects
-    private final TalonFX indexerMotor;
-    private final TalonFX towerMotor;
+    private final TalonFXAutoLogged indexerMotor, towerMotor;
     private final TalonFXConfiguration motorConfig;
 
     private final IndexerIOInputsAutoLogged inputs = new IndexerIOInputsAutoLogged();
-    private final MotorIO towerMotorIO, indexerMotoIO;
-    private final MotorIOInputsAutoLogged towerMotorInputs = new MotorIOInputsAutoLogged();
-    private final MotorIOInputsAutoLogged indexerMotorInputs = new MotorIOInputsAutoLogged();
 
     public IndexerIOReal() {
-        indexerMotor = new TalonFX(Constants.CANIds.SPINDEXER_INDEXER_MOTOR, Constants.CANIds.Canivore);
-        towerMotor = new TalonFX(Constants.CANIds.SPINDEXER_TOWER_MOTOR, Constants.CANIds.Canivore);
+        indexerMotor = new TalonFXAutoLogged(Constants.CANIds.SPINDEXER_INDEXER_MOTOR, Constants.CANIds.Canivore);
+        towerMotor = new TalonFXAutoLogged(Constants.CANIds.SPINDEXER_TOWER_MOTOR, Constants.CANIds.Canivore);
 
         motorConfig = new TalonFXConfiguration();
         indexerMotor.getConfigurator().apply(motorConfig);
         towerMotor.getConfigurator().apply(motorConfig);
-
-        indexerMotoIO = new MotorIOTalon(indexerMotor);
-        towerMotorIO = new MotorIOTalon(towerMotor);
     }
 
     /** Updates the set of loggable inputs. */
@@ -42,19 +32,17 @@ public class IndexerIOReal implements IndexerIO {
         inputs.towerSpeed = towerMotor.getVelocity().getValueAsDouble();
 
         Logger.processInputs("Indexer", inputs);
-        indexerMotoIO.updateInputs(indexerMotorInputs);
-        towerMotorIO.updateInputs(towerMotorInputs);
-        Logger.processInputs("Indexer/IndexerMotor", indexerMotorInputs);
-        Logger.processInputs("Indexer/TowerMotor", towerMotorInputs);
+        Logger.processInputs("Indexer/IndexerMotor", indexerMotor.getInputs());
+        Logger.processInputs("Indexer/TowerMotor", towerMotor.getInputs());
     }
 
     @Override
-    public MotorIOInputsAutoLogged getMotorInputs(int id) {
+    public TalonFXInputsAutoLogged getMotorInputs(int id) {
         switch (id) {
             case CANIds.SPINDEXER_INDEXER_MOTOR:
-                return indexerMotorInputs;
+                return indexerMotor.getInputs();
             case CANIds.SPINDEXER_TOWER_MOTOR:
-                return towerMotorInputs;
+                return towerMotor.getInputs();
             default:
                 return null;
         }

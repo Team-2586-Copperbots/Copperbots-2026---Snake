@@ -1,6 +1,7 @@
 package frc.robot.subsystems.shooter;
 
 public class ShooterIOSim implements ShooterIO {
+    @SuppressWarnings("unused")
     private double velocityVoltagePlaceholder;
 
     public ShooterIOSim() {
@@ -9,8 +10,6 @@ public class ShooterIOSim implements ShooterIO {
 
     @Override
     public void updateInputs(ShooterIOInputs inputs) {
-        inputs.motorSetpoint = velocityVoltagePlaceholder;
-        inputs.motorSpeed = velocityVoltagePlaceholder;
     }
 
     @Override

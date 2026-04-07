@@ -3,27 +3,29 @@ package frc.robot.subsystems.shooter;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import frc.robot.Constants;
 import frc.robot.Constants.SHOOTER_CONSTANTS;
+import frc.robot.util.auto_logging_stuff.TalonFXAutoLogged;
 
 import static frc.robot.Constants.CANIds.Canivore;
 
+import org.littletonrobotics.junction.Logger;
+
 public class ShooterIOReal implements ShooterIO {
     // motors
-    private final TalonFX shooterMotor1, shooterMotor2;
+    private final TalonFXAutoLogged shooterMotor1, shooterMotor2;
 
     // config vars
     private final TalonFXConfiguration shooterConfig;
     private final VelocityVoltage velocityVoltage = new VelocityVoltage(0.0).withSlot(0);
 
     public ShooterIOReal() {
-        shooterMotor1 = new TalonFX(Constants.CANIds.SHOOTER_MOTOR_1, Canivore);
-        shooterMotor2 = new TalonFX(Constants.CANIds.SHOOTER_MOTOR_2, Canivore);
+        shooterMotor1 = new TalonFXAutoLogged(Constants.CANIds.SHOOTER_MOTOR_1, Canivore);
+        shooterMotor2 = new TalonFXAutoLogged(Constants.CANIds.SHOOTER_MOTOR_2, Canivore);
 
         shooterConfig = new TalonFXConfiguration();
 
@@ -47,17 +49,8 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void updateInputs(ShooterIOInputs inputs) {
-        inputs.motorAmps = new double[] { shooterMotor1.getSupplyCurrent().getValueAsDouble(),
-                shooterMotor2.getSupplyCurrent().getValueAsDouble() };
-        inputs.motorIsOK = new boolean[] { shooterMotor1.isAlive(), shooterMotor1.isAlive() };
-        inputs.motorTemps = new double[] { shooterMotor1.getStatorCurrent().getValueAsDouble(),
-                shooterMotor2.getStatorCurrent().getValueAsDouble() };
-        inputs.motorVolts = new double[] { shooterMotor1.getMotorVoltage().getValueAsDouble(),
-                shooterMotor2.getMotorVoltage().getValueAsDouble() };
-
-        inputs.motorSetpoint = shooterMotor1.getClosedLoopReference().getValueAsDouble();
-        inputs.motorSpeed = shooterMotor1.getVelocity().getValueAsDouble();
-
+        Logger.processInputs("Shooter/Motor 1", shooterMotor1.getInputs());
+        Logger.processInputs("Shooter/Motor 2", shooterMotor2.getInputs());
     }
 
     @Override

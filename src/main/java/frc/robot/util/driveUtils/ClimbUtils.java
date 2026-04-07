@@ -3,10 +3,6 @@ package frc.robot.util.driveUtils;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Rotations;
-
-import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;

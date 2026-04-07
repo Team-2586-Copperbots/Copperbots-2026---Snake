@@ -2,25 +2,23 @@ package frc.robot.subsystems.turret;
 
 import org.littletonrobotics.junction.AutoLog;
 
-import frc.robot.subsystems.intake.Intake.IntakePosition;
+import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
 
 public interface TurretIO {
     @AutoLog
     public static class TurretIOInputs {
-        public boolean motorIsOK = false;
-        public double motorVolts = 0;
-        public double motorAmps = 0;
-        public double motorSetpoint = 0;
-        public double motorRotation = 0;
-        public boolean motorIsClosedLoop = true;
-
+        public double absTurretRotation = 0;
         public double turretRotation = 0;
 
         public boolean limitSwitch = false;
-        public boolean canMakeItToTarget = true;
+        public boolean canMakeItToTarget = false;
     }
 
     public default void updateInputs(TurretIOInputs inputs) {
+    }
+
+    public default TalonFXInputsAutoLogged getMotorInputs() {
+        return null;
     }
 
     public default void setTurretSetpoint(double rotation) {

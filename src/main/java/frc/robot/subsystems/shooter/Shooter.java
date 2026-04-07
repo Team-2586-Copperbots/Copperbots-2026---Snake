@@ -2,15 +2,16 @@ package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.CANIds;
 import frc.robot.Constants.SHOOTER_CONSTANTS;
 
+import static frc.robot.Constants.CANIds.SHOOTER_MOTOR_1;
+
 import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
     private static Shooter instance = null;
     private ShooterIO io;
-    private ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
     private double setPoint = 0;
 
     public static Shooter getInstance() {
@@ -49,17 +50,16 @@ public class Shooter extends SubsystemBase {
     }
 
     public double getMotor1Speed() {
-        return inputs.motorSpeed;
+        return io.getMotorInputs(CANIds.SHOOTER_MOTOR_1).velocity;
     }
 
     @AutoLogOutput(key = "Shooter/getAtTarget")
     public boolean isAtTarget() {
-        return Math.abs(inputs.motorSpeed - inputs.motorSetpoint) < SHOOTER_CONSTANTS.TOLERENCE;
+        return Math.abs(getMotor1Speed() - io.getMotorInputs(SHOOTER_MOTOR_1).setpoint) < SHOOTER_CONSTANTS.TOLERENCE;
     }
 
     @Override
     public void periodic() {
-        io.updateInputs(inputs);
-        Logger.processInputs("Shooter", inputs);
+        io.updateInputs(null);
     }
 }

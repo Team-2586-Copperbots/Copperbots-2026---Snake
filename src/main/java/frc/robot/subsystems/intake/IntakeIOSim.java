@@ -2,7 +2,6 @@ package frc.robot.subsystems.intake;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
-import frc.robot.Constants.INTAKE_CONSTANTS;
 import frc.robot.subsystems.intake.Intake.IntakePosition;
 
 import static edu.wpi.first.units.Units.Meter;
@@ -12,6 +11,7 @@ import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 
 public class IntakeIOSim implements IntakeIO {
 
+    @SuppressWarnings("unused")
     private IntakePosition targetPosition = IntakePosition.IN;
     public static IntakeSimulation simulatedIntake = null;
     private Distance width = Meter.of(Units.inchesToMeters(23));

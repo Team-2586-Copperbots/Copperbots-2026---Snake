@@ -1,7 +1,5 @@
 package frc.robot.subsystems.intake;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.CANIds;
@@ -19,6 +17,7 @@ public class Intake extends SubsystemBase {
         return instance;
     }
 
+    @SuppressWarnings("static-access")
     public Intake() {
         switch (Constants.currentMode) {
             case REAL:

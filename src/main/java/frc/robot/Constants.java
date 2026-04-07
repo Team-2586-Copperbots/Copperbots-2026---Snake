@@ -77,7 +77,7 @@ public final class Constants {
     public static final double slowdownSpeed = 0.2;
   }
 
-  // robotcontainer
+  // MARK:- robotcontainer
 
   public static class OPERATOR_CONSTANTS {
     // controlers
@@ -117,7 +117,7 @@ public final class Constants {
 
   }
 
-  // hardware
+  // MARK:- IDs
 
   public static class CANIds {
     public static final CANBus Canivore = new CANBus("Subsystems");
@@ -145,13 +145,13 @@ public final class Constants {
     public static final int CLIMB_LIMIT_SWITCH = 8;
   }
 
-  // subsystems + simpuation
+  // MARK:- subsystems
 
   public static class SHOOTER_CONSTANTS {
     public static final Distance HEIGHT_OF_WHEEL_OFF_GROUND = Meters.of(0.64135); // in meters
     public static final Distance SHOOTER_WHEELE_CIRCUMFERENCE = Inches.of(4 * Math.PI);
     public static final Angle SHOOTER_HOOD_ANGLE = Degrees.of(22.165);
-    public static final double TOLERENCE = 3;
+    public static final double TOLERENCE = 1.5;
     public static final double CURRENT_LIMIT = 80;
   }
 
@@ -173,11 +173,8 @@ public final class Constants {
   }
 
   public static enum LED_Strip {
-    // TODO: fix indexe (plural?) when strips are made, for eskey?
     BUILT_IN(0, 7),
-    FIRST(8, 44),
-    SECOND(78, 147),
-    THIRD(148, 217);
+    FIRST(8, 44),;
 
     public final int start;
     public final int end;

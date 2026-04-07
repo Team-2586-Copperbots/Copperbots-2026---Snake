@@ -3,7 +3,7 @@ package frc.robot.subsystems.climb;
 import org.littletonrobotics.junction.AutoLog;
 
 import frc.robot.subsystems.climb.Climb.ClimbPosition;
-import frc.robot.util.auto_loggint_stuff.MotorIOInputsAutoLogged;
+import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
 
 public interface ClimbIO {
     @AutoLog
@@ -20,7 +20,7 @@ public interface ClimbIO {
         return null;
     }
 
-    public default MotorIOInputsAutoLogged getMotorInputs(int i) {
+    public default TalonFXInputsAutoLogged getMotorInputs(int i) {
         return null;
     }
 

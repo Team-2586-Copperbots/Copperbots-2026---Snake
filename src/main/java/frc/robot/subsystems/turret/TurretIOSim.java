@@ -4,8 +4,11 @@ import frc.robot.Constants.TURRET_CONSTANTS;
 
 public class TurretIOSim implements TurretIO {
     private double turretMotorPose;
+    @SuppressWarnings("unused")
     private double motorSpeed = 0;
+    @SuppressWarnings("unused")
     private boolean isClosedLoop = true;
+    @SuppressWarnings("unused")
     private boolean isAtPosition = true;
 
     public TurretIOSim() {
