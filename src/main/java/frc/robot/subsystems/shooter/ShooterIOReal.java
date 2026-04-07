@@ -8,8 +8,10 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import frc.robot.Constants;
+import frc.robot.Constants.CANIds;
 import frc.robot.Constants.SHOOTER_CONSTANTS;
 import frc.robot.util.auto_logging_stuff.TalonFXAutoLogged;
+import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
 
 import static frc.robot.Constants.CANIds.Canivore;
 
@@ -51,6 +53,17 @@ public class ShooterIOReal implements ShooterIO {
     public void updateInputs(ShooterIOInputs inputs) {
         Logger.processInputs("Shooter/Motor 1", shooterMotor1.getInputs());
         Logger.processInputs("Shooter/Motor 2", shooterMotor2.getInputs());
+    }
+
+    @Override
+    public TalonFXInputsAutoLogged getMotorInputs(int id) {
+        switch (id) {
+            case CANIds.SHOOTER_MOTOR_1:
+                return shooterMotor1.getInputs();
+            case CANIds.SHOOTER_MOTOR_2:
+                return shooterMotor2.getInputs();
+        }
+        return null;
     }
 
     @Override

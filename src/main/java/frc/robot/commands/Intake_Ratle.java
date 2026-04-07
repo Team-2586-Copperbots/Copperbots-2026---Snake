@@ -11,7 +11,7 @@ public class Intake_Ratle extends Command {
     private Intake Intake;
     private double lastActionTime;
 
-    public Intake_Ratle(Intake Intake) {
+    public Intake_Ratle(Intake Intake, boolean WCurrent) {
         this.Intake = Intake;
         lastActionTime = System.currentTimeMillis();
         // Use addRequirements() here to declare subsystem dependencies.

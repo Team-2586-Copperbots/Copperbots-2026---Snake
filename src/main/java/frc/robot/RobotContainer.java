@@ -67,6 +67,8 @@ import frc.robot.util.driveUtils.ClimbUtils;
  */
 public class RobotContainer {
 
+        private static boolean zeroed = false;
+
         // MARK: Objects
 
         private final Climb climb = Climb.getInstance();
@@ -318,13 +320,18 @@ public class RobotContainer {
         }
 
         public Command zeroThings() {
-                return new ParallelCommandGroup(
-                                new Turret_ZeroTurret(turret),
-                                // new Climb_ZeroClimb(climb),
-                                new ParallelCommandGroup(new Shooter_ShootSpeed(shooter, 0, false),
-                                                new Indexer_Spin(indexer, IndexerStates.OFF),
-                                                new Intake_Spin(intake, 0), DriveCommands.stopWithX(drive))
-                                                .withTimeout(1));
+                if (!zeroed) {
+                        zeroed = true;
+                        return new ParallelCommandGroup(
+                                        new Turret_ZeroTurret(turret),
+                                        new Climb_ZeroClimb(climb),
+                                        new ParallelCommandGroup(new Shooter_ShootSpeed(shooter, 0, false),
+                                                        new Indexer_Spin(indexer, IndexerStates.OFF),
+                                                        new Intake_Spin(intake, 0), DriveCommands.stopWithX(drive))
+                                                        .withTimeout(1));
+
+                }
+                return Commands.none();
         }
 
         /**
@@ -332,15 +339,10 @@ public class RobotContainer {
          * @return the command to run in autonomous
          */
         public Command getAutonomousCommand() {
-                if (characterizationChooser.getSelected() == Commands.none()) {
+                if (characterizationChooser.getSelected() != Commands.none()) {
                         return characterizationChooser.getSelected();
                 } else {
-                        // if (Autos.getAuto() != Commands.none()) {
                         return Autos.getAuto();
-                        // }
-                        // else {
-                        // return bLineChouser.getSelected();
-                        // }
                 }
 
         }

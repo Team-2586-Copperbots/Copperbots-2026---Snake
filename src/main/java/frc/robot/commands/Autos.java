@@ -54,7 +54,7 @@ public final class Autos {
 
         }
 
-        private static Command outNum1() {
+        private static Command outNSweepFirst() {
                 return new SequentialCommandGroup(
                                 drive.autoPathFromString("b1-1"),
                                 new Intake_PID(intake, IntakePosition.OUT,
@@ -62,14 +62,9 @@ public final class Autos {
                                                 .withTimeout(0.05),
                                 drive.autoPathFromString("b1-2"),
                                 new Intake_Spin(intake, 0),
-                                drive.autoPathFromString("b1-3"),
-                                new ParallelCommandGroup(
-                                                Shooter_AutoShoot_Sequence
-                                                                .get(shooter, turret,
-                                                                                indexer),
-                                                new Intake_Ratle(intake))
-                                                .withTimeout(5));
+                                drive.autoPathFromString("b1-3"));
         }
+        
 
         private static void makeAutos() {
                 AUTOS = List.of(
@@ -77,11 +72,19 @@ public final class Autos {
                                                 new SequentialCommandGroup(
                                                                 Shooter_AutoShoot_Sequence.get(shooter, turret, indexer)
                                                                                 .withDeadline(new WaitCommand(2)),
-                                                                outNum1())),
+                                                                outNSweepFirst())),
+                                auto("out then out again",
+                                                new SequentialCommandGroup(
+                                                                outNSweepFirst(),
+                                                                Shooter_AutoShoot_Sequence.get(shooter, turret,
+                                                                                indexer).withTimeout(5),
+                                                                outNSweepFirst(),
+                                                                Shooter_AutoShoot_Sequence.get(shooter, turret,
+                                                                                indexer))),
                                 auto("autoclimb", Climb_AutoClimb_Sequence.get(drive, climb)),
                                 auto("out",
                                                 new SequentialCommandGroup(
-                                                                outNum1())),
+                                                                outNSweepFirst(), Shooter_AutoShoot_Sequence.get(shooter, turret, indexer))),
                                 auto("drive forwards",
                                                 new SequentialCommandGroup(
                                                                 drive.cRunVelocity(new ChassisSpeeds(1, 0, 0))
