@@ -14,7 +14,10 @@ public interface ShooterIO {
 
     public default TalonFXInputsAutoLogged getMotorInputs(int id) {
         return null;
-    } 
+    }
+
+    public default void runVoltage(double voltage) {
+    }
 
     public default void setMotorSetpoint(double velovity) {
     }

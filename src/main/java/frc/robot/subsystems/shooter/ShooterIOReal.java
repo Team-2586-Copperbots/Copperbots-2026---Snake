@@ -54,6 +54,11 @@ public class ShooterIOReal implements ShooterIO {
     }
 
     @Override
+    public void runVoltage(double voltage) {
+        shooterMotor1.setVoltage(voltage);
+    }
+
+    @Override
     public void setMotorSetpoint(double velocity) {
         shooterMotor1.setControl(velocityVoltage.withVelocity(velocity));
     }
