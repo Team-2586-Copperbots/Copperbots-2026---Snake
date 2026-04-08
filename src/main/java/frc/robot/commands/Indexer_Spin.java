@@ -5,6 +5,7 @@ import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.indexer.Indexer.IndexerStates;
 
 public class Indexer_Spin extends Command {
+    // class to manulay run the shooter
     private Indexer Indexer;
     private IndexerStates State;
     // private boolean simPojectil = false;

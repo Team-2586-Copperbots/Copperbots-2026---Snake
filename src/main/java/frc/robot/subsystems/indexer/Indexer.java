@@ -16,7 +16,7 @@ public class Indexer extends SubsystemBase {
         return instance;
     }
 
-    public Indexer() {
+    private Indexer() {
         switch (Constants.currentMode) {
                 case REAL:
                     io = new IndexerIOReal();

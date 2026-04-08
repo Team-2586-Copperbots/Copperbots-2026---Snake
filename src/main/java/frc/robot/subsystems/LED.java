@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANIds;
 import frc.robot.Constants;
-import frc.robot.Constants.LED_Strip;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.turret.Turret;
 
@@ -44,11 +43,10 @@ public class LED extends SubsystemBase {
     @Override
     public void periodic() {
         Logger.recordOutput("CANdle 5V Amps", candle.getOutputCurrent().getValueAsDouble());
-        // setAutoState();
+        setAutoState();
         Logger.recordOutput("CANdle control", candle.getAppliedControl().toString());
     }
 
-    @SuppressWarnings("unused")
     private void setAutoState() {
         if (Turret.getInstance().isAtTarget() && Shooter.getInstance().isAtTarget()) {
             setColor(LED_Strip.FIRST, LED_Colour.GREEN);
@@ -71,6 +69,20 @@ public class LED extends SubsystemBase {
     public Command fire(LED_Strip strip) {
         return runOnce(
                 () -> candle.setControl(new FireAnimation(strip.start, strip.end).withBrightness(.5).withCooling(.3)));
+    }
+
+    // Indexe of the CANdle's light strips
+    public static enum LED_Strip {
+        BUILT_IN(0, 7),
+        FIRST(8, 44),;
+
+        public final int start;
+        public final int end;
+
+        private LED_Strip(int start, int end) {
+            this.start = start;
+            this.end = end;
+        }
     }
 
     public static enum LED_Colour {

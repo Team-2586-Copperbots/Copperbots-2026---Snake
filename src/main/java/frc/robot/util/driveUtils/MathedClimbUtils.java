@@ -16,7 +16,7 @@ import frc.robot.subsystems.drive.BLine_Constants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.AllianceFlipUtil;
 
-public class ClimbUtils {
+public class MathedClimbUtils {
 
     private static final PathConstraints finalConstraings = BLine_Constants.highTolerence
             .setMaxVelocityMetersPerSec(0.25);
@@ -43,12 +43,11 @@ public class ClimbUtils {
     // climb target specific math
     private static Distance climbSideFlipingDistanceFromBottom = Meters.of(3.9747);
 
-    
     // true for top climb, false for bottom climb
     private static boolean getIsTopClimb() {
         // upper climb
         Logger.recordOutput("a2", climbSideFlipingDistanceFromBottom.in(Meters));
-        
+
         Logger.recordOutput("a1", AllianceFlipUtil.applyY(Drive.getInstance().getPose().getY()));
         if ((climbSideFlipingDistanceFromBottom.in(Meters))
                 - AllianceFlipUtil.applyY(Drive.getInstance().getPose().getY()) > 0) {

@@ -1,5 +1,7 @@
 package frc.robot.subsystems.intake;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.CANIds;
@@ -18,7 +20,7 @@ public class Intake extends SubsystemBase {
     }
 
     @SuppressWarnings("static-access")
-    public Intake() {
+    private Intake() {
         switch (Constants.currentMode) {
             case REAL:
                 io = new IntakeIOReal();
@@ -46,6 +48,8 @@ public class Intake extends SubsystemBase {
     }
 
     public void setRollerSpeed(double speed) {
+        Logger.recordOutput("less than 0.08", (Math.abs(io.getMotorInputs(CANIds.INTAKE_WRIST_MOTOR).position
+                - IntakePosition.IN.value)));
         if ((Math.abs(io.getMotorInputs(CANIds.INTAKE_WRIST_MOTOR).position
                 - IntakePosition.IN.value)) < INTAKE_CONSTANTS.distanceToStopAt) {
             io.setRollerSpeed(0);
@@ -58,7 +62,7 @@ public class Intake extends SubsystemBase {
         return io.getMotorInputs(CANIds.INTAKE_WRIST_MOTOR).position;
     }
 
-    public boolean getIsAtTArget() {
+    public boolean getIsAtTarget() {
         return Math.abs(getWristPosition() - getWristTarget().value) < INTAKE_CONSTANTS.POSITION_TOLERENCE;
     }
 
@@ -83,7 +87,7 @@ public class Intake extends SubsystemBase {
     public static enum IntakePosition {
         IN(0.0),
         OUT(0.251),
-        JUGLE(INTAKE_CONSTANTS.distanceToStopAt + 0.01);
+        JUGGLE(INTAKE_CONSTANTS.distanceToStopAt + 0.01);
         // ,
         // HALFWAY(4);
 

@@ -39,7 +39,7 @@ public class Turret extends SubsystemBase {
         return instance;
     }
 
-    public Turret(TurretIO io) {
+    private Turret(TurretIO io) {
         this.io = io;
     }
 
@@ -70,7 +70,8 @@ public class Turret extends SubsystemBase {
     }
 
     public boolean isAtTarget() {
-        return (Math.abs(io.getMotorInputs().position - io.getMotorInputs().setpoint) < TURRET_CONSTANTS.TOLERENCE) && canGetToTarget();
+        return (Math.abs(io.getMotorInputs().position - io.getMotorInputs().setpoint) < TURRET_CONSTANTS.TOLERENCE)
+                && canGetToTarget();
     }
 
     public void setTurretToZero() {

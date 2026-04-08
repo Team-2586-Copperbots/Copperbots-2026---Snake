@@ -6,6 +6,7 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.util.GeneralUtils;
 
 public class Shooter_AutoSpeed extends Command {
+    // class to bring the shooter up to speed, but not angle based on where the drive is
     private Shooter Shooter;
 
     public Shooter_AutoSpeed(Shooter shooterSubsystem) {
@@ -24,8 +25,7 @@ public class Shooter_AutoSpeed extends Command {
     @Override
     public void execute() {
         Shooter.setShooterSpeedSet(
-                GeneralUtils.shooterSpeedFromDistance(
-                        GeneralUtils.distanceFromTarget(Constants.FIELD_CONSTANTS.CENTER_OF_HUB)));
+                GeneralUtils.shooterSpeedFromTarget());
     }
 
     @Override

@@ -8,16 +8,15 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.turret.Turret;
 
 public class Shooter_AutoShoot_Sequence {
-
-    public static boolean shouldShoot() {
-        return (Shooter.getInstance().isAtTarget() && Turret.getInstance().isAtTarget());
-    }
+    // class to return commands for auto shooting
+    // one with just tracking and feeding
+    // one with tracking, feeding, and rattle command
+    // rattle command seems to stop working after a few pumps
 
     public static Command get(Shooter shooter, Turret turret, Indexer indexer) {
         return new ParallelCommandGroup(
                 new Turret_AimAndShoot(shooter, turret),
                 new Indexer_AutoFeed(indexer)
-        // ,new Intake_Ratle(null)
         );
     }
 

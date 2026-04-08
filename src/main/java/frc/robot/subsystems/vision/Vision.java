@@ -61,7 +61,7 @@ public class Vision extends SubsystemBase {
     return instance;
   }
 
-  public Vision(VisionConsumer consumer, VisionIO... io) {
+  private Vision(VisionConsumer consumer, VisionIO... io) {
     this.consumer = consumer;
     this.io = io;
 

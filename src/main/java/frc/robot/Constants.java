@@ -9,6 +9,8 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import java.io.IOException;
 
+import javax.xml.crypto.KeySelector.Purpose;
+
 import com.ctre.phoenix6.CANBus;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathConstraints;
@@ -77,8 +79,7 @@ public final class Constants {
     public static final double slowdownSpeed = 0.2;
   }
 
-  // MARK:- robotcontainer
-
+  // MARK: robotcontainer
   public static class OPERATOR_CONSTANTS {
     // controlers
     public static final int DRIVER_CONTROLER_PORT = 0;
@@ -97,7 +98,7 @@ public final class Constants {
     public static final double LOOP_TIME = 0.15;
   }
 
-  // math
+  // math for the field, maby should be in its own file, but not a lot of math, just a thing to flip it for the alinace and duplicate for the 
 
   public static class FIELD_CONSTANTS {
     public static final Distance FIELD_LENGTH = Meters.of(Units.inchesToMeters(651.22));
@@ -117,8 +118,7 @@ public final class Constants {
 
   }
 
-  // MARK:- IDs
-
+  // MARK: IDs
   public static class CANIds {
     public static final CANBus Canivore = new CANBus("Subsystems");
     // shooter motors
@@ -138,6 +138,8 @@ public final class Constants {
     public static final int TURRET_TURN_MOTOR = 23;
     // candle
     public static final int CANDLE = 31;
+    // pigion
+    public static final int PIGION = 32;
   }
 
   public static class DIO_IDS {
@@ -145,8 +147,7 @@ public final class Constants {
     public static final int CLIMB_LIMIT_SWITCH = 8;
   }
 
-  // MARK:- subsystems
-
+  // MARK: subsystems
   public static class SHOOTER_CONSTANTS {
     public static final Distance HEIGHT_OF_WHEEL_OFF_GROUND = Meters.of(0.64135); // in meters
     public static final Distance SHOOTER_WHEELE_CIRCUMFERENCE = Inches.of(4 * Math.PI);
@@ -171,18 +172,4 @@ public final class Constants {
     public static final double POSITION_TOLERENCE = 0.01;
     public static final double timeBetwenRattaling = 700;
   }
-
-  public static enum LED_Strip {
-    BUILT_IN(0, 7),
-    FIRST(8, 44),;
-
-    public final int start;
-    public final int end;
-
-    private LED_Strip(int start, int end) {
-      this.start = start;
-      this.end = end;
-    }
-  }
-
 }

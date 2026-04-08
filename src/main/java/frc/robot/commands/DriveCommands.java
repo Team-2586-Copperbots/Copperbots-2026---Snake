@@ -33,6 +33,7 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 public class DriveCommands {
+        // class that contains a number of functions to control the Advantage Kit Drive System
         private static final double DEADBAND = 0.085;
         private static final double ANGLE_KP = 5.0;
         private static final double ANGLE_KD = 0.4;

@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.intake.Intake;
 
 public class Intake_Spin extends Command {
+    // command that only sets the speed of the intake roller, may or may not
+    // interrupt the rest of the subsystem or don't thing it does
     private Intake intake;
     private double speed;
 

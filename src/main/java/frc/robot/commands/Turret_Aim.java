@@ -5,6 +5,7 @@ import frc.robot.subsystems.turret.Turret;
 import frc.robot.util.GeneralUtils;
 
 public class Turret_Aim extends Command {
+    // class to aim the turret at the current target based on the drivtrain
     private Turret Turret;
 
     public Turret_Aim(Turret TurretSubsystem) {

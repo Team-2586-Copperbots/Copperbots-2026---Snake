@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.shooter.Shooter;
 
 public class Shooter_ShootSpeed extends Command {
+    // runs the shooter at a speed that is passed and alowes the speed to be ajusted or even negative
     private Shooter Shooter;
     private Double Speed;
     // true of false to use the setShooterSpeedAjust() command

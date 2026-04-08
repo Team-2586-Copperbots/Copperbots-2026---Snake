@@ -5,6 +5,9 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.Intake.IntakePosition;
 
 public class Intake_PID extends Command {
+    // class to move the intake
+    // constructurs to use IntakePosition and wrist speed
+    // needs to be run periodicly to do the logic for the roller
     private Intake intake;
     private Intake.IntakePosition position = null;
     private Double wristSpeed = Double.NaN;
@@ -28,11 +31,11 @@ public class Intake_PID extends Command {
 
     @Override
     public void initialize() {
-
     }
 
     @Override
     public void execute() {
+        intake.setRollerSpeed(rollerSpeed);
         if (position != null) {
             intake.setIntakePositionTarget(position);
         } else if (!wristSpeed.isNaN()) {
@@ -41,11 +44,13 @@ public class Intake_PID extends Command {
         } else {
             System.out.println("Wrist speed is Nan");
         }
-        intake.setRollerSpeed(rollerSpeed);
     }
 
     @Override
     public boolean isFinished() {
+        // if (intake.getIsAtTarget() && position != null) {
+        // return true;
+        // }
         return false;
     }
 
@@ -54,6 +59,7 @@ public class Intake_PID extends Command {
         if (!wristSpeed.isNaN()) {
             intake.setWristSpeed(0);
         }
+        intake.setRollerSpeed(rollerSpeed);
     }
 
 }

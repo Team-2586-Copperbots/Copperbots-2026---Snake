@@ -45,7 +45,7 @@ import frc.robot.lib.BLine.Path;
 import frc.robot.lib.BLine.Path.PathConstraints;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.GeneralUtils;
-import frc.robot.util.driveUtils.ClimbUtils;
+import frc.robot.util.driveUtils.MathedClimbUtils;
 
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
@@ -154,9 +154,8 @@ public class Drive extends SubsystemBase {
           break;
         case SIM:
           // Sim robot, instantiate physics sim IO implementations
-          Pose2d startingPose2d = new Pose2d(2, 2, Rotation2d.kZero);
           driveSimulation = new SwerveDriveSimulation(Drive.getMapleSimConfig(),
-              startingPose2d);
+              new Pose2d(2, 2, Rotation2d.kZero));
           SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
           instance = new Drive(
               new GyroIOSim(driveSimulation.getGyroSimulation()),
@@ -243,7 +242,7 @@ public class Drive extends SubsystemBase {
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
     Logger.processInputs("Drive/Gyro", gyroInputs);
-    Logger.recordOutput("climb pose", ClimbUtils.centerOfClimbPose);
+    Logger.recordOutput("climb pose", MathedClimbUtils.centerOfClimbPose);
     Logger.recordOutput("auto flip",
         AllianceFlipUtil.applyY(getPose().getY()) > AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY()));
     Logger.recordOutput("target for turret", GeneralUtils.findTarget());
@@ -353,8 +352,6 @@ public class Drive extends SubsystemBase {
     return path;
   }
 
-  
-
   public DeferredCommand deferedCommandToPose(Pose2d pose) {
     return new DeferredCommand(() -> this.commandFromPath(pathFromPose(pose)), Set.of(this));
   }
@@ -377,6 +374,20 @@ public class Drive extends SubsystemBase {
 
   public Command pathFromStringFlipable(String name, boolean mirror) {
     Path path = new Path(name);
+    if (mirror) {
+      path.mirror();
+    }
+    return pathBuilder.build(path);
+  }
+
+  public Path autoMirrorPath(Path path) {
+    if (AllianceFlipUtil.applyY(getPose().getY()) < AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY())) {
+      path.mirror();
+    }
+    return path;
+  }
+
+  public Command pathFlipable(Path path, boolean mirror) {
     if (mirror) {
       path.mirror();
     }

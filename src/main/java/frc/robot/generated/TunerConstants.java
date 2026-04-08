@@ -21,6 +21,7 @@ import edu.wpi.first.units.measure.*;
 public class TunerConstants {
         // Both sets of gains need to be tuned to your individual robot.
 
+        // MARK: Output Gains
         // The steer motor uses any SwerveModule.SteerRequestType control request with
         // the
         // output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
@@ -41,6 +42,11 @@ public class TunerConstants {
         // This affects the PID/FF gains for the drive motors
         private static final ClosedLoopOutputType kDriveClosedLoopOutput = ClosedLoopOutputType.Voltage;
 
+        // The stator current at which the wheels start to slip;
+        // This needs to be tuned to your individual robot
+        // MARK: slip current
+        private static final Current kSlipCurrent = Amps.of(46);
+
         // The type of motor used for the drive motor
         private static final DriveMotorArrangement kDriveMotorType = DriveMotorArrangement.TalonFX_Integrated;
         // The type of motor used for the drive motor
@@ -50,14 +56,11 @@ public class TunerConstants {
         // When not Pro-licensed, Fused*/Sync* automatically fall back to Remote*
         private static final SteerFeedbackType kSteerFeedbackType = SteerFeedbackType.FusedCANcoder;
 
-        // The stator current at which the wheels start to slip;
-        // This needs to be tuned to your individual robot
-        private static final Current kSlipCurrent = Amps.of(46);
-
         // Initial configs for the drive and steer motors and the azimuth encoder; these
         // cannot be null.
         // Some configs will be overwritten; check the `with*InitialConfigs()` API
         // documentation.
+        // MARK: current limiting
         private static final TalonFXConfiguration driveInitialConfigs = new TalonFXConfiguration()
                         .withCurrentLimits(new CurrentLimitsConfigs()
                                         .withSupplyCurrentLimit(Current.ofBaseUnits(60, Amps)));
@@ -89,6 +92,7 @@ public class TunerConstants {
 
         private static final double kDriveGearRatio = 6.746031746031747;
         private static final double kSteerGearRatio = 21.428571428571427;
+        // MARK: wheel radius
         private static final Distance kWheelRadius = Inches.of(1.965);
 
         private static final boolean kInvertLeftSide = false;
@@ -210,6 +214,7 @@ public class TunerConstants {
         // );
         // }
 
+        // MARK: stuf to build a drive
         /**
          * Swerve Drive class utilizing CTR Electronics' Phoenix 6 API with the selected
          * device types.

@@ -18,7 +18,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.FIELD_CONSTANTS;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.simsProjectile;
@@ -85,7 +85,6 @@ public class Robot extends LoggedRobot {
     // and put our
     // autonomous chooser on the dashboard.
     Constants.FIELD_CONSTANTS.updateUtilsPositions();
-    Logger.recordOutput("thing5", FIELD_CONSTANTS.TEST_POSE2D);
     robotContainer = new RobotContainer();
     FollowPathCommand.warmupCommand().schedule();
     PathfindingCommand.warmupCommand().schedule();
@@ -139,7 +138,8 @@ public class Robot extends LoggedRobot {
   public void autonomousInit() {
     // schedule the autonomous command (example)
     if (robotContainer.getAutonomousCommand() != null) {
-      m_autonomousCommand = Commands.sequence(robotContainer.zeroThings(), robotContainer.getAutonomousCommand());
+      m_autonomousCommand = new SequentialCommandGroup(robotContainer.zeroThings(),
+          robotContainer.getAutonomousCommand());
     }
     CommandScheduler.getInstance().schedule(m_autonomousCommand);
 

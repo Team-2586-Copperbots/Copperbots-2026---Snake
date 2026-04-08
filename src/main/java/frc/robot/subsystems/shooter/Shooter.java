@@ -43,7 +43,7 @@ public class Shooter extends SubsystemBase {
         return instance;
     }
 
-    public Shooter(ShooterIO io) {
+    private Shooter(ShooterIO io) {
         this.io = io;
         mech = new Mechanism((e) -> io.runVoltage(e.in(Volts)), null, null, "shooter");
         SysIdRoutine.Config config = new Config(null, null, Seconds.of(15),

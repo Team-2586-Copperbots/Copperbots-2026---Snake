@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.FIELD_CONSTANTS;
-import frc.robot.Constants.LED_Strip;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.OPERATOR_CONSTANTS;
 import frc.robot.commands.Turret_AimAndShoot;
@@ -42,6 +41,7 @@ import frc.robot.commands.Turret_Aim;
 import frc.robot.commands.Turret_ZeroTurret;
 import frc.robot.subsystems.LED;
 import frc.robot.subsystems.LED.LED_Colour;
+import frc.robot.subsystems.LED.LED_Strip;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.Climb.ClimbPosition;
 import frc.robot.subsystems.drive.BLine_Constants;
@@ -54,7 +54,7 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.simsProjectile;
-import frc.robot.util.driveUtils.ClimbUtils;
+import frc.robot.util.driveUtils.MathedClimbUtils;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -304,7 +304,7 @@ public class RobotContainer {
 
                 testController1.povUp()
                                 .whileTrue(drive.commandFromPath(drive.pathFromPoseWithConstraints(
-                                                new Pose2d(ClimbUtils.centerOfClimbPose, Rotation2d.kCCW_90deg),
+                                                new Pose2d(MathedClimbUtils.centerOfClimbPose, Rotation2d.kCCW_90deg),
                                                 BLine_Constants.highTolerence)));
                 testController1.L2().whileTrue(DriveCommands.myDrive(drive, testController1,
                                 1.0, polarityChooser::getSelected));
@@ -339,11 +339,11 @@ public class RobotContainer {
          * @return the command to run in autonomous
          */
         public Command getAutonomousCommand() {
-                if (characterizationChooser.getSelected() != Commands.none()) {
-                        return characterizationChooser.getSelected();
-                } else {
-                        return Autos.getAuto();
-                }
+                // if (characterizationChooser.getSelected() != Commands.none()) {
+                // return characterizationChooser.getSelected();
+                // } else {
+                return Autos.getAuto();
+                // }
 
         }
 
