@@ -22,9 +22,9 @@ public class BrutalClimbUtils {
      * Changables
      */
 
-     // TODO: update poses when at comp/home and compare
-    private static Pose2d FINAL_CLIMB_TARGET_UPPER = new Pose2d(0, 0, new Rotation2d(Degrees.of(0)));
-    private static Pose2d FINAL_CLIMB_TARGET_LOWER = new Pose2d(0, 0, new Rotation2d(Degrees.of(0)));
+    // TODO: update poses when at comp/home and compare
+    private static Pose2d FINAL_CLIMB_TARGET_UPPER = new Pose2d(0.982, 4.497326, new Rotation2d(Degrees.of(90)));
+    private static Pose2d FINAL_CLIMB_TARGET_LOWER = new Pose2d(0.982, 2.955326, new Rotation2d(Degrees.of(-90)));
 
     private static Pose2d FINAL_CLIMB_TARGET = new Pose2d();
     private static Pose2d PRE_CLIMB_TARGET = new Pose2d();
@@ -68,9 +68,11 @@ public class BrutalClimbUtils {
         double amountOut = 1;
 
         if (getIsTopClimb()) {
-            PRE_CLIMB_TARGET = FINAL_CLIMB_TARGET.plus(new Transform2d(Meters.of(amountOut), Meters.of(0), new Rotation2d()));
+            PRE_CLIMB_TARGET = FINAL_CLIMB_TARGET
+                    .plus(new Transform2d(Meters.of(amountOut), Meters.of(0), FINAL_CLIMB_TARGET.getRotation()));
         } else {
-            PRE_CLIMB_TARGET = FINAL_CLIMB_TARGET.plus(new Transform2d(Meters.of(-amountOut), Meters.of(0), new Rotation2d()));
+            PRE_CLIMB_TARGET = FINAL_CLIMB_TARGET
+                    .plus(new Transform2d(Meters.of(-amountOut), Meters.of(0), FINAL_CLIMB_TARGET.getRotation()));
         }
 
         return drive.pathFromPoseWithConstraints(PRE_CLIMB_TARGET, BLine_Constants.highTolerence);

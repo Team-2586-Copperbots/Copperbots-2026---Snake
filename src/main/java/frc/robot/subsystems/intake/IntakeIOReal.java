@@ -45,7 +45,7 @@ public class IntakeIOReal implements IntakeIO {
         wristMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake; 
         // when in tolerence no pid
         wristMotorConfig.ClosedLoopGeneral.GainSchedErrorThreshold = 0.01;
-        wristMotorConfig.Slot0.GainSchedBehavior = GainSchedBehaviorValue.ZeroOutput; 
+        wristMotorConfig.Slot0.GainSchedBehavior = GainSchedBehaviorValue.Inactive; 
 
         var pidConfig = wristMotorConfig.Slot0;
         pidConfig.kP = 18.000;

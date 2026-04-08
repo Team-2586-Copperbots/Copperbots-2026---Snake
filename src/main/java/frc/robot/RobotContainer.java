@@ -54,6 +54,7 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.simsProjectile;
+import frc.robot.util.driveUtils.BrutalClimbUtils;
 import frc.robot.util.driveUtils.MathedClimbUtils;
 
 /**
@@ -224,8 +225,8 @@ public class RobotContainer {
                 // driveController.triangle().onTrue(drive.resetHearding());
 
                 // speed up or slow down drivtrain command that overrides the default command
-                driveController.cross().whileTrue(DriveCommands.myDrive(drive, driveController,
-                                OPERATOR_CONSTANTS.SLOW_SPEED_LIMITER, polarityChooser::getSelected));
+                // driveController.cross().whileTrue(DriveCommands.myDrive(drive, driveController,
+                //                 OPERATOR_CONSTANTS.SLOW_SPEED_LIMITER, polarityChooser::getSelected));
 
                 driveController.R2().whileTrue(new ParallelCommandGroup(
                                 Shooter_AutoShoot_Sequence.get(shooter, turret, indexer),
@@ -239,6 +240,7 @@ public class RobotContainer {
                 // .sysIdDynamic(edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward));
 
                 driveController.circle().whileTrue(drive.deferedCommandToPose(FIELD_CONSTANTS.TEST_POSE2D));
+                driveController.triangle().whileTrue(drive.commandFromPath(BrutalClimbUtils.getFinalClimbTarget(drive)));
                 driveController.square().whileTrue(Autos.getAuto());
                 driveController.cross().whileTrue(Climb_AutoClimb_Sequence.get(drive, climb));
 

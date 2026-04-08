@@ -9,10 +9,12 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants.FIELD_CONSTANTS;
 import frc.robot.Constants.OPERATOR_CONSTANTS;
 import frc.robot.lib.BLine.Path.PathConstraints;
 import frc.robot.subsystems.LED;
 import frc.robot.subsystems.climb.Climb;
+import frc.robot.subsystems.climb.Climb.ClimbPosition;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.intake.Intake;
@@ -20,6 +22,7 @@ import frc.robot.subsystems.intake.Intake.IntakePosition;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.util.driveUtils.BrutalClimbUtils;
 
 import static edu.wpi.first.units.Units.Seconds;
 
@@ -72,8 +75,18 @@ public final class Autos {
         }
 
         private static Command ountNSwepBumpNum2() {
-                return new SequentialCommandGroup(new ParallelCommandGroup(drive.autoPathFromString("b1-4"),
-                                new Intake_PID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED)));
+                return new ParallelDeadlineGroup(drive.autoPathFromString("b1-4"),
+                                new Intake_PID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED));
+        }
+
+        private static Command toUpperClimb() {
+                return new SequentialCommandGroup(
+                                drive.commandFromPath(drive.pathFromPose(FIELD_CONSTANTS.TEST_POSE2D)),
+                                new ParallelCommandGroup(
+                                                drive.commandFromPath(BrutalClimbUtils.getPreClimbTarget(drive)),
+                                                new Climb_Move(climb, ClimbPosition.UP)),
+                                drive.commandFromPath(BrutalClimbUtils.getFinalClimbTarget(drive)),
+                                new Climb_Move(climb, ClimbPosition.CLIMBED));
         }
 
         private static void makeAutos() {
@@ -93,7 +106,11 @@ public final class Autos {
                                                                 outNSweepFirst(),
                                                                 Shooter_AutoShoot_Sequence.getWRumble(shooter, turret,
                                                                                 indexer, intake))),
-                                auto("autoclimb", Climb_AutoClimb_Sequence.get(drive, climb)),
+                                auto("autoclimb", new SequentialCommandGroup(
+                                                outNSweepFirst(),
+                                                Shooter_AutoShoot_Sequence.getWRumble(shooter, turret,
+                                                                indexer, intake).withTimeout(5.5),new Intake_PID(intake, IntakePosition.IN, OPERATOR_CONSTANTS.ROLLER_SPEED),
+                                                toUpperClimb())),
                                 auto("out then back on bump",
                                                 new SequentialCommandGroup(
                                                                 outNSweepFirst(),

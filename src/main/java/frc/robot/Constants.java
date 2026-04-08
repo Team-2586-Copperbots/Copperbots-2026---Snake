@@ -9,8 +9,6 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import java.io.IOException;
 
-import javax.xml.crypto.KeySelector.Purpose;
-
 import com.ctre.phoenix6.CANBus;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathConstraints;
@@ -98,7 +96,8 @@ public final class Constants {
     public static final double LOOP_TIME = 0.15;
   }
 
-  // math for the field, maby should be in its own file, but not a lot of math, just a thing to flip it for the alinace and duplicate for the 
+  // math for the field, maby should be in its own file, but not a lot of math,
+  // just a thing to flip it for the alinace and duplicate for the
 
   public static class FIELD_CONSTANTS {
     public static final Distance FIELD_LENGTH = Meters.of(Units.inchesToMeters(651.22));
@@ -107,7 +106,7 @@ public final class Constants {
     public static Pose2d CENTER_OF_HUB = new Pose2d();
     public static Pose2d BOTTOM_FULE_STORAGE = new Pose2d();
     public static Pose2d TOP_FULE_STORAGE = new Pose2d();
-    public static Pose2d TEST_POSE2D = new Pose2d(Meters.of(4.266), Meters.of(0.622), Rotation2d.kCW_90deg);
+    public static Pose2d TEST_POSE2D = new Pose2d(Meters.of(2.373), Meters.of(5.369), Rotation2d.kCW_90deg);
 
     public static void updateUtilsPositions() {
       CENTER_OF_HUB = AllianceFlipUtil.apply(new Pose2d(Meters.of(4.62), Meters.of(4.04), Rotation2d.kZero));

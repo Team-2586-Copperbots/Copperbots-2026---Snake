@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.Constants.FIELD_CONSTANTS;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.simsProjectile;
 
