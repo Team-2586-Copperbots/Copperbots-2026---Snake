@@ -100,8 +100,8 @@ public final class Constants {
   // just a thing to flip it for the alinace and duplicate for the
 
   public static class FIELD_CONSTANTS {
-    public static final Distance FIELD_LENGTH = Meters.of(Units.inchesToMeters(651.22));
-    public static final Distance FIELD_WIDTH = Meters.of(Units.inchesToMeters(317.69));
+    public static final Distance FIELD_LENGTH = Meters.of(Units.inchesToMeters(651.22)); // M 16.540988
+    public static final Distance FIELD_WIDTH = Meters.of(Units.inchesToMeters(317.69)); // M 8.069326
 
     public static Pose2d CENTER_OF_HUB = new Pose2d();
     public static Pose2d BOTTOM_FULE_STORAGE = new Pose2d();
