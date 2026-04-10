@@ -387,7 +387,7 @@ public class Drive extends SubsystemBase {
   }
 
   public Path autoMirrorPath(Path path) {
-    if (AllianceFlipUtil.applyY(getPose().getY()) < AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY())) {
+    if (RobotContainer.autofliper.getSelected() == true) { // AllianceFlipUtil.applyY(getPose().getY()) < AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY())
       path.mirror();
     }
     return path;

@@ -9,7 +9,7 @@ public interface ShooterIO {
     public static class ShooterIOInputs {
     }
 
-    public default void updateInputs(ShooterIOInputs inputs) {
+    public default void updateInputs() {
     }
 
     public default TalonFXInputsAutoLogged getMotorInputs(int id) {

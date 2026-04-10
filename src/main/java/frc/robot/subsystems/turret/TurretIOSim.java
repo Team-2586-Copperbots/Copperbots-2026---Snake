@@ -1,8 +1,10 @@
 package frc.robot.subsystems.turret;
 
 import frc.robot.Constants.TURRET_CONSTANTS;
+import frc.robot.util.auto_logging_stuff.SimMotorAutoLogged;
 
 public class TurretIOSim implements TurretIO {
+    private SimMotorAutoLogged turnMotor;
     private double turretMotorPose;
     @SuppressWarnings("unused")
     private double motorSpeed = 0;

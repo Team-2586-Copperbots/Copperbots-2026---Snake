@@ -20,7 +20,7 @@ public interface ClimbIO {
         return null;
     }
 
-    public default TalonFXInputsAutoLogged getMotorInputs(int i) {
+    public default TalonFXInputsAutoLogged getMotorInputs(int id) {
         return null;
     }
 

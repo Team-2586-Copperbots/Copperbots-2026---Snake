@@ -1,24 +1,29 @@
 package frc.robot.subsystems.shooter;
 
+import org.littletonrobotics.junction.Logger;
+
+import frc.robot.util.auto_logging_stuff.SimMotorAutoLogged;
+
 public class ShooterIOSim implements ShooterIO {
-    @SuppressWarnings("unused")
-    private double velocityVoltagePlaceholder;
+    private SimMotorAutoLogged shotterMotor;
 
     public ShooterIOSim() {
-        velocityVoltagePlaceholder = 0;
+        shotterMotor = new SimMotorAutoLogged();
     }
 
     @Override
-    public void updateInputs(ShooterIOInputs inputs) {
+    public void updateInputs() {
+        Logger.processInputs("Shooter/motor1", shotterMotor.getInputs());
+
     }
 
     @Override
     public void setMotorSetpoint(double velocity) {
-        velocityVoltagePlaceholder = velocity;
+        shotterMotor.setSimTarget(velocity, true);
     }
 
     @Override
     public void setPercentageSpeed(double speed) {
-        velocityVoltagePlaceholder = speed * 100;
+        shotterMotor.setSimSpeed(speed);
     }
 }

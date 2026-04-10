@@ -50,7 +50,7 @@ public class ShooterIOReal implements ShooterIO {
     }
 
     @Override
-    public void updateInputs(ShooterIOInputs inputs) {
+    public void updateInputs() {
         Logger.processInputs("Shooter/Motor 1", shooterMotor1.getInputs());
         Logger.processInputs("Shooter/Motor 2", shooterMotor2.getInputs());
     }

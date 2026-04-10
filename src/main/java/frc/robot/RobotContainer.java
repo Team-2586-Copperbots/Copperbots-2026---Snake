@@ -115,7 +115,7 @@ public class RobotContainer {
                 Autos.putChouser();
 
                 autofliper.addOption("left", true);
-                autofliper.addOption("right", false);
+                autofliper.setDefaultOption("right", false);
                 SmartDashboard.putData("autofliper, default left", autofliper);
                 polarityChooser = new SendableChooser<Double>();
                 polarityChooser.addOption("negative", -1.0);

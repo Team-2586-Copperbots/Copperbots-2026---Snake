@@ -121,6 +121,24 @@ public final class Autos {
                                                                 ountNSwepBumpNum2(),
                                                                 Shooter_AutoShoot_Sequence.getWRumble(shooter, turret,
                                                                                 indexer, intake))),
+                                auto("middle, back-shoot-depo-shoot-autoclimb", new SequentialCommandGroup(
+                                                drive.commandFromPath(drive.pathFromString("m1-1")),
+                                                Shooter_AutoShoot_Sequence.get(shooter, turret, indexer)
+                                                                .withTimeout(4)),
+                                                new ParallelDeadlineGroup(
+                                                                drive.commandFromPath(drive.pathFromString("m1-2")),
+                                                                new Intake_PID(intake, IntakePosition.OUT,
+                                                                                OPERATOR_CONSTANTS.ROLLER_SPEED)),
+                                                drive.commandFromPath(drive.pathFromString("m1-3")),
+                                                new ParallelCommandGroup(
+                                                                drive.commandFromPath(drive.pathFromString("m1-4")),
+                                                                Shooter_AutoShoot_Sequence
+                                                                                .getWRumble(shooter, turret, indexer,
+                                                                                                intake)
+                                                                                .withTimeout(5.5),
+                                                                new Climb_Move(climb, ClimbPosition.UP)),
+                                                drive.commandFromPath(BrutalClimbUtils.getFinalClimbTarget(drive)),
+                                                new Climb_Move(climb, ClimbPosition.CLIMBED)),
                                 auto("drive forwards",
                                                 new SequentialCommandGroup(
                                                                 drive.cRunVelocity(new ChassisSpeeds(1, 0, 0))
