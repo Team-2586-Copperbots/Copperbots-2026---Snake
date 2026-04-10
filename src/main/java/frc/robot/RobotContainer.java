@@ -293,8 +293,7 @@ public class RobotContainer {
                                 .onTrue(new Intake_Spin(intake, OPERATOR_CONSTANTS.ROLLER_SPEED, false));
                 operatorController.povRight().onTrue(new Intake_Spin(intake, 0, false));
                 operatorController.cross()
-                                .whileTrue(new Intake_Spin(intake, -Constants.OPERATOR_CONSTANTS.ROLLER_SPEED, false)
-                                                .andThen(() -> new Intake_Spin(intake, 0, false)));
+                                .whileTrue(new Intake_Spin(intake, -Constants.OPERATOR_CONSTANTS.ROLLER_SPEED, true));
 
                 // MARK: Test1
 

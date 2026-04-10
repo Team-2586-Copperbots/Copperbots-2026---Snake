@@ -35,6 +35,9 @@ public class Intake_Spin extends Command {
 
     @Override
     public boolean isFinished() {
+        if (stop) {
+            return false;
+        }
         return true;
     }
 
