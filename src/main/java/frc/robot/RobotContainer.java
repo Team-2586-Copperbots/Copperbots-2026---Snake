@@ -185,7 +185,7 @@ public class RobotContainer {
                 NamedCommands.registerCommand("aim'n'Shoot",
                                 new Turret_AimAndShoot(shooter, turret));
                 NamedCommands.registerCommand("shoot", new Shooter_ShootSpeed(shooter, 20, false));
-                NamedCommands.registerCommand("intake spin", new Intake_Spin(intake, 1));
+                NamedCommands.registerCommand("intake spin", new Intake_Spin(intake, 1, false));
                 NamedCommands.registerCommand("intake out",
                                 new Intake_PID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED));
                 NamedCommands.registerCommand("intake in",
@@ -290,9 +290,11 @@ public class RobotContainer {
 
                 // roller
                 operatorController.povLeft()
-                                .onTrue(new Intake_Spin(intake, OPERATOR_CONSTANTS.ROLLER_SPEED));
-                operatorController.povRight().onTrue(new Intake_Spin(intake, 0));
-                operatorController.cross().onTrue(new Intake_Spin(intake, -Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
+                                .onTrue(new Intake_Spin(intake, OPERATOR_CONSTANTS.ROLLER_SPEED, false));
+                operatorController.povRight().onTrue(new Intake_Spin(intake, 0, false));
+                operatorController.cross()
+                                .whileTrue(new Intake_Spin(intake, -Constants.OPERATOR_CONSTANTS.ROLLER_SPEED, false)
+                                                .andThen(() -> new Intake_Spin(intake, 0, false)));
 
                 // MARK: Test1
 
@@ -340,10 +342,10 @@ public class RobotContainer {
                         return new ParallelCommandGroup(
                                         new Turret_ZeroTurret(turret),
                                         new Climb_ZeroClimb(climb),
-                                        new ParallelCommandGroup(new Shooter_ShootSpeed(shooter, 0, false),
-                                                        new Indexer_Spin(indexer, IndexerStates.OFF),
-                                                        new Intake_Spin(intake, 0), DriveCommands.stopWithX(drive))
-                                                        .withTimeout(1));
+                                        new Shooter_ShootSpeed(shooter, 0, false),
+                                        new Indexer_Spin(indexer, IndexerStates.OFF).withTimeout(0.04),
+                                        new Intake_Spin(intake, 0, false),
+                                        DriveCommands.stopWithX(drive));
 
                 }
                 return Commands.none();

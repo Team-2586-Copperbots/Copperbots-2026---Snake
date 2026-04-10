@@ -1,6 +1,8 @@
 
 package frc.robot.commands;
 
+import com.fasterxml.jackson.databind.deser.std.ThrowableDeserializer;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.intake.Intake;
 
@@ -9,10 +11,12 @@ public class Intake_Spin extends Command {
     // interrupt the rest of the subsystem or don't thing it does
     private Intake intake;
     private double speed;
+    private boolean stop;
 
-    public Intake_Spin(Intake IntakeSubsystem, double speed) {
+    public Intake_Spin(Intake IntakeSubsystem, double speed, boolean stop) {
         this.intake = IntakeSubsystem;
         this.speed = speed;
+        this.stop = stop;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(IntakeSubsystem);
     }
@@ -37,7 +41,9 @@ public class Intake_Spin extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-
+        if (stop) {
+            intake.setRollerSpeed(0);
+        }
     }
 
 }

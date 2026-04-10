@@ -69,8 +69,8 @@ public final class Autos {
                                 // drive.autoPathFromString("b1-2"),
                                 drive.defer(() -> drive.commandFromPath(drive.changeConstrains(
                                                 drive.autoMirrorPath(drive.pathFromString("b1-2")),
-                                                new PathConstraints().setMaxVelocityMetersPerSec(2)))),
-                                new Intake_Spin(intake, 0),
+                                                new PathConstraints().setMaxVelocityMetersPerSec(0.75)))),
+                                new Intake_Spin(intake, 0, false),
                                 drive.defer(() -> drive.autoPathFromString("b1-3")));
         }
 

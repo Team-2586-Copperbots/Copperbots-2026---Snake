@@ -38,7 +38,6 @@ public class Climb_ZeroClimb extends Command {
     public void end(boolean interrupted) {
         Climb.setClimbSpeed(0);
         Climb.setPositionToZero();
-        // Climb.setClimbTargetPosition(ClimbPosition.DOWN);
     }
 
 }
