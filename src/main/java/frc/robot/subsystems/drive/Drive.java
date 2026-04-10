@@ -241,6 +241,7 @@ public class Drive extends SubsystemBase {
   public void periodic() {
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
+    Logger.recordOutput("thing/distance to target", GeneralUtils.distanceFromTarget());
     Logger.processInputs("Drive/Gyro", gyroInputs);
     Logger.recordOutput("climb pose", MathedClimbUtils.centerOfClimbPose);
     Logger.recordOutput("auto flip",

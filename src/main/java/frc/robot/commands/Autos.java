@@ -62,20 +62,20 @@ public final class Autos {
 
         private static Command outNSweepFirst() {
                 return new SequentialCommandGroup(
-                                new ParallelDeadlineGroup(drive.autoPathFromString("b1-1"),
+                                new ParallelDeadlineGroup(drive.defer(() -> drive.autoPathFromString("b1-1")),
                                                 new SequentialCommandGroup(new WaitCommand(1),
                                                                 new Intake_PID(intake, IntakePosition.OUT,
                                                                                 OPERATOR_CONSTANTS.ROLLER_SPEED))),
                                 // drive.autoPathFromString("b1-2"),
-                                drive.commandFromPath(drive.changeConstrains(
+                                drive.defer(() -> drive.commandFromPath(drive.changeConstrains(
                                                 drive.autoMirrorPath(drive.pathFromString("b1-2")),
-                                                new PathConstraints().setMaxVelocityMetersPerSec(2))),
+                                                new PathConstraints().setMaxVelocityMetersPerSec(2)))),
                                 new Intake_Spin(intake, 0),
-                                drive.autoPathFromString("b1-3"));
+                                drive.defer(() -> drive.autoPathFromString("b1-3")));
         }
 
         private static Command ountNSwepBumpNum2() {
-                return new ParallelDeadlineGroup(drive.autoPathFromString("b1-4"),
+                return new ParallelDeadlineGroup(drive.defer(() -> drive.autoPathFromString("b1-4")),
                                 new Intake_PID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED));
         }
 
@@ -109,7 +109,9 @@ public final class Autos {
                                 auto("autoclimb", new SequentialCommandGroup(
                                                 outNSweepFirst(),
                                                 Shooter_AutoShoot_Sequence.getWRumble(shooter, turret,
-                                                                indexer, intake).withTimeout(5.5),new Intake_PID(intake, IntakePosition.IN, OPERATOR_CONSTANTS.ROLLER_SPEED),
+                                                                indexer, intake).withTimeout(5.5),
+                                                new Intake_PID(intake, IntakePosition.IN,
+                                                                OPERATOR_CONSTANTS.ROLLER_SPEED),
                                                 toUpperClimb())),
                                 auto("out then back on bump",
                                                 new SequentialCommandGroup(

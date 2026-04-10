@@ -96,6 +96,7 @@ public class RobotContainer {
         private final SendableChooser<Command> bLineChouser;
         private final SendableChooser<Command> characterizationChooser;
         private final SendableChooser<Double> polarityChooser;
+        public final SendableChooser<Boolean> autofliper;
 
         /**
          * MARK: Init
@@ -110,8 +111,11 @@ public class RobotContainer {
                         IntakeSimulation.IntakeSide intakeSimulation = null;
 
                 }
-                Autos.putChouser();
 
+                Autos.putChouser();
+                autofliper = new SendableChooser<Boolean>();
+                autofliper.addOption("no change", false);
+                autofliper.addOption("mirrir", true);
                 polarityChooser = new SendableChooser<Double>();
                 polarityChooser.addOption("negative", -1.0);
                 polarityChooser.setDefaultOption("pos", 1.0);
@@ -307,15 +311,20 @@ public class RobotContainer {
                 // testController1.povRight().whileTrue(new Intake_PID(intake, 0.05, 0));
                 // testController1.povLeft().whileTrue(new Intake_PID(intake, -0.05, 0));
 
-                testController1.povUp()
-                                .whileTrue(drive.commandFromPath(drive.pathFromPoseWithConstraints(
-                                                new Pose2d(MathedClimbUtils.centerOfClimbPose, Rotation2d.kCCW_90deg),
-                                                BLine_Constants.highTolerence)));
-                testController1.L2().whileTrue(DriveCommands.myDrive(drive, testController1,
-                                1.0, polarityChooser::getSelected));
-                testController1.triangle().onTrue(new Climb_ZeroClimb(climb));
-                testController1.square().whileTrue(Climb_AutoClimb_Sequence.get(drive, climb));
-                testController1.circle().onTrue(new Climb_Move(climb, ClimbPosition.UP));
+                // testController1.povUp()
+                // .whileTrue(drive.commandFromPath(drive.pathFromPoseWithConstraints(
+                // new Pose2d(MathedClimbUtils.centerOfClimbPose, Rotation2d.kCCW_90deg),
+                // BLine_Constants.highTolerence)));
+                // testController1.L2().whileTrue(DriveCommands.myDrive(drive, testController1,
+                // 1.0, polarityChooser::getSelected));
+                // testController1.triangle().onTrue(new Climb_ZeroClimb(climb));
+                // testController1.square().whileTrue(Climb_AutoClimb_Sequence.get(drive,
+                // climb));
+                // testController1.circle().onTrue(new Climb_Move(climb, ClimbPosition.UP));
+                testController1.povUp().onTrue(new Shooter_ShootSpeed(shooter, 5, true));
+                testController1.povDown().onTrue(new Shooter_ShootSpeed(shooter, -5, true));
+                testController1.povRight().onTrue(new Shooter_ShootSpeed(shooter, 1, true));
+                testController1.povLeft().onTrue(new Shooter_ShootSpeed(shooter, -1, true));
         }
 
         public Command resetGyro() {
