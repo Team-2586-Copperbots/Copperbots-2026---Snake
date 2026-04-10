@@ -151,7 +151,7 @@ public final class Constants {
     public static final Distance HEIGHT_OF_WHEEL_OFF_GROUND = Meters.of(0.64135); // in meters
     public static final Distance SHOOTER_WHEELE_CIRCUMFERENCE = Inches.of(4 * Math.PI);
     public static final Angle SHOOTER_HOOD_ANGLE = Degrees.of(22.165);
-    public static final double TOLERENCE = 0.5;
+    public static final double TOLERENCE = 0.8;
     public static final double CURRENT_LIMIT = 80;
   }
 

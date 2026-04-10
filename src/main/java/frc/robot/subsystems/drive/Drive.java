@@ -37,12 +37,14 @@ import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.FIELD_CONSTANTS;
 import frc.robot.Constants.Mode;
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.BLine.FollowPath;
 import frc.robot.lib.BLine.Path;
 import frc.robot.lib.BLine.Path.PathConstraints;
+import frc.robot.subsystems.turret.Turret;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.GeneralUtils;
 import frc.robot.util.driveUtils.MathedClimbUtils;
@@ -310,7 +312,7 @@ public class Drive extends SubsystemBase {
   //
   //
 
-  // mythings
+  // MARK:- BLine
 
   private void buildBline() {
     // configure BLine
@@ -369,10 +371,10 @@ public class Drive extends SubsystemBase {
     Logger.recordOutput("Autos/flip logic", AllianceFlipUtil.applyY(getPose().getY()) > AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY()));
     Logger.recordOutput("Autos/roboty", AllianceFlipUtil.applyY(getPose().getY()));
     Logger.recordOutput("Autos/huby", AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY()));
-    if (AllianceFlipUtil.applyY(getPose().getY()) > AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY())) {
-      return pathFromStringFlipable(name, false);
-    } else {
+    if (RobotContainer.autofliper.getSelected() == true) { // AllianceFlipUtil.applyY(getPose().getY()) > AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY())
       return pathFromStringFlipable(name, true);
+    } else {
+      return pathFromStringFlipable(name, false);
     }
   }
 
