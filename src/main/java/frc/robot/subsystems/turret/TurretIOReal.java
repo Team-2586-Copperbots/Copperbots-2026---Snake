@@ -47,6 +47,8 @@ public class TurretIOReal implements TurretIO {
 
         turnMotorConfig.ClosedLoopGeneral.GainSchedErrorThreshold = 0.002 * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO;
 
+        turnMotorConfig.CurrentLimits.StatorCurrentLimit = 80;
+
         turnMotor.getConfigurator().apply(turnMotorConfig);
     }
 
