@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.FIELD_CONSTANTS;
 import frc.robot.Constants.OPERATOR_CONSTANTS;
 import frc.robot.lib.BLine.Path.PathConstraints;
-// import frc.robot.subsystems.LED;
+import frc.robot.subsystems.LED;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.Climb.ClimbPosition;
 import frc.robot.subsystems.drive.Drive;
@@ -39,8 +39,8 @@ public final class Autos {
         private static final Indexer indexer = Indexer.getInstance();
         private static final Shooter shooter = Shooter.getInstance();
         private static final Turret turret = Turret.getInstance();
-        // @SuppressWarnings("unused")
-        // private static final LED candle = LED.getInstance();
+        @SuppressWarnings("unused")
+        private static final LED candle = LED.getInstance();
 
         private Autos() {
         }

@@ -9,6 +9,7 @@ import org.ironmaple.simulation.SimulatedArena;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -38,10 +39,12 @@ import frc.robot.commands.Intake_PID;
 import frc.robot.commands.Shooter_ShootSpeed;
 import frc.robot.commands.Turret_Aim;
 import frc.robot.commands.Turret_ZeroTurret;
-// import frc.robot.subsystems.LED;
-// import frc.robot.subsystems.LED.LED_Colour;
-// import frc.robot.subsystems.LED.LED_Strip;
+import frc.robot.subsystems.LED;
+import frc.robot.subsystems.LED.LED_Colour;
+import frc.robot.subsystems.LED.LED_Strip;
 import frc.robot.subsystems.climb.Climb;
+import frc.robot.subsystems.climb.Climb.ClimbPosition;
+import frc.robot.subsystems.drive.BLine_Constants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.indexer.Indexer.IndexerStates;
@@ -52,6 +55,7 @@ import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.simsProjectile;
 import frc.robot.util.driveUtils.BrutalClimbUtils;
+import frc.robot.util.driveUtils.MathedClimbUtils;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -76,6 +80,7 @@ public class RobotContainer {
         private final Indexer indexer = Indexer.getInstance();
         private final Shooter shooter = Shooter.getInstance();
         private final Turret turret = Turret.getInstance();
+        private final LED led = LED.getInstance();
 
         private final CommandPS4Controller driveController = new CommandPS4Controller(
                         OPERATOR_CONSTANTS.DRIVER_CONTROLER_PORT);
@@ -267,6 +272,8 @@ public class RobotContainer {
                 // indexer sudsystem
                 operatorController.circle().whileTrue(new Indexer_Spin(indexer, IndexerStates.ON));
                 operatorController.triangle().onTrue(new Indexer_Spin(indexer, IndexerStates.OFF));
+                operatorController.touchpad().onTrue(led.setColor(LED_Strip.FIRST, LED_Colour.BLACK));
+                operatorController.PS().onTrue(led.setColor(LED_Strip.FIRST, LED_Colour.BLUE));
 
                 // climb
                 operatorController.R1().whileTrue(new Climb_Move(climb, 0.9));
