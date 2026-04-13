@@ -6,7 +6,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Climb extends SubsystemBase {
+    // Instance based
     private static Climb instance = null;
+    // everything though a IO for sims and real (but sims are not ready)
     private ClimbIO io;
 
     public static Climb getInstance() {
@@ -16,7 +18,7 @@ public class Climb extends SubsystemBase {
         return instance;
     }
 
-    public Climb() {
+    private Climb() {
         switch (Constants.currentMode) {
             case REAL:
                 io = new ClimbIOReal();

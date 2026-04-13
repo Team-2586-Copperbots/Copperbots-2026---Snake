@@ -77,8 +77,7 @@ public final class Constants {
     public static final double slowdownSpeed = 0.2;
   }
 
-  // robotcontainer
-
+  // MARK: robotcontainer
   public static class OPERATOR_CONSTANTS {
     // controlers
     public static final int DRIVER_CONTROLER_PORT = 0;
@@ -97,16 +96,17 @@ public final class Constants {
     public static final double LOOP_TIME = 0.15;
   }
 
-  // math
+  // math for the field, maby should be in its own file, but not a lot of math,
+  // just a thing to flip it for the alinace and duplicate for the
 
   public static class FIELD_CONSTANTS {
-    public static final Distance FIELD_LENGTH = Meters.of(Units.inchesToMeters(651.22));
-    public static final Distance FIELD_WIDTH = Meters.of(Units.inchesToMeters(317.69));
+    public static final Distance FIELD_LENGTH = Meters.of(Units.inchesToMeters(651.22)); // M 16.540988
+    public static final Distance FIELD_WIDTH = Meters.of(Units.inchesToMeters(317.69)); // M 8.069326
 
     public static Pose2d CENTER_OF_HUB = new Pose2d();
     public static Pose2d BOTTOM_FULE_STORAGE = new Pose2d();
     public static Pose2d TOP_FULE_STORAGE = new Pose2d();
-    public static Pose2d TEST_POSE2D = new Pose2d(Meters.of(4.266), Meters.of(0.622), Rotation2d.kCW_90deg);
+    public static Pose2d TEST_POSE2D = new Pose2d(Meters.of(2.373), Meters.of(5.369), Rotation2d.kCW_90deg);
 
     public static void updateUtilsPositions() {
       CENTER_OF_HUB = AllianceFlipUtil.apply(new Pose2d(Meters.of(4.62), Meters.of(4.04), Rotation2d.kZero));
@@ -117,8 +117,7 @@ public final class Constants {
 
   }
 
-  // hardware
-
+  // MARK: IDs
   public static class CANIds {
     public static final CANBus Canivore = new CANBus("Subsystems");
     // shooter motors
@@ -138,6 +137,8 @@ public final class Constants {
     public static final int TURRET_TURN_MOTOR = 23;
     // candle
     public static final int CANDLE = 31;
+    // pigion
+    public static final int PIGION = 32;
   }
 
   public static class DIO_IDS {
@@ -145,13 +146,12 @@ public final class Constants {
     public static final int CLIMB_LIMIT_SWITCH = 8;
   }
 
-  // subsystems + simpuation
-
+  // MARK: subsystems
   public static class SHOOTER_CONSTANTS {
     public static final Distance HEIGHT_OF_WHEEL_OFF_GROUND = Meters.of(0.64135); // in meters
     public static final Distance SHOOTER_WHEELE_CIRCUMFERENCE = Inches.of(4 * Math.PI);
     public static final Angle SHOOTER_HOOD_ANGLE = Degrees.of(22.165);
-    public static final double TOLERENCE = 3;
+    public static final double TOLERENCE = 0.8;
     public static final double CURRENT_LIMIT = 80;
   }
 
@@ -171,21 +171,4 @@ public final class Constants {
     public static final double POSITION_TOLERENCE = 0.01;
     public static final double timeBetwenRattaling = 700;
   }
-
-  public static enum LED_Strip {
-    // TODO: fix indexe (plural?) when strips are made, for eskey?
-    BUILT_IN(0, 7),
-    FIRST(8, 44),
-    SECOND(78, 147),
-    THIRD(148, 217);
-
-    public final int start;
-    public final int end;
-
-    private LED_Strip(int start, int end) {
-      this.start = start;
-      this.end = end;
-    }
-  }
-
 }

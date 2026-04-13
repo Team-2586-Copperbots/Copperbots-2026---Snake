@@ -1,4 +1,4 @@
-package frc.robot.util.auto_loggint_stuff;
+package frc.robot.util.auto_logging_stuff.motor_io;
 
 import org.littletonrobotics.junction.AutoLog;
 

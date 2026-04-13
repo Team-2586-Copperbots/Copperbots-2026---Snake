@@ -7,6 +7,10 @@ import frc.robot.subsystems.turret.Turret;
 import frc.robot.util.GeneralUtils;
 
 public class Turret_AimAndShoot extends Command {
+    // class to Aim the turret AND bring the shooter up to speed
+    // could proably be done using a similar structure to
+    // Climb_AutoClimb_Sequence.java with a static get command that callse auto aim
+    // and auto shoot
     private Shooter Shooter;
     private Turret Turret;
 

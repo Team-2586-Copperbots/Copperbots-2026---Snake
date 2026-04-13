@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.FIELD_CONSTANTS;
-import frc.robot.Constants.LED_Strip;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.OPERATOR_CONSTANTS;
 import frc.robot.commands.Turret_AimAndShoot;
@@ -42,6 +41,7 @@ import frc.robot.commands.Turret_Aim;
 import frc.robot.commands.Turret_ZeroTurret;
 import frc.robot.subsystems.LED;
 import frc.robot.subsystems.LED.LED_Colour;
+import frc.robot.subsystems.LED.LED_Strip;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.Climb.ClimbPosition;
 import frc.robot.subsystems.drive.BLine_Constants;
@@ -54,7 +54,8 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.simsProjectile;
-import frc.robot.util.driveUtils.ClimbUtils;
+import frc.robot.util.driveUtils.BrutalClimbUtils;
+import frc.robot.util.driveUtils.MathedClimbUtils;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -66,6 +67,8 @@ import frc.robot.util.driveUtils.ClimbUtils;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+
+        private static boolean zeroed = false;
 
         // MARK: Objects
 
@@ -93,6 +96,7 @@ public class RobotContainer {
         private final SendableChooser<Command> bLineChouser;
         private final SendableChooser<Command> characterizationChooser;
         private final SendableChooser<Double> polarityChooser;
+        public static final SendableChooser<Boolean> autofliper = new SendableChooser<Boolean>();;
 
         /**
          * MARK: Init
@@ -107,8 +111,12 @@ public class RobotContainer {
                         IntakeSimulation.IntakeSide intakeSimulation = null;
 
                 }
+
                 Autos.putChouser();
 
+                autofliper.addOption("left", true);
+                autofliper.setDefaultOption("right", false);
+                SmartDashboard.putData("autofliper, default left", autofliper);
                 polarityChooser = new SendableChooser<Double>();
                 polarityChooser.addOption("negative", -1.0);
                 polarityChooser.setDefaultOption("pos", 1.0);
@@ -177,7 +185,7 @@ public class RobotContainer {
                 NamedCommands.registerCommand("aim'n'Shoot",
                                 new Turret_AimAndShoot(shooter, turret));
                 NamedCommands.registerCommand("shoot", new Shooter_ShootSpeed(shooter, 20, false));
-                NamedCommands.registerCommand("intake spin", new Intake_Spin(intake, 1));
+                NamedCommands.registerCommand("intake spin", new Intake_Spin(intake, 1, false));
                 NamedCommands.registerCommand("intake out",
                                 new Intake_PID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED));
                 NamedCommands.registerCommand("intake in",
@@ -222,8 +230,9 @@ public class RobotContainer {
                 // driveController.triangle().onTrue(drive.resetHearding());
 
                 // speed up or slow down drivtrain command that overrides the default command
-                driveController.cross().whileTrue(DriveCommands.myDrive(drive, driveController,
-                                OPERATOR_CONSTANTS.SLOW_SPEED_LIMITER, polarityChooser::getSelected));
+                // driveController.cross().whileTrue(DriveCommands.myDrive(drive,
+                // driveController,
+                // OPERATOR_CONSTANTS.SLOW_SPEED_LIMITER, polarityChooser::getSelected));
 
                 driveController.R2().whileTrue(new ParallelCommandGroup(
                                 Shooter_AutoShoot_Sequence.get(shooter, turret, indexer),
@@ -237,8 +246,11 @@ public class RobotContainer {
                 // .sysIdDynamic(edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward));
 
                 driveController.circle().whileTrue(drive.deferedCommandToPose(FIELD_CONSTANTS.TEST_POSE2D));
+                driveController.triangle()
+                                .whileTrue(drive.commandFromPath(BrutalClimbUtils.getFinalClimbTarget(drive)));
                 driveController.square().whileTrue(Autos.getAuto());
                 driveController.cross().whileTrue(Climb_AutoClimb_Sequence.get(drive, climb));
+                driveController.L1().whileTrue(new Indexer_Spin(indexer, IndexerStates.ON));
 
                 // MARK: Operator
 
@@ -278,9 +290,10 @@ public class RobotContainer {
 
                 // roller
                 operatorController.povLeft()
-                                .onTrue(new Intake_Spin(intake, OPERATOR_CONSTANTS.ROLLER_SPEED));
-                operatorController.povRight().onTrue(new Intake_Spin(intake, 0));
-                operatorController.cross().onTrue(new Intake_Spin(intake, -Constants.OPERATOR_CONSTANTS.ROLLER_SPEED));
+                                .onTrue(new Intake_Spin(intake, OPERATOR_CONSTANTS.ROLLER_SPEED, false));
+                operatorController.povRight().onTrue(new Intake_Spin(intake, 0, false));
+                operatorController.cross()
+                                .whileTrue(new Intake_Spin(intake, -Constants.OPERATOR_CONSTANTS.ROLLER_SPEED, true));
 
                 // MARK: Test1
 
@@ -300,15 +313,20 @@ public class RobotContainer {
                 // testController1.povRight().whileTrue(new Intake_PID(intake, 0.05, 0));
                 // testController1.povLeft().whileTrue(new Intake_PID(intake, -0.05, 0));
 
-                testController1.povUp()
-                                .whileTrue(drive.commandFromPath(drive.pathFromPoseWithConstraints(
-                                                new Pose2d(ClimbUtils.centerOfClimbPose, Rotation2d.kCCW_90deg),
-                                                BLine_Constants.highTolerence)));
-                testController1.L2().whileTrue(DriveCommands.myDrive(drive, testController1,
-                                1.0, polarityChooser::getSelected));
-                testController1.triangle().onTrue(new Climb_ZeroClimb(climb));
-                testController1.square().whileTrue(Climb_AutoClimb_Sequence.get(drive, climb));
-                testController1.circle().onTrue(new Climb_Move(climb, ClimbPosition.UP));
+                // testController1.povUp()
+                // .whileTrue(drive.commandFromPath(drive.pathFromPoseWithConstraints(
+                // new Pose2d(MathedClimbUtils.centerOfClimbPose, Rotation2d.kCCW_90deg),
+                // BLine_Constants.highTolerence)));
+                // testController1.L2().whileTrue(DriveCommands.myDrive(drive, testController1,
+                // 1.0, polarityChooser::getSelected));
+                // testController1.triangle().onTrue(new Climb_ZeroClimb(climb));
+                // testController1.square().whileTrue(Climb_AutoClimb_Sequence.get(drive,
+                // climb));
+                // testController1.circle().onTrue(new Climb_Move(climb, ClimbPosition.UP));
+                testController1.povUp().onTrue(new Shooter_ShootSpeed(shooter, 5, true));
+                testController1.povDown().onTrue(new Shooter_ShootSpeed(shooter, -5, true));
+                testController1.povRight().onTrue(new Shooter_ShootSpeed(shooter, 1, true));
+                testController1.povLeft().onTrue(new Shooter_ShootSpeed(shooter, -1, true));
         }
 
         public Command resetGyro() {
@@ -318,13 +336,18 @@ public class RobotContainer {
         }
 
         public Command zeroThings() {
-                return new ParallelCommandGroup(
-                                new Turret_ZeroTurret(turret),
-                                // new Climb_ZeroClimb(climb),
-                                new ParallelCommandGroup(new Shooter_ShootSpeed(shooter, 0, false),
-                                                new Indexer_Spin(indexer, IndexerStates.OFF),
-                                                new Intake_Spin(intake, 0), DriveCommands.stopWithX(drive))
-                                                .withTimeout(1));
+                if (!zeroed) {
+                        zeroed = true;
+                        return new ParallelCommandGroup(
+                                        new Turret_ZeroTurret(turret),
+                                        new Climb_ZeroClimb(climb),
+                                        new Shooter_ShootSpeed(shooter, 0, false),
+                                        new Indexer_Spin(indexer, IndexerStates.OFF).withTimeout(0.04),
+                                        new Intake_Spin(intake, 0, false),
+                                        DriveCommands.stopWithX(drive));
+
+                }
+                return Commands.none();
         }
 
         /**
@@ -332,16 +355,11 @@ public class RobotContainer {
          * @return the command to run in autonomous
          */
         public Command getAutonomousCommand() {
-                if (characterizationChooser.getSelected() == Commands.none()) {
-                        return characterizationChooser.getSelected();
-                } else {
-                        // if (Autos.getAuto() != Commands.none()) {
-                        return Autos.getAuto();
-                        // }
-                        // else {
-                        // return bLineChouser.getSelected();
-                        // }
-                }
+                // if (characterizationChooser.getSelected() != Commands.none()) {
+                // return characterizationChooser.getSelected();
+                // } else {
+                return Autos.getAuto();
+                // }
 
         }
 

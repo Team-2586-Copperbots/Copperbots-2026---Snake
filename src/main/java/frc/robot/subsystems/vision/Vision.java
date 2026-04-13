@@ -33,6 +33,7 @@ public class Vision extends SubsystemBase {
   private final VisionIOInputsAutoLogged[] inputs;
   private final Alert[] disconnectedAlerts;
 
+  @SuppressWarnings("static-access")
   public static Vision getInstance() {
     if (instance == null) {
       switch (Constants.currentMode) {
@@ -60,7 +61,7 @@ public class Vision extends SubsystemBase {
     return instance;
   }
 
-  public Vision(VisionConsumer consumer, VisionIO... io) {
+  private Vision(VisionConsumer consumer, VisionIO... io) {
     this.consumer = consumer;
     this.io = io;
 

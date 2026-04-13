@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.turret.Turret;;
 
 public class Turret_ManualTurret extends Command {
+    // command to set the target angle of the turret manulay, proably for
+    // trouble-shooting
     private Turret Turret;
     private double angle;
 

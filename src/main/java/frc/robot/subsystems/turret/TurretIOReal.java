@@ -2,11 +2,10 @@ package frc.robot.subsystems.turret;
 
 import static frc.robot.Constants.CANIds.Canivore;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.ControlModeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
@@ -14,21 +13,22 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants.CANIds;
 import frc.robot.Constants.DIO_IDS;
 import frc.robot.Constants.TURRET_CONSTANTS;
+import frc.robot.util.auto_logging_stuff.TalonFXAutoLogged;
+import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
 
 public class TurretIOReal implements TurretIO {
 
     // every thing workis in rotations!
     // everything is messured from the limit switch
 
-    private final TalonFX turnMotor;
+    private final TalonFXAutoLogged turnMotor;
     private final TalonFXConfiguration turnMotorConfig;
     private final DigitalInput limitSwitch;
     private final PositionVoltage positionVoltage = new PositionVoltage(0);
-    private boolean isClosedLoop = true;
     private boolean canMakeItToTarget = true;
 
     public TurretIOReal() {
-        turnMotor = new TalonFX(CANIds.TURRET_TURN_MOTOR, Canivore);
+        turnMotor = new TalonFXAutoLogged(CANIds.TURRET_TURN_MOTOR, Canivore);
         limitSwitch = new DigitalInput(DIO_IDS.TURRET_LIMIT_SWITCH);
 
         turnMotorConfig = new TalonFXConfiguration();
@@ -47,27 +47,29 @@ public class TurretIOReal implements TurretIO {
 
         turnMotorConfig.ClosedLoopGeneral.GainSchedErrorThreshold = 0.002 * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO;
 
+        turnMotorConfig.CurrentLimits.StatorCurrentLimit = 80;
+
         turnMotor.getConfigurator().apply(turnMotorConfig);
     }
 
     @Override
     public void updateInputs(TurretIOInputs inputs) {
-        inputs.motorAmps = turnMotor.getStatorCurrent().getValueAsDouble();
-        inputs.motorIsClosedLoop = turnMotor.getControlMode().getValue() == ControlModeValue.PositionVoltage;
-        inputs.motorIsOK = turnMotor.isAlive();
-        inputs.motorRotation = turnMotor.getPosition().getValueAsDouble();
-        inputs.motorSetpoint = turnMotor.getClosedLoopReference().getValueAsDouble();
-        inputs.motorVolts = turnMotor.getMotorVoltage().getValueAsDouble();
+        Logger.processInputs("Turret/Motor", turnMotor.getInputs());
 
         inputs.turretRotation = getRobotRelitiveRotation();
+        inputs.absTurretRotation = getRingRotation();
 
         inputs.canMakeItToTarget = canMakeItToTarget;
         inputs.limitSwitch = !limitSwitch.get();
     }
 
+    @Override
+    public TalonFXInputsAutoLogged getMotorInputs() {
+        return turnMotor.getInputs();
+    }
+
     // set comand to set the turning motor to a speed -1 to 1
     public void setTurretSpeed(double speed) {
-        isClosedLoop = false;
         turnMotor.set(speed);
     }
 
@@ -75,8 +77,6 @@ public class TurretIOReal implements TurretIO {
     // of the turret within the limits of 0-320 degreas
     @Override
     public void setTurretSetpoint(double roations) {
-        isClosedLoop = true;
-
         if ((roations >= 0)
                 && (roations < TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT)) {
             canMakeItToTarget = true;

@@ -5,7 +5,6 @@ import org.littletonrobotics.junction.Logger;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -14,12 +13,11 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants.CANIds;
 import frc.robot.Constants.DIO_IDS;
 import frc.robot.subsystems.climb.Climb.ClimbPosition;
-import frc.robot.util.auto_loggint_stuff.LoggedTalonFX;
-import frc.robot.util.auto_loggint_stuff.MotorIOInputsAutoLogged;
-import frc.robot.util.auto_loggint_stuff.MotorIOTalon;
+import frc.robot.util.auto_logging_stuff.TalonFXAutoLogged;
+import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
 
 public class ClimbIOReal implements ClimbIO {
-    private final TalonFX climbMotor1, climbMotor2;
+    private final TalonFXAutoLogged climbMotor1, climbMotor2;
     // private final LoggedTalonFX climb1, climb2;
     private final DigitalInput limitSwitch;
     private final TalonFXConfiguration climbMotorConfig;
@@ -29,16 +27,19 @@ public class ClimbIOReal implements ClimbIO {
     // private final PositionTorqueCurrentFOC
 
     private final ClimbIOInputsAutoLogged inputs = new ClimbIOInputsAutoLogged();
-    private final MotorIOTalon climbMotor1IO, climbMotor2IO;
-    private final MotorIOInputsAutoLogged climbMotor1Inputs = new MotorIOInputsAutoLogged();
-    private final MotorIOInputsAutoLogged climbMotor2Inputs = new MotorIOInputsAutoLogged();
+    // private final MotorIOTalon climbMotor1IO, climbMotor2IO;
+    // private final MotorIOInputsAutoLogged climbMotor1Inputs = new
+    // MotorIOInputsAutoLogged();
+    // private final MotorIOInputsAutoLogged climbMotor2Inputs = new
+    // MotorIOInputsAutoLogged();
 
     public ClimbIOReal() {
-        climbMotor1 = new TalonFX(CANIds.CLIMB_MOTOR_1);
-        climbMotor2 = new TalonFX(CANIds.CLIMB_MOTOR_2);
+        climbMotor1 = new TalonFXAutoLogged(CANIds.CLIMB_MOTOR_1);
+        climbMotor2 = new TalonFXAutoLogged(CANIds.CLIMB_MOTOR_2);
         limitSwitch = new DigitalInput(DIO_IDS.CLIMB_LIMIT_SWITCH);
         climbMotorConfig = new TalonFXConfiguration();
 
+        // climbMotorConfig.CurrentLimits.StatorCurrentLimit = 80; un necicary
 
         var motorOutputConfigs = climbMotorConfig.MotorOutput;
         motorOutputConfigs.NeutralMode = NeutralModeValue.Brake;
@@ -54,8 +55,8 @@ public class ClimbIOReal implements ClimbIO {
 
         climbMotor2.setControl(new Follower(climbMotor1.getDeviceID(), MotorAlignmentValue.Aligned));
 
-        climbMotor1IO = new MotorIOTalon(climbMotor1);
-        climbMotor2IO = new MotorIOTalon(climbMotor2);
+        // climbMotor1IO = new MotorIOTalon(climbMotor1);
+        // climbMotor2IO = new MotorIOTalon(climbMotor2);
     }
 
     @Override
@@ -65,15 +66,8 @@ public class ClimbIOReal implements ClimbIO {
 
         Logger.processInputs("Climb", inputs);
 
-        climbMotor1IO.updateInputs(climbMotor1Inputs);
-        climbMotor2IO.updateInputs(climbMotor2Inputs);
-        Logger.processInputs("Climb/Climb Motor 1", climbMotor1Inputs);
-        Logger.processInputs("Climb/Climb Motor 2", climbMotor2Inputs);
-
-        // for (int i = 0; i < motorio.length; i++) {
-        // motorio[i].updateInputs(motorInputs[i]);
-        // Logger.processInputs("Climb/motor"+i, motorInputs[i]);
-        // }
+        Logger.processInputs("Climb/Climb Motor 1", climbMotor1.getInputs());
+        Logger.processInputs("Climb/Climb motor 2", climbMotor2.getInputs());
     }
 
     @Override
@@ -82,12 +76,12 @@ public class ClimbIOReal implements ClimbIO {
     }
 
     @Override
-    public MotorIOInputsAutoLogged getMotorInputs(int id) {
+    public TalonFXInputsAutoLogged getMotorInputs(int id) {
         switch (id) {
             case CANIds.CLIMB_MOTOR_1:
-                return climbMotor1Inputs;
+                return climbMotor1.getInputs();
             case CANIds.CLIMB_MOTOR_2:
-                return climbMotor2Inputs;
+                return climbMotor2.getInputs();
             default:
                 return null;
         }

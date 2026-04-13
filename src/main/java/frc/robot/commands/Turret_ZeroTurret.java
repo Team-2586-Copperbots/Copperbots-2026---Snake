@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.turret.Turret;;
 
 public class Turret_ZeroTurret extends Command {
+    // command to zero / set the home position of the turret, used at the start of auton or teleop
     private Turret Turret;
 
     public Turret_ZeroTurret(Turret TurretSubsystem) {

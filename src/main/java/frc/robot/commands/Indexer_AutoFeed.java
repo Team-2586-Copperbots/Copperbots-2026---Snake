@@ -9,6 +9,8 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.turret.Turret;
 
 public class Indexer_AutoFeed extends Command {
+    // command that runs the spindexer UP when the shooter and turret are lined up
+    // needs to be run constantly so the math and logic keeps on running
     private Indexer indexer;
     private Shooter shooter;
     private Turret turret;
@@ -25,11 +27,15 @@ public class Indexer_AutoFeed extends Command {
 
     }
 
+    public boolean shouldShoot() {
+        return (shooter.isAtTarget() && turret.isAtTarget());
+    }
+
     @Override
     public void execute() {
         Logger.recordOutput("AutoFeed/Shooter.isAtTarget()", shooter.isAtTarget());
         Logger.recordOutput("AutoFeed/Turret.isAtTarget", turret.isAtTarget());
-        if (shooter.isAtTarget() && turret.isAtTarget()) {
+        if (shouldShoot()) {
             indexer.setSpindexerSpeed(IndexerStates.ON.spindexer);
             indexer.setTowerSpeed(IndexerStates.ON.tower);
         } else {

@@ -1,9 +1,8 @@
 package frc.robot.subsystems.intake;
 
 import org.littletonrobotics.junction.AutoLog;
-
 import frc.robot.subsystems.intake.Intake.IntakePosition;
-import frc.robot.util.auto_loggint_stuff.MotorIOInputsAutoLogged;
+import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
 
 public interface IntakeIO {
     @AutoLog
@@ -21,7 +20,7 @@ public interface IntakeIO {
         return null;
     }
 
-    public default MotorIOInputsAutoLogged getMotorInputs(int id) {
+    public default TalonFXInputsAutoLogged getMotorInputs(int id) {
         return null;
     }
 

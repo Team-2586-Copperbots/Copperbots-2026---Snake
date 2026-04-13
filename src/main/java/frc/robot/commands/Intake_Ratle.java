@@ -8,11 +8,19 @@ import frc.robot.Constants.OPERATOR_CONSTANTS;
 import frc.robot.subsystems.intake.Intake;
 
 public class Intake_Ratle extends Command {
+    // unfinished class to rattle the intake in and out for auto
+    // TODO: change to current bassed, mabey even a new class for a time based an current bassed
+    // TODO: why does time bassed stop working after a time
+    // needs to be runn constantly for the math with the intake roller to work
     private Intake Intake;
     private double lastActionTime;
+    private double timeWhenHitCurrentThreshold;
+    private double maxCurrent = 30;
 
-    public Intake_Ratle(Intake Intake) {
+    public Intake_Ratle(Intake Intake, boolean WCurrent) {
         this.Intake = Intake;
+        // make a implementation with current based along side time based
+
         lastActionTime = System.currentTimeMillis();
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(Intake);
@@ -30,11 +38,11 @@ public class Intake_Ratle extends Command {
         Logger.recordOutput("time betwen", Math.abs(lastActionTime - System.currentTimeMillis()));
         if (Math.abs(lastActionTime - System.currentTimeMillis()) > INTAKE_CONSTANTS.timeBetwenRattaling) {
             Intake.setIntakePositionTarget(IntakePosition.OUT);
-            if (Intake.getIsAtTArget()) {
+            if (Intake.getIsAtTarget()) {
                 lastActionTime = System.currentTimeMillis();
             }
         } else {
-            Intake.setIntakePositionTarget(IntakePosition.JUGLE);
+            Intake.setIntakePositionTarget(IntakePosition.JUGGLE);
         }
 
     }

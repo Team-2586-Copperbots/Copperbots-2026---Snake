@@ -2,7 +2,7 @@ package frc.robot.subsystems.indexer;
 
 import org.littletonrobotics.junction.AutoLog;
 
-import frc.robot.util.auto_loggint_stuff.MotorIOInputsAutoLogged;
+import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
 
 public interface IndexerIO {
 
@@ -17,7 +17,7 @@ public interface IndexerIO {
     public default void updateInputs() {
     }
 
-    public default MotorIOInputsAutoLogged getMotorInputs(int i) {
+    public default TalonFXInputsAutoLogged getMotorInputs(int i) {
         return null;
     }
 

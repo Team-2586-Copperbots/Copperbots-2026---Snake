@@ -1,8 +1,12 @@
 package frc.robot.subsystems.indexer;
 
+import org.littletonrobotics.junction.Logger;
+
+import frc.robot.util.auto_logging_stuff.SimMotorAutoLogged;
+
 public class IndexerIOSim implements IndexerIO {
-    private double towerSpeed = 0;
-    private double spindexerSpeed = 0;
+    private SimMotorAutoLogged towerMotor;
+    private SimMotorAutoLogged spindexerMotor;
 
     private IndexerIOInputsAutoLogged inputs = new IndexerIOInputsAutoLogged();
 
@@ -13,17 +17,20 @@ public class IndexerIOSim implements IndexerIO {
     /** Updates the set of loggable inputs. */
     @Override
     public void updateInputs() {
-        inputs.spindexerSpeed = spindexerSpeed;
-        inputs.towerSpeed = towerSpeed;
+        inputs.spindexerSpeed = spindexerMotor.getInputs().velocity / 100;
+        inputs.towerSpeed = towerMotor.getInputs().velocity / 100;
+        Logger.processInputs("Spindexer", inputs);
+        Logger.processInputs("Spindexer/tower motor", towerMotor.getInputs());
+        Logger.processInputs("Spindexer/spindexer motor", spindexerMotor.getInputs());
     }
 
     @Override
     public void setTowerSpeed(double output) {
-        towerSpeed = output;
+        towerMotor.setSimSpeed(output);
     }
 
     @Override
     public void setSpindexerSpeed(double output) {
-        spindexerSpeed = output;
+        spindexerMotor.setSimSpeed(output);
     }
 }

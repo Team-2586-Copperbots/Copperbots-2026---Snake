@@ -1,4 +1,4 @@
-package frc.robot.util.auto_loggint_stuff;
+package frc.robot.util.auto_logging_stuff.motor_io;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.ControlModeValue;

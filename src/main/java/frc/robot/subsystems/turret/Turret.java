@@ -1,12 +1,10 @@
 package frc.robot.subsystems.turret;
 
-import static edu.wpi.first.units.Units.Rotation;
 import static edu.wpi.first.units.Units.Rotations;
 
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.TURRET_CONSTANTS;
@@ -41,7 +39,7 @@ public class Turret extends SubsystemBase {
         return instance;
     }
 
-    public Turret(TurretIO io) {
+    private Turret(TurretIO io) {
         this.io = io;
     }
 
@@ -60,7 +58,7 @@ public class Turret extends SubsystemBase {
     }
 
     public Rotation2d getRotation() {
-        return new Rotation2d(Rotations.of(inputs.motorRotation));
+        return new Rotation2d(Rotations.of(io.getRobotRelitiveRotation()));
     }
 
     public boolean getLimitSwitch() {
@@ -72,7 +70,8 @@ public class Turret extends SubsystemBase {
     }
 
     public boolean isAtTarget() {
-        return (Math.abs(inputs.motorRotation - inputs.motorSetpoint) < TURRET_CONSTANTS.TOLERENCE) && canGetToTarget();
+        return (Math.abs(io.getMotorInputs().position - io.getMotorInputs().setpoint) < TURRET_CONSTANTS.TOLERENCE)
+                && canGetToTarget();
     }
 
     public void setTurretToZero() {

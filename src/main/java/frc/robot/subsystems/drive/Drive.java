@@ -37,15 +37,17 @@ import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.FIELD_CONSTANTS;
 import frc.robot.Constants.Mode;
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.BLine.FollowPath;
 import frc.robot.lib.BLine.Path;
 import frc.robot.lib.BLine.Path.PathConstraints;
+import frc.robot.subsystems.turret.Turret;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.GeneralUtils;
-import frc.robot.util.driveUtils.ClimbUtils;
+import frc.robot.util.driveUtils.MathedClimbUtils;
 
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
@@ -154,9 +156,8 @@ public class Drive extends SubsystemBase {
           break;
         case SIM:
           // Sim robot, instantiate physics sim IO implementations
-          Pose2d startingPose2d = new Pose2d(2, 2, Rotation2d.kZero);
           driveSimulation = new SwerveDriveSimulation(Drive.getMapleSimConfig(),
-              startingPose2d);
+              new Pose2d(2, 2, Rotation2d.kZero));
           SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
           instance = new Drive(
               new GyroIOSim(driveSimulation.getGyroSimulation()),
@@ -242,8 +243,9 @@ public class Drive extends SubsystemBase {
   public void periodic() {
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
+    Logger.recordOutput("thing/distance to target", GeneralUtils.distanceFromTarget());
     Logger.processInputs("Drive/Gyro", gyroInputs);
-    Logger.recordOutput("climb pose", ClimbUtils.centerOfClimbPose);
+    Logger.recordOutput("climb pose", MathedClimbUtils.centerOfClimbPose);
     Logger.recordOutput("auto flip",
         AllianceFlipUtil.applyY(getPose().getY()) > AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY()));
     Logger.recordOutput("target for turret", GeneralUtils.findTarget());
@@ -310,7 +312,7 @@ public class Drive extends SubsystemBase {
   //
   //
 
-  // mythings
+  // MARK:- BLine
 
   private void buildBline() {
     // configure BLine
@@ -353,8 +355,6 @@ public class Drive extends SubsystemBase {
     return path;
   }
 
-  
-
   public DeferredCommand deferedCommandToPose(Pose2d pose) {
     return new DeferredCommand(() -> this.commandFromPath(pathFromPose(pose)), Set.of(this));
   }
@@ -368,15 +368,32 @@ public class Drive extends SubsystemBase {
   }
 
   public Command autoPathFromString(String name) {
-    if (AllianceFlipUtil.applyY(getPose().getY()) > AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY())) {
-      return pathFromStringFlipable(name, false);
-    } else {
+    Logger.recordOutput("Autos/flip logic", AllianceFlipUtil.applyY(getPose().getY()) > AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY()));
+    Logger.recordOutput("Autos/roboty", AllianceFlipUtil.applyY(getPose().getY()));
+    Logger.recordOutput("Autos/huby", AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY()));
+    if (RobotContainer.autofliper.getSelected() == true) { // AllianceFlipUtil.applyY(getPose().getY()) > AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY())
       return pathFromStringFlipable(name, true);
+    } else {
+      return pathFromStringFlipable(name, false);
     }
   }
 
   public Command pathFromStringFlipable(String name, boolean mirror) {
     Path path = new Path(name);
+    if (mirror) {
+      path.mirror();
+    }
+    return pathBuilder.build(path);
+  }
+
+  public Path autoMirrorPath(Path path) {
+    if (RobotContainer.autofliper.getSelected() == true) { // AllianceFlipUtil.applyY(getPose().getY()) < AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY())
+      path.mirror();
+    }
+    return path;
+  }
+
+  public Command pathFlipable(Path path, boolean mirror) {
     if (mirror) {
       path.mirror();
     }
