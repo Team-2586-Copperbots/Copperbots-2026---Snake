@@ -146,10 +146,10 @@ public class Drive extends SubsystemBase {
         case REAL:
           instance = new Drive(
               new GyroIOPigeon2(),
-              new ModuleIOTalonFX(TunerConstants.FrontLeft),
-              new ModuleIOTalonFX(TunerConstants.FrontRight),
-              new ModuleIOTalonFX(TunerConstants.BackLeft),
-              new ModuleIOTalonFX(TunerConstants.BackRight),
+              new ModuleIOTalonFXReal(TunerConstants.FrontLeft),
+              new ModuleIOTalonFXReal(TunerConstants.FrontRight),
+              new ModuleIOTalonFXReal(TunerConstants.BackLeft),
+              new ModuleIOTalonFXReal(TunerConstants.BackRight),
               (robotPose) -> {
               });
           break;
@@ -160,10 +160,10 @@ public class Drive extends SubsystemBase {
           SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
           instance = new Drive(
               new GyroIOSim(driveSimulation.getGyroSimulation()),
-              new ModuleIOSim(driveSimulation.getModules()[0]),
-              new ModuleIOSim(driveSimulation.getModules()[1]),
-              new ModuleIOSim(driveSimulation.getModules()[2]),
-              new ModuleIOSim(driveSimulation.getModules()[3]),
+              new ModuleIOTalonFXSim(TunerConstants.FrontLeft, driveSimulation.getModules()[0]),
+              new ModuleIOTalonFXSim(TunerConstants.FrontRight, driveSimulation.getModules()[1]),
+              new ModuleIOTalonFXSim(TunerConstants.BackLeft, driveSimulation.getModules()[2]),
+              new ModuleIOTalonFXSim(TunerConstants.BackRight, driveSimulation.getModules()[3]),
               driveSimulation::setSimulationWorldPose);
           break;
         default:// Replayed robot, disable IO implementations
