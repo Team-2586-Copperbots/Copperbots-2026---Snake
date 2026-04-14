@@ -1,7 +1,5 @@
 package frc.robot.subsystems.intake;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.CANIds;
@@ -93,7 +91,7 @@ public class Intake extends SubsystemBase {
 
     public static enum IntakePosition {
         IN(0.0),
-        OUT(0.251),
+        OUT(0.252),
         JUGGLE(INTAKE_CONSTANTS.distanceToStopAt + 0.01);
         // ,
         // HALFWAY(4);

@@ -6,6 +6,7 @@ import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
 
 public class TurretIOSim implements TurretIO {
     private SimMotorAutoLogged turnMotor;
+    @SuppressWarnings("unused")
     private boolean canMakeItToTarget = true;
 
     public TurretIOSim() {
