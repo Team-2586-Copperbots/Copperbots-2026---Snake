@@ -167,8 +167,9 @@ public final class Constants {
 
   public static class INTAKE_CONSTANTS {
     public static final double rotorToSensor = (5 / 1) * (57 / 24) * (45 / 20);
-    public static final double distanceToStopAt = 0.08;
+    public static final double distanceToStopAt = 0.07;
     public static final double POSITION_TOLERENCE = 0.01;
     public static final double timeBetwenRattaling = 700;
+    public static final double timeBetwenCurrentRattle = 400;
   }
 }

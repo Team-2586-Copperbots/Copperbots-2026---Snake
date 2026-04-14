@@ -18,6 +18,9 @@ import frc.robot.Constants.OPERATOR_CONSTANTS;
 import frc.robot.Constants.SHOOTER_CONSTANTS;
 import frc.robot.Constants.TURRET_CONSTANTS;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.indexer.Indexer.IndexerStates;
+import frc.robot.subsystems.indexer.Indexer.customeIndexerState;
+import frc.robot.subsystems.shooter.Shooter;
 
 public final class GeneralUtils {
 
@@ -36,6 +39,15 @@ public final class GeneralUtils {
             number = -number;
         }
         return number;
+    }
+
+    public static customeIndexerState getAutoIndexerState() {
+        // double shooterSpeed = (Shooter.getInstance().getMotor1Speed() * 4 * Math.PI /* for radius */) / 2; // one side
+        //                                                                                                    // is fixed
+        double towerSpeed = Shooter.getInstance().getMotor1Speed() * 0.5;
+
+
+        return new customeIndexerState(-0.45, towerSpeed);
     }
 
     public static Pose2d findTarget() {
@@ -66,6 +78,7 @@ public final class GeneralUtils {
     public static double shooterSpeedFromTarget() {
         return shooterSpeedFromDistance(distanceFromTarget());
     }
+
     public static double shooterSpeedFromDistance(double distance) {
         // regresion equation for shooter
         Logger.recordOutput("Stuff/distancs for shooter", distance);

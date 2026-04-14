@@ -22,7 +22,7 @@ import frc.robot.subsystems.intake.Intake.IntakePosition;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.vision.Vision;
-import frc.robot.util.driveUtils.BrutalClimbUtils;
+import frc.robot.util.driveUtils.ManualClimbUtils;
 
 import static edu.wpi.first.units.Units.Seconds;
 
@@ -80,13 +80,14 @@ public final class Autos {
                                 new Intake_PID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED));
         }
 
+        @SuppressWarnings("unused")
         private static Command toUpperClimb() {
                 return new SequentialCommandGroup(
                                 drive.commandFromPath(drive.pathFromPose(FIELD_CONSTANTS.TEST_POSE2D)),
                                 new ParallelCommandGroup(
-                                                drive.commandFromPath(BrutalClimbUtils.getPreClimbTarget(drive)),
+                                                drive.commandFromPath(ManualClimbUtils.getPreClimbTarget(drive)),
                                                 new Climb_Move(climb, ClimbPosition.UP)),
-                                drive.commandFromPath(BrutalClimbUtils.getFinalClimbTarget(drive)),
+                                drive.commandFromPath(ManualClimbUtils.getFinalClimbTarget(drive)),
                                 new Climb_Move(climb, ClimbPosition.CLIMBED));
         }
 
@@ -103,6 +104,12 @@ public final class Autos {
                                                 outNSweepFirst(),
                                                 Shooter_AutoShoot_Sequence.getWRumble(shooter, turret,
                                                                 indexer, intake))),
+                                auto("new out", new SequentialCommandGroup(new ParallelDeadlineGroup(
+                                                drive.defer(() -> drive.autoPathFromString("b1-4")),
+                                                new Intake_PID(intake, IntakePosition.OUT,
+                                                                OPERATOR_CONSTANTS.ROLLER_SPEED)),
+                                                Shooter_AutoShoot_Sequence.getWRumble(shooter, turret, indexer,
+                                                                intake))),
                                 auto("out then out again",
                                                 new SequentialCommandGroup(
                                                                 outNSweepFirst(),
@@ -135,7 +142,7 @@ public final class Autos {
                                                                                                 intake)
                                                                                 .withTimeout(5.5),
                                                                 new Climb_Move(climb, ClimbPosition.UP)),
-                                                drive.commandFromPath(BrutalClimbUtils.getFinalClimbTarget(drive)),
+                                                drive.commandFromPath(ManualClimbUtils.getFinalClimbTarget(drive)),
                                                 new Climb_Move(climb, ClimbPosition.CLIMBED)),
                                 auto("drive forwards",
                                                 new SequentialCommandGroup(

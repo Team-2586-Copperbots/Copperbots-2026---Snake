@@ -16,14 +16,13 @@ public class Shooter_AutoShoot_Sequence {
     public static Command get(Shooter shooter, Turret turret, Indexer indexer) {
         return new ParallelCommandGroup(
                 new Turret_AimAndShoot(shooter, turret),
-                new Indexer_AutoFeed(indexer)
-        );
+                new Indexer_AutoFeed(indexer));
     }
 
     public static Command getWRumble(Shooter shooter, Turret turret, Indexer indexer, Intake intake) {
         return new ParallelCommandGroup(
                 new Turret_AimAndShoot(shooter, turret),
                 new Indexer_AutoFeed(indexer),
-                new Intake_Ratle(intake, true));
+                new Intake_Time_Ratle(intake));
     }
 }

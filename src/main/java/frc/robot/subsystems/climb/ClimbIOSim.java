@@ -8,15 +8,23 @@ import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
 
 public class ClimbIOSim implements ClimbIO {
     private SimMotorAutoLogged climbMotor1;
+    private ClimbIOInputsAutoLogged inputs;
 
     public ClimbIOSim() {
         climbMotor1 = new SimMotorAutoLogged();
+        inputs = new ClimbIOInputsAutoLogged();
+        inputs.limitSwitch = true;
     }
 
     @Override
     public void updateAndLogInputs() {
         Logger.processInputs("Climb/motor", climbMotor1.getInputs());
 
+    }
+
+    @Override
+    public ClimbIOInputsAutoLogged getInputs() {
+        return inputs;
     }
 
     @Override
@@ -31,6 +39,6 @@ public class ClimbIOSim implements ClimbIO {
 
     @Override
     public void setTargetPosition(ClimbPosition position) {
-        climbMotor1.setSimTarget(0, false);
+        climbMotor1.setSimTarget(position.value, false);
     }
 }

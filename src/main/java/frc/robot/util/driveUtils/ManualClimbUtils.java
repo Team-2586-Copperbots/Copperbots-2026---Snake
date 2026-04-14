@@ -14,7 +14,7 @@ import frc.robot.subsystems.drive.BLine_Constants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.AllianceFlipUtil;
 
-public class BrutalClimbUtils {
+public class ManualClimbUtils {
 
     private static final PathConstraints finalConstraints = BLine_Constants.highTolerence
             .setMaxVelocityMetersPerSec(0.25);

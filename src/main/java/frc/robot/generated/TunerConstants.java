@@ -45,7 +45,7 @@ public class TunerConstants {
         // The stator current at which the wheels start to slip;
         // This needs to be tuned to your individual robot
         // MARK: slip current
-        private static final Current kSlipCurrent = Amps.of(46);
+        private static final Current kSlipCurrent = Amps.of(50);
 
         // The type of motor used for the drive motor
         private static final DriveMotorArrangement kDriveMotorType = DriveMotorArrangement.TalonFX_Integrated;

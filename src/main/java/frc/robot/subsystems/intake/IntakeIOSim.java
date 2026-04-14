@@ -1,13 +1,10 @@
 package frc.robot.subsystems.intake;
 
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Distance;
+import frc.robot.Constants.CANIds;
 import frc.robot.subsystems.intake.Intake.IntakePosition;
 import frc.robot.util.auto_logging_stuff.SimMotorAutoLogged;
+import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
 
-import static edu.wpi.first.units.Units.Meter;
-import org.ironmaple.simulation.IntakeSimulation;
-import org.ironmaple.simulation.IntakeSimulation.IntakeSide;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
 
@@ -25,7 +22,7 @@ public class IntakeIOSim implements IntakeIO {
         rollerMotor = new SimMotorAutoLogged();
         wristMotor = new SimMotorAutoLogged();
         // simulatedIntake = IntakeSimulation.OverTheBumperIntake("Fule", drive, width,
-        //         length, IntakeSide.FRONT, 80);
+        // length, IntakeSide.FRONT, 80);
     }
 
     @Override
@@ -38,6 +35,18 @@ public class IntakeIOSim implements IntakeIO {
     }
 
     @Override
+    public TalonFXInputsAutoLogged getMotorInputs(int id) {
+        switch (id) {
+            case CANIds.INTAKE_ROLLER_MOTOR:
+                return rollerMotor.getInputs();
+            case CANIds.INTAKE_WRIST_MOTOR:
+                return rollerMotor.getInputs();
+            default:
+                return null;
+        }
+    }
+
+    @Override
     public void setRollerSpeed(double speed) {
         rollerMotor.setSimSpeed(speed);
     }
@@ -47,9 +56,9 @@ public class IntakeIOSim implements IntakeIO {
         targetPosition = position;
         wristMotor.setSimTarget(targetPosition.value, false);
         // if (position.equals(IntakePosition.OUT)) {
-        //     simulatedIntake.startIntake();
+        // simulatedIntake.startIntake();
         // } else {
-        //     simulatedIntake.stopIntake();
+        // simulatedIntake.stopIntake();
         // }
     }
 

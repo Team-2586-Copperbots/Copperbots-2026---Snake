@@ -7,17 +7,13 @@ import frc.robot.Constants.INTAKE_CONSTANTS;
 import frc.robot.Constants.OPERATOR_CONSTANTS;
 import frc.robot.subsystems.intake.Intake;
 
-public class Intake_Ratle extends Command {
+public class Intake_Time_Ratle extends Command {
     // unfinished class to rattle the intake in and out for auto
-    // TODO: change to current bassed, mabey even a new class for a time based an current bassed
-    // TODO: why does time bassed stop working after a time
     // needs to be runn constantly for the math with the intake roller to work
     private Intake Intake;
     private double lastActionTime;
-    private double timeWhenHitCurrentThreshold;
-    private double maxCurrent = 30;
 
-    public Intake_Ratle(Intake Intake, boolean WCurrent) {
+    public Intake_Time_Ratle(Intake Intake) {
         this.Intake = Intake;
         // make a implementation with current based along side time based
 
