@@ -3,6 +3,9 @@ package frc.robot.subsystems.shooter;
 import org.littletonrobotics.junction.Logger;
 
 import frc.robot.util.auto_logging_stuff.SimMotorAutoLogged;
+import frc.robot.util.auto_logging_stuff.TalonFXAutoLogged;
+import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
+import frc.robot.util.auto_logging_stuff.TalonFXAutoLogged.TalonFXInputs;
 
 public class ShooterIOSim implements ShooterIO {
     private SimMotorAutoLogged shotterMotor;
@@ -17,6 +20,10 @@ public class ShooterIOSim implements ShooterIO {
 
     }
 
+    @Override
+    public TalonFXInputsAutoLogged getMotorInputs(int id) {
+        return shotterMotor.getInputs();
+    }
     @Override
     public void setMotorSetpoint(double velocity) {
         shotterMotor.setSimTarget(velocity, true);

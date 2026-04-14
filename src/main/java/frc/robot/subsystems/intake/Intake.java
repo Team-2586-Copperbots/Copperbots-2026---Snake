@@ -48,8 +48,6 @@ public class Intake extends SubsystemBase {
     }
 
     public void setRollerSpeed(double speed) {
-        Logger.recordOutput("less than 0.08", (Math.abs(io.getMotorInputs(CANIds.INTAKE_WRIST_MOTOR).position
-                - IntakePosition.IN.value)));
         if ((Math.abs(io.getMotorInputs(CANIds.INTAKE_WRIST_MOTOR).position
                 - IntakePosition.IN.value)) < INTAKE_CONSTANTS.distanceToStopAt) {
             io.setRollerSpeed(0);
@@ -60,6 +58,15 @@ public class Intake extends SubsystemBase {
 
     public double getWristPosition() {
         return io.getMotorInputs(CANIds.INTAKE_WRIST_MOTOR).position;
+    }
+
+    public boolean getWristStalled() {
+        double stallCurrent = 30;
+        if (io.getMotorInputs(CANIds.INTAKE_WRIST_MOTOR).amps > stallCurrent) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public boolean getIsAtTarget() {

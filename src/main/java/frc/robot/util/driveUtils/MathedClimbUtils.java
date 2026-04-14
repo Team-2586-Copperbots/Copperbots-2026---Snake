@@ -46,9 +46,6 @@ public class MathedClimbUtils {
     // true for top climb, false for bottom climb
     private static boolean getIsTopClimb() {
         // upper climb
-        Logger.recordOutput("a2", climbSideFlipingDistanceFromBottom.in(Meters));
-
-        Logger.recordOutput("a1", AllianceFlipUtil.applyY(Drive.getInstance().getPose().getY()));
         if ((climbSideFlipingDistanceFromBottom.in(Meters))
                 - AllianceFlipUtil.applyY(Drive.getInstance().getPose().getY()) > 0) {
             return true;

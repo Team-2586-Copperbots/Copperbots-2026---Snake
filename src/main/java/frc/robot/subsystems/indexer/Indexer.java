@@ -59,7 +59,15 @@ public class Indexer extends SubsystemBase {
             this.spindexer = spindexer;
             this.tower = tower;
         }
+    }
 
+    public static class IndexerState {
+        public static customeIndexerState ON = new customeIndexerState(-0.45, 0.5);
+        public static customeIndexerState OFF = new customeIndexerState(0, 0);
+        
+    }
+
+    public record customeIndexerState(double spindexer, double tower) {
     }
 
 }

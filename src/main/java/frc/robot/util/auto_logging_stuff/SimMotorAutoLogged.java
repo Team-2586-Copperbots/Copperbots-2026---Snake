@@ -1,7 +1,5 @@
 package frc.robot.util.auto_logging_stuff;
 
-import org.opencv.features2d.FlannBasedMatcher;
-
 public class SimMotorAutoLogged extends TalonFXAutoLogged {
 
     public SimMotorAutoLogged() {

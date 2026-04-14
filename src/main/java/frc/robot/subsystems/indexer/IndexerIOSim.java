@@ -11,6 +11,8 @@ public class IndexerIOSim implements IndexerIO {
     private IndexerIOInputsAutoLogged inputs = new IndexerIOInputsAutoLogged();
 
     public IndexerIOSim() {
+        towerMotor = new SimMotorAutoLogged();
+        spindexerMotor = new SimMotorAutoLogged();
 
     }
 

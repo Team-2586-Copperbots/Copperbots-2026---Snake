@@ -2,19 +2,14 @@ package frc.robot.subsystems.turret;
 
 import frc.robot.Constants.TURRET_CONSTANTS;
 import frc.robot.util.auto_logging_stuff.SimMotorAutoLogged;
+import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
 
 public class TurretIOSim implements TurretIO {
     private SimMotorAutoLogged turnMotor;
-    private double turretMotorPose;
-    @SuppressWarnings("unused")
-    private double motorSpeed = 0;
-    @SuppressWarnings("unused")
-    private boolean isClosedLoop = true;
-    @SuppressWarnings("unused")
-    private boolean isAtPosition = true;
+    private boolean canMakeItToTarget = true;
 
     public TurretIOSim() {
-        turretMotorPose = 0;
+        turnMotor = new SimMotorAutoLogged();
     }
 
     @Override
@@ -22,38 +17,41 @@ public class TurretIOSim implements TurretIO {
 
     }
 
+    @Override 
+    public TalonFXInputsAutoLogged getMotorInputs() {
+        return turnMotor.getInputs();
+    }
+
     @Override
     public void setTurretSetpoint(double roations) {
-        isClosedLoop = true;
-
         // limits are typed in as degres
         if (roations >= (-TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET)
                 && (TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT - roations) < 0) {
-            isAtPosition = true;
-            turretMotorPose = (roations + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET)
-                    * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO;
+            canMakeItToTarget = true;
+            turnMotor.setSimTarget(((roations + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET)
+                    * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO), false);
         } else {
-            // says that it did not make it to the desired position
-            isAtPosition = false;
-
+            canMakeItToTarget = false;
+            turnMotor.setSimTarget(
+                    TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO,
+                    false);
         }
     }
 
     // set the turn motors's internal encoder
     @Override
     public void setTurretZero() {
-        turretMotorPose = 0;
+        turnMotor.getInputs().position = 0;
     }
 
     @Override
     public double getRingRotation() {
-        return turretMotorPose / TURRET_CONSTANTS.MOTOR_TO_RING_RATIO;
+        return turnMotor.getInputs().position / TURRET_CONSTANTS.MOTOR_TO_RING_RATIO;
     }
 
     @Override
     public double getRobotRelitiveRotation() {
-        return (turretMotorPose / TURRET_CONSTANTS.MOTOR_TO_RING_RATIO)
-                + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET;
+        return getRingRotation() + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET;
     }
 
 }

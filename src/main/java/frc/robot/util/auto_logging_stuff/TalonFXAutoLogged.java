@@ -6,6 +6,9 @@ import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.ControlModeValue;
 
+import frc.robot.Constants;
+import frc.robot.Constants.Mode;
+
 public class TalonFXAutoLogged extends TalonFX {
     private TalonFXInputsAutoLogged inputs;
 
@@ -41,18 +44,20 @@ public class TalonFXAutoLogged extends TalonFX {
 
     public void updateInputs() {
         // inputs.name = motor.toString();
+        if (Constants.currentMode != Mode.SIM) {
 
-        inputs.isOk = this.isAlive();
+            inputs.isOk = this.isAlive();
 
-        inputs.amps = this.getStatorCurrent().getValueAsDouble();
-        inputs.volts = this.getMotorVoltage().getValueAsDouble();
-        inputs.temp = this.getDeviceTemp().getValueAsDouble();
+            inputs.amps = this.getStatorCurrent().getValueAsDouble();
+            inputs.volts = this.getMotorVoltage().getValueAsDouble();
+            inputs.temp = this.getDeviceTemp().getValueAsDouble();
 
-        inputs.position = this.getPosition().getValueAsDouble();
-        inputs.velocity = this.getVelocity().getValueAsDouble();
+            inputs.position = this.getPosition().getValueAsDouble();
+            inputs.velocity = this.getVelocity().getValueAsDouble();
 
-        inputs.isClosedLoop = this.getControlMode().getValue() == ControlModeValue.PositionVoltage;
-        inputs.setpoint = this.getClosedLoopReference().getValueAsDouble();
+            inputs.isClosedLoop = this.getControlMode().getValue() == ControlModeValue.PositionVoltage;
+            inputs.setpoint = this.getClosedLoopReference().getValueAsDouble();
+        }
     }
 
     public TalonFXInputsAutoLogged getInputs() {

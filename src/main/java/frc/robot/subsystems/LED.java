@@ -42,9 +42,7 @@ public class LED extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Logger.recordOutput("CANdle 5V Amps", candle.getOutputCurrent().getValueAsDouble());
-        setAutoState();
-        Logger.recordOutput("CANdle control", candle.getAppliedControl().toString());
+        // setAutoState();
     }
 
     private void setAutoState() {
