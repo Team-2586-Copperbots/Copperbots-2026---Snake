@@ -75,6 +75,13 @@ public final class Autos {
                                 drive.defer(() -> drive.autoPathFromString("b1-3")));
         }
 
+        private static Command newOutNSweepFirst() {
+                return new ParallelDeadlineGroup(
+                                drive.defer(() -> drive.autoPathFromString("b1-1_3")),
+                                new Intake_PID(intake, IntakePosition.OUT,
+                                                OPERATOR_CONSTANTS.ROLLER_SPEED));
+        }
+
         private static Command ountNSwepBumpNum2() {
                 return new ParallelDeadlineGroup(drive.defer(() -> drive.autoPathFromString("b1-4")),
                                 new Intake_PID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED));
@@ -104,10 +111,11 @@ public final class Autos {
                                                 outNSweepFirst(),
                                                 Shooter_AutoShoot_Sequence.getWRumble(shooter, turret,
                                                                 indexer, intake))),
-                                auto("new out", new SequentialCommandGroup(new ParallelDeadlineGroup(
-                                                drive.defer(() -> drive.autoPathFromString("b1-4")),
-                                                new Intake_PID(intake, IntakePosition.OUT,
-                                                                OPERATOR_CONSTANTS.ROLLER_SPEED)),
+                                auto("new out", new SequentialCommandGroup(
+                                                newOutNSweepFirst(),
+                                                Shooter_AutoShoot_Sequence.getWRumble(shooter, turret, indexer,
+                                                                intake).withTimeout(9),
+                                                newOutNSweepFirst(),
                                                 Shooter_AutoShoot_Sequence.getWRumble(shooter, turret, indexer,
                                                                 intake))),
                                 auto("out then out again",

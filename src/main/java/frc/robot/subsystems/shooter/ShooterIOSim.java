@@ -3,9 +3,7 @@ package frc.robot.subsystems.shooter;
 import org.littletonrobotics.junction.Logger;
 
 import frc.robot.util.auto_logging_stuff.SimMotorAutoLogged;
-import frc.robot.util.auto_logging_stuff.TalonFXAutoLogged;
 import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
-import frc.robot.util.auto_logging_stuff.TalonFXAutoLogged.TalonFXInputs;
 
 public class ShooterIOSim implements ShooterIO {
     private SimMotorAutoLogged shotterMotor;
