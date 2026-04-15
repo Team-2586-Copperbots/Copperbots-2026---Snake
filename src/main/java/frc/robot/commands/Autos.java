@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -15,6 +17,7 @@ import frc.robot.lib.BLine.Path.PathConstraints;
 import frc.robot.subsystems.LED;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.Climb.ClimbPosition;
+import frc.robot.subsystems.drive.BLine_Constants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.intake.Intake;
@@ -24,6 +27,7 @@ import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.driveUtils.ManualClimbUtils;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Seconds;
 
 import java.util.List;
@@ -135,23 +139,28 @@ public final class Autos {
                                                                 Shooter_AutoShoot_Sequence.getWRumble(shooter, turret,
                                                                                 indexer, intake))),
                                 auto("middle, back-shoot-depo-shoot-autoclimb", new SequentialCommandGroup(
-                                                drive.commandFromPath(drive.pathFromString("m1-1")),
-                                                Shooter_AutoShoot_Sequence.get(shooter, turret, indexer)
-                                                                .withTimeout(4)),
                                                 new ParallelDeadlineGroup(
                                                                 drive.commandFromPath(drive.pathFromString("m1-2")),
                                                                 new Intake_PID(intake, IntakePosition.OUT,
                                                                                 OPERATOR_CONSTANTS.ROLLER_SPEED)),
                                                 drive.commandFromPath(drive.pathFromString("m1-3")),
                                                 new ParallelCommandGroup(
-                                                                drive.commandFromPath(drive.pathFromString("m1-4")),
                                                                 Shooter_AutoShoot_Sequence
                                                                                 .getWRumble(shooter, turret, indexer,
                                                                                                 intake)
                                                                                 .withTimeout(5.5),
                                                                 new Climb_Move(climb, ClimbPosition.UP)),
-                                                drive.commandFromPath(ManualClimbUtils.getFinalClimbTarget(drive)),
-                                                new Climb_Move(climb, ClimbPosition.CLIMBED)),
+                                                new Intake_PID(intake, IntakePosition.IN, 0)
+                                                                .withTimeout(1),
+                                                drive.commandFromPath(drive.changeConstrains(
+                                                                drive.pathFromPose(new Pose2d(0.957, 05.1,
+                                                                                new Rotation2d(Degrees.of(90)))),
+                                                                BLine_Constants.highTolerence
+                                                                                .setMaxVelocityMetersPerSec(0.25))),
+                                                // drive.commandFromPath(drive.pathFromPose(new Pose2d(0.98, 05.010,
+                                                // new Rotation2d(Degrees.of(90))))),
+                                                drive.cRunVelocity(new ChassisSpeeds(-0.25, 0, 0)).withTimeout(2),
+                                                new Climb_Move(climb, ClimbPosition.CLIMBED))),
                                 auto("drive forwards",
                                                 new SequentialCommandGroup(
                                                                 drive.cRunVelocity(new ChassisSpeeds(1, 0, 0))

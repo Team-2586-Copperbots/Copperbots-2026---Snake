@@ -206,28 +206,6 @@ public class Drive extends SubsystemBase {
     // Start odometry thread
     PhoenixOdometryThread.getInstance().start();
 
-    // // Configure AutoBuilder for PathPlanner
-    // AutoBuilder.configure(
-    // this::getPose,
-    // this::resetOdometry,
-    // this::getChassisSpeeds,
-    // this::runVelocity,
-    // new PPHolonomicDriveController(
-    // new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
-    // PP_CONFIG,
-    // () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
-    // this);
-    // Pathfinding.setPathfinder(new LocalADStarAK());
-    // PathPlannerLogging.setLogActivePathCallback(
-    // (activePath) -> {
-    // Logger.recordOutput("Odometry/Trajectory", activePath.toArray(new
-    // Pose2d[0]));
-    // });
-    // PathPlannerLogging.setLogTargetPoseCallback(
-    // (targetPose) -> {
-    // Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
-    // });
-
     buildBline();
 
     // Configure SysId
