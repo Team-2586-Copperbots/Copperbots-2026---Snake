@@ -49,7 +49,7 @@ public class Intake_Current_Ratle extends Command {
                 goingOut = false;
             }
         } else {
-            Logger.recordOutput("Intake/time betwen current based", System.currentTimeMillis() - timeWhenHitCurrentHitThreshold);
+            Logger.recordOutput("Intake/time betwen, current based", System.currentTimeMillis() - timeWhenHitCurrentHitThreshold);
             if (System.currentTimeMillis() - timeWhenHitCurrentHitThreshold > INTAKE_CONSTANTS.timeBetwenCurrentRattle) {
                 Intake.setIntakePositionTarget(IntakePosition.OUT);
                 goingOut = true;

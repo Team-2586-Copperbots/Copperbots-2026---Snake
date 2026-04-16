@@ -304,7 +304,7 @@ public class RobotContainer {
                 // testController1.povDown().onTrue(new Intake_PID(intake, IntakePosition.IN, 0));
                 // testController1.povRight().whileTrue(new Intake_Spin(intake, 0, false));
                 // testController1.povLeft().whileTrue(new Intake_Spin(intake, OPERATOR_CONSTANTS.ROLLER_SPEED, false));
-                // testController1.triangle().whileTrue(new Intake_Time_Ratle(intake));
+                testController1.triangle().whileTrue(new Intake_Time_Ratle(intake));
                 // testController1.cross().whileTrue(new Intake_Current_Ratle(intake));
 
                 // // code to test the indexer
@@ -334,8 +334,8 @@ public class RobotContainer {
                 // testController1.circle().onTrue(new Climb_Move(climb, ClimbPosition.UP));
 
                 // // code for getting speeds
-                testController1.triangle().onTrue(new Shooter_ShootSpeed(shooter, 55, false));
-                testController1.cross().onTrue(new Shooter_ShootSpeed(shooter, 0, false));
+                // testController1.triangle().onTrue(new Shooter_ShootSpeed(shooter, 55, false));
+                // testController1.cross().onTrue(new Shooter_ShootSpeed(shooter, 0, false));
                 // testController1.triangle().onTrue(new Shooter_ShootSpeed(shooter, 5, true));
                 // testController1.square().onTrue(new Shooter_ShootSpeed(shooter, -5, true));
                 // testController1.circle().onTrue(new Shooter_ShootSpeed(shooter, 1, true));
