@@ -23,7 +23,9 @@ public class ManualClimbUtils {
      */
 
     // TODO: update poses when at comp/home and compare
-    private static Pose2d FINAL_CLIMB_TARGET_UPPER = new Pose2d(0.982, 4.497326, new Rotation2d(Degrees.of(90)));
+    // 1.016 4.67
+    // 1.05 4.53
+    private static Pose2d FINAL_CLIMB_TARGET_UPPER = new Pose2d(1.033, 4.6, new Rotation2d(Degrees.of(90)));
     private static Pose2d FINAL_CLIMB_TARGET_LOWER = new Pose2d(0.982, 2.955326, new Rotation2d(Degrees.of(-90)));
 
     private static Pose2d FINAL_CLIMB_TARGET = new Pose2d();
