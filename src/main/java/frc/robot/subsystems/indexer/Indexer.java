@@ -63,7 +63,7 @@ public class Indexer extends SubsystemBase {
     public static class IndexerStates {
         public static IndexerState ON = new IndexerState(-0.45, 0.5);
         public static IndexerState OFF = new IndexerState(0, 0);
-        public static IndexerState FULL = new IndexerState(1, 1);
+        // public static IndexerState FULL = new IndexerState(1, 1);
         
 
     }

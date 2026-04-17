@@ -115,7 +115,7 @@ public final class Autos {
                                                 outNSweepFirst(),
                                                 Shooter_AutoShoot_Sequence.getWRumble(shooter, turret,
                                                                 indexer, intake))),
-                                auto("new out", new SequentialCommandGroup(
+                                auto("new out then out again", new SequentialCommandGroup(
                                                 newOutNSweepFirst(),
                                                 Shooter_AutoShoot_Sequence.getWRumble(shooter, turret, indexer,
                                                                 intake).withTimeout(9),
@@ -133,6 +133,14 @@ public final class Autos {
                                 auto("out then back on bump",
                                                 new SequentialCommandGroup(
                                                                 outNSweepFirst(),
+                                                                Shooter_AutoShoot_Sequence.getWRumble(shooter, turret,
+                                                                                indexer, intake).withTimeout(9),
+                                                                ountNSwepBumpNum2(),
+                                                                Shooter_AutoShoot_Sequence.getWRumble(shooter, turret,
+                                                                                indexer, intake))),
+                                auto("new out then back on bump",
+                                                new SequentialCommandGroup(
+                                                                newOutNSweepFirst(),
                                                                 Shooter_AutoShoot_Sequence.getWRumble(shooter, turret,
                                                                                 indexer, intake).withTimeout(9),
                                                                 ountNSwepBumpNum2(),
