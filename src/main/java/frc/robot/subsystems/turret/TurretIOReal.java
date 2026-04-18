@@ -51,6 +51,7 @@ public class TurretIOReal implements TurretIO {
         turnMotorConfig.Slot0.GainSchedBehavior = GainSchedBehaviorValue.ZeroOutput;
 
         turnMotorConfig.CurrentLimits.StatorCurrentLimit = 80;
+        turnMotorConfig.CurrentLimits.SupplyCurrentLimit = 40;
 
         turnMotor.getConfigurator().apply(turnMotorConfig);
     }

@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.Climb.ClimbPosition;
 
-public class Climb_Move extends Command {
+public class Climb_move extends Command {
     // this is a class to move the climb subsystem up and down
     // two constructors are provided so you can move the climb using a ClimbPosition
     // varialble or a speed -1 - 1 for the motors to run at
@@ -13,14 +13,14 @@ public class Climb_Move extends Command {
     private double Speed = -2;
     private ClimbPosition position = null;
 
-    public Climb_Move(Climb climbSubsystem, double speed) {
+    public Climb_move(Climb climbSubsystem, double speed) {
         this.climb = climbSubsystem;
         this.Speed = speed;
 
         addRequirements(climbSubsystem);
     }
 
-    public Climb_Move(Climb climbSubsystem, ClimbPosition position) {
+    public Climb_move(Climb climbSubsystem, ClimbPosition position) {
         this.climb = climbSubsystem;
         this.position = position;
 

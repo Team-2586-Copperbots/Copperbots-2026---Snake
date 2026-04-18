@@ -62,6 +62,7 @@ public class IntakeIOReal implements IntakeIO {
         pidConfig.GravityArmPositionOffset = 0.131;
         
         rollerMotorConfig.CurrentLimits.StatorCurrentLimit = 80;
+        rollerMotorConfig.CurrentLimits.SupplyCurrentLimit = 60;
 
         wristMotor.getConfigurator().apply(wristMotorConfig);
         rollerMotor.getConfigurator().apply(rollerMotorConfig);

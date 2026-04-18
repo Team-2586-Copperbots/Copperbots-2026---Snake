@@ -17,18 +17,18 @@ public class Climb_AutoClimb_Sequence {
                 return new SequentialCommandGroup(
                                 new ParallelCommandGroup(
                                                 drive.commandFromPath(MathedClimbUtils.getPreClimbTarget(drive)),
-                                                new Climb_Move(climb, ClimbPosition.UP)),
+                                                new Climb_move(climb, ClimbPosition.UP)),
                                 drive.commandFromPath(MathedClimbUtils.getFinalClimbTarget(drive)),
-                                new Climb_Move(climb, ClimbPosition.DOWN));
+                                new Climb_move(climb, ClimbPosition.DOWN));
         }
 
         public static Command getManual(Drive drive, Climb climb) {
                 return new SequentialCommandGroup(
                                 new ParallelCommandGroup(
                                                 drive.commandFromPath(ManualClimbUtils.getPreClimbTarget(drive)),
-                                                new Climb_Move(climb, ClimbPosition.UP)),
+                                                new Climb_move(climb, ClimbPosition.UP)),
                                 drive.commandFromPath(ManualClimbUtils.getFinalClimbTarget(drive)),
-                                new Climb_Move(climb, ClimbPosition.DOWN));
+                                new Climb_move(climb, ClimbPosition.DOWN));
 
         }
 

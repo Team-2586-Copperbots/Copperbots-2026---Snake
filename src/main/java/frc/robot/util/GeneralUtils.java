@@ -80,7 +80,11 @@ public final class GeneralUtils {
     public static double shooterSpeedFromDistance(double distance) {
         // regresion equation for shooter
         Logger.recordOutput("Stuff/distancs for shooter", distance);
-        return ((5.98 * distance) + 29.8);
+        double speed = ((5.98 * distance) + 29.8);
+        // if (speed > 90) {
+        //     speed = 90;
+        // }
+        return speed;
     }
 
     public static double timeFromDistance(double distance) {
