@@ -32,6 +32,7 @@ public class ShooterIOReal implements ShooterIO {
         shooterConfig = new TalonFXConfiguration();
 
         shooterConfig.CurrentLimits.StatorCurrentLimit = SHOOTER_CONSTANTS.CURRENT_LIMIT;
+        shooterConfig.CurrentLimits.SupplyCurrentLimit = 50;
         var motorOutputConfigs = shooterConfig.MotorOutput;
         motorOutputConfigs.NeutralMode = NeutralModeValue.Brake;
         motorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive;

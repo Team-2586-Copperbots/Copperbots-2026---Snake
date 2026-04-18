@@ -97,29 +97,56 @@ public final class Autos {
                                 drive.commandFromPath(drive.pathFromPose(FIELD_CONSTANTS.TEST_POSE2D)),
                                 new ParallelCommandGroup(
                                                 drive.commandFromPath(ManualClimbUtils.getPreClimbTarget(drive)),
-                                                new Climb_Move(climb, ClimbPosition.UP)),
+                                                new Climb_move(climb, ClimbPosition.UP)),
                                 drive.commandFromPath(ManualClimbUtils.getFinalClimbTarget(drive)),
-                                new Climb_Move(climb, ClimbPosition.CLIMBED));
+                                new Climb_move(climb, ClimbPosition.CLIMBED));
         }
 
         private static void makeAutos() {
                 AUTOS = List.of(
                                 // auto("8ball then out",
-                                //                 new SequentialCommandGroup(
-                                //                                 Shooter_AutoShoot_Sequence
-                                //                                                 .getWRumble(shooter, turret, indexer,
-                                //                                                                 intake)
-                                //                                                 .withDeadline(new WaitCommand(2)),
-                                //                                 outNSweepFirst())),
-                                auto("elims auto 1", 
-                                        new SequentialCommandGroup(
-                                                new ParallelCommandGroup(new WaitCommand(5), Shooter_AutoShoot_Sequence.getWRumble(shooter, turret, indexer,
+                                // new SequentialCommandGroup(
+                                // Shooter_AutoShoot_Sequence
+                                // .getWRumble(shooter, turret, indexer,
+                                // intake)
+                                // .withDeadline(new WaitCommand(2)),
+                                // outNSweepFirst())),
+                                auto("null", Commands.none()),
+                                auto("shoot 8", Shooter_AutoShoot_Sequence.get(shooter, turret, indexer)),
+                                auto("elims auto 1",
+                                                new SequentialCommandGroup(
+                                                                new ParallelDeadlineGroup(new WaitCommand(5),
+                                                                                Shooter_AutoShoot_Sequence.getWRumble(
+                                                                                                shooter, turret,
+                                                                                                indexer,
                                                                                                 intake)),
-                                                new ParallelCommandGroup(
-                                                        drive.defer(() -> drive.autoPathFromString("e-1")), 
-                                                        new Intake_PID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED)), 
-                                                Shooter_AutoShoot_Sequence.getWRumble(shooter, turret, indexer,
-                                                                                                intake))),
+                                                                new ParallelDeadlineGroup(
+                                                                                drive.defer(() -> drive
+                                                                                                .autoPathFromString(
+                                                                                                                "e-1")),
+                                                                                new Intake_PID(intake,
+                                                                                                IntakePosition.OUT,
+                                                                                                OPERATOR_CONSTANTS.ROLLER_SPEED))
+                                                                                .withTimeout(9.0),
+                                                                Shooter_AutoShoot_Sequence.getWRumble(shooter, turret,
+                                                                                indexer,
+                                                                                intake))),
+                                auto("elims auto 2",
+                                                new SequentialCommandGroup(
+                                                                new ParallelDeadlineGroup(new WaitCommand(5),
+                                                                                Shooter_AutoShoot_Sequence.getWRumble(
+                                                                                                shooter, turret,
+                                                                                                indexer,
+                                                                                                intake)),
+                                                                new ParallelDeadlineGroup(
+                                                                                drive.defer(() -> drive
+                                                                                                .autoPathFromString(
+                                                                                                                "e-2 secret")),
+                                                                                new Intake_PID(intake,
+                                                                                                IntakePosition.OUT,
+                                                                                                OPERATOR_CONSTANTS.ROLLER_SPEED))
+                                                                                .withTimeout(5.0),
+                                                                DriveCommands.stopWithX(drive))),
                                 auto("out", new SequentialCommandGroup(
                                                 outNSweepFirst(),
                                                 Shooter_AutoShoot_Sequence.getWRumble(shooter, turret,
@@ -158,7 +185,7 @@ public final class Autos {
                                                                                 .getWRumble(shooter, turret, indexer,
                                                                                                 intake)
                                                                                 .withTimeout(5.5),
-                                                                new Climb_Move(climb, ClimbPosition.UP)),
+                                                                new Climb_move(climb, ClimbPosition.UP)),
                                                 new Intake_PID(intake, IntakePosition.IN, 0)
                                                                 .withTimeout(1),
                                                 drive.commandFromPath(drive.changeConstrains(
@@ -169,7 +196,7 @@ public final class Autos {
                                                 // drive.commandFromPath(drive.pathFromPose(new Pose2d(0.98, 05.010,
                                                 // new Rotation2d(Degrees.of(90))))),
                                                 drive.cRunVelocity(new ChassisSpeeds(-0.25, 0, 0)).withTimeout(2),
-                                                new Climb_Move(climb, ClimbPosition.CLIMBED))),
+                                                new Climb_move(climb, ClimbPosition.CLIMBED))),
                                 auto("drive forwards",
                                                 new SequentialCommandGroup(
                                                                 drive.cRunVelocity(new ChassisSpeeds(1, 0, 0))
