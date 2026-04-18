@@ -104,13 +104,22 @@ public final class Autos {
 
         private static void makeAutos() {
                 AUTOS = List.of(
-                                auto("8ball then out",
-                                                new SequentialCommandGroup(
-                                                                Shooter_AutoShoot_Sequence
-                                                                                .getWRumble(shooter, turret, indexer,
-                                                                                                intake)
-                                                                                .withDeadline(new WaitCommand(2)),
-                                                                outNSweepFirst())),
+                                // auto("8ball then out",
+                                //                 new SequentialCommandGroup(
+                                //                                 Shooter_AutoShoot_Sequence
+                                //                                                 .getWRumble(shooter, turret, indexer,
+                                //                                                                 intake)
+                                //                                                 .withDeadline(new WaitCommand(2)),
+                                //                                 outNSweepFirst())),
+                                auto("elims auto 1", 
+                                        new SequentialCommandGroup(
+                                                new ParallelCommandGroup(new WaitCommand(5), Shooter_AutoShoot_Sequence.getWRumble(shooter, turret, indexer,
+                                                                                                intake)),
+                                                new ParallelCommandGroup(
+                                                        drive.defer(() -> drive.autoPathFromString("e-1")), 
+                                                        new Intake_PID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED)), 
+                                                Shooter_AutoShoot_Sequence.getWRumble(shooter, turret, indexer,
+                                                                                                intake))),
                                 auto("out", new SequentialCommandGroup(
                                                 outNSweepFirst(),
                                                 Shooter_AutoShoot_Sequence.getWRumble(shooter, turret,
