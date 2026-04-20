@@ -83,7 +83,12 @@ public class Shooter extends SubsystemBase {
 
     @AutoLogOutput(key = "Shooter/getAtTarget")
     public boolean isAtTarget() {
-        return Math.abs(getMotor1Speed() - io.getMotorInputs(SHOOTER_MOTOR_1).setpoint) < SHOOTER_CONSTANTS.TOLERENCE;
+        boolean isAtTarget = Math
+                .abs(getMotor1Speed() - io.getMotorInputs(SHOOTER_MOTOR_1).setpoint) < SHOOTER_CONSTANTS.TOLERENCE;
+        if (io.getMotorInputs(SHOOTER_MOTOR_1).setpoint >= 80) {
+            return true;
+        }
+        return isAtTarget;
     }
 
     @Override

@@ -111,8 +111,8 @@ public final class Constants {
     public static void updateUtilsPositions() {
       CENTER_OF_HUB = AllianceFlipUtil.apply(new Pose2d(Meters.of(4.62), Meters.of(4.04), Rotation2d.kZero));
       BOTTOM_FULE_STORAGE = AllianceFlipUtil.apply(new Pose2d(Meters.of(2.75), Meters.of(1.6), Rotation2d.kZero));
-      TOP_FULE_STORAGE = new Pose2d(BOTTOM_FULE_STORAGE.getX(),
-          (FIELD_WIDTH.in(Meters) - BOTTOM_FULE_STORAGE.getY()), Rotation2d.kZero);
+      TOP_FULE_STORAGE = new Pose2d(BOTTOM_FULE_STORAGE.getX(), (FIELD_WIDTH.in(Meters) - BOTTOM_FULE_STORAGE.getY()),
+          Rotation2d.kZero);
     }
 
   }
