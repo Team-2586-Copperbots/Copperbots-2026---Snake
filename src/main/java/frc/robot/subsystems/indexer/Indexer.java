@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-
 public class Indexer extends SubsystemBase {
     private static Indexer instance = null;
     private IndexerIO io;
@@ -18,17 +17,17 @@ public class Indexer extends SubsystemBase {
 
     private Indexer() {
         switch (Constants.currentMode) {
-                case REAL:
-                    io = new IndexerIOReal();
-                    break;
-                case SIM:
-                    io = new IndexerIOSim();
-                    break;
-                default:
-                    io = new IndexerIO() {
-                    };
-                    break;
-            }
+            case REAL:
+                io = new IndexerIOReal();
+                break;
+            case SIM:
+                io = new IndexerIOSim();
+                break;
+            default:
+                io = new IndexerIO() {
+                };
+                break;
+        }
     }
 
     @Override
@@ -48,26 +47,28 @@ public class Indexer extends SubsystemBase {
         io.setTowerSpeed(speed);
     }
 
-    public static enum IndexerStates {
-        ON(-0.45, 0.5),
-        OFF(0, 0);
+    // public static enum IndexerStates {
+    // ON(-0.45, 0.5),
+    // OFF(0, 0);
 
-        public final double spindexer;
-        public final double tower;
+    // public final double spindexer;
+    // public final double tower;
 
-        private IndexerStates(double spindexer, double tower) {
-            this.spindexer = spindexer;
-            this.tower = tower;
-        }
-    }
+    // private IndexerStates(double spindexer, double tower) {
+    // this.spindexer = spindexer;
+    // this.tower = tower;
+    // }
+    // }
 
-    public static class IndexerState {
-        public static customeIndexerState ON = new customeIndexerState(-0.45, 0.5);
-        public static customeIndexerState OFF = new customeIndexerState(0, 0);
+    public static class IndexerStates {
+        public static IndexerState ON = new IndexerState(-0.45, 0.5);
+        public static IndexerState OFF = new IndexerState(0, 0);
+        // public static IndexerState FULL = new IndexerState(1, 1);
         
+
     }
 
-    public record customeIndexerState(double spindexer, double tower) {
+    public record IndexerState(double spindexer, double tower) {
     }
 
 }

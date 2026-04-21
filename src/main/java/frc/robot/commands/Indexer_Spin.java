@@ -2,20 +2,22 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.indexer.Indexer;
+import frc.robot.subsystems.indexer.Indexer.IndexerState;
+import frc.robot.subsystems.indexer.Indexer.IndexerStates;
 import frc.robot.subsystems.indexer.Indexer.IndexerStates;
 
 public class Indexer_Spin extends Command {
     // class to manulay run the shooter
     private Indexer Indexer;
-    private IndexerStates State;
+    private IndexerState state;
     // private boolean simPojectil = false;
     // private int counter = 0;
     // @AutoLogOutput (key="Indexer/timebetwen")
     // private int timeBetwen = 25;
 
-    public Indexer_Spin(Indexer IndexerSubsystem, IndexerStates state) {
+    public Indexer_Spin(Indexer IndexerSubsystem, IndexerState state) {
         this.Indexer = IndexerSubsystem;
-        this.State = state;
+        this.state = state;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(IndexerSubsystem);
     }
@@ -23,23 +25,24 @@ public class Indexer_Spin extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        // if (State != IndexerStates.OFF && Constants.currentMode == Constants.Mode.SIM) {
-        //     simPojectil = true;
+        // if (State != IndexerStates.OFF && Constants.currentMode ==
+        // Constants.Mode.SIM) {
+        // simPojectil = true;
         // }
-        Indexer.setSpindexerSpeed(State.spindexer);
-        Indexer.setTowerSpeed(State.tower);
+        Indexer.setSpindexerSpeed(state.spindexer());
+        Indexer.setTowerSpeed(state.tower());
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
         // if (simPojectil) {
-        //     if (counter < timeBetwen) {
-        //         counter++;
-        //     } else {
-        //         counter = 0;
-        //         simsProjectile.shootLemmon();
-        //     }
+        // if (counter < timeBetwen) {
+        // counter++;
+        // } else {
+        // counter = 0;
+        // simsProjectile.shootLemmon();
+        // }
         // }
     }
 
@@ -51,8 +54,8 @@ public class Indexer_Spin extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        Indexer.setSpindexerSpeed(IndexerStates.OFF.spindexer);
-        Indexer.setTowerSpeed(IndexerStates.OFF.tower);
+        Indexer.setSpindexerSpeed(IndexerStates.OFF.spindexer());
+        Indexer.setTowerSpeed(IndexerStates.OFF.tower());
     }
 
 }

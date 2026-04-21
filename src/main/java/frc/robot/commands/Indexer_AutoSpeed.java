@@ -7,18 +7,15 @@ import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.indexer.Indexer.IndexerStates;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.turret.Turret;
+import frc.robot.util.GeneralUtils;
 
-public class Indexer_AutoFeed extends Command {
-    // command that runs the spindexer UP when the shooter and turret are lined up
-    // needs to be run constantly so the math and logic keeps on running
+public class Indexer_AutoSpeed extends Command {
     private Indexer indexer;
-    private Shooter shooter;
-    private Turret turret;
+    private Shooter shooter = Shooter.getInstance();
+    private Turret turret = Turret.getInstance();
 
-    public Indexer_AutoFeed(Indexer indexerSubsystem) {
+    public Indexer_AutoSpeed(Indexer indexerSubsystem) {
         this.indexer = indexerSubsystem;
-        this.shooter = Shooter.getInstance();
-        this.turret = Turret.getInstance();
         addRequirements(indexerSubsystem);
     }
 
@@ -28,7 +25,8 @@ public class Indexer_AutoFeed extends Command {
     }
 
     public boolean shouldShoot() {
-        return (shooter.isAtTarget() && turret.isAtTarget());
+        // return (shooter.isAtTarget() && turret.isAtTarget());
+        return true;
     }
 
     @Override
@@ -36,8 +34,9 @@ public class Indexer_AutoFeed extends Command {
         Logger.recordOutput("AutoFeed/Shooter.isAtTarget()", shooter.isAtTarget());
         Logger.recordOutput("AutoFeed/Turret.isAtTarget", turret.isAtTarget());
         if (shouldShoot()) {
-            indexer.setSpindexerSpeed(IndexerStates.ON.spindexer());
-            indexer.setTowerSpeed(IndexerStates.ON.tower());
+            Logger.recordOutput("AutoFeed/autoindexer", GeneralUtils.getAutoIndexerState());
+            indexer.setSpindexerSpeed(GeneralUtils.getAutoIndexerState().spindexer());
+            indexer.setTowerSpeed(GeneralUtils.getAutoIndexerState().tower());
         } else {
             indexer.setSpindexerSpeed(IndexerStates.OFF.spindexer());
             indexer.setTowerSpeed(IndexerStates.OFF.tower());
@@ -54,5 +53,4 @@ public class Indexer_AutoFeed extends Command {
         indexer.setSpindexerSpeed(IndexerStates.OFF.spindexer());
         indexer.setTowerSpeed(IndexerStates.OFF.tower());
     }
-
 }

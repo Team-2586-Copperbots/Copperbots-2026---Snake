@@ -14,8 +14,6 @@ import frc.robot.subsystems.turret.Turret;
 
 import static frc.robot.Constants.CANIds.Canivore;
 
-import org.littletonrobotics.junction.Logger;
-
 public class LED extends SubsystemBase {
     private static LED instance = null;
     private CANdle candle;
@@ -45,6 +43,7 @@ public class LED extends SubsystemBase {
         // setAutoState();
     }
 
+    @SuppressWarnings("unused")
     private void setAutoState() {
         if (Turret.getInstance().isAtTarget() && Shooter.getInstance().isAtTarget()) {
             setColor(LED_Strip.FIRST, LED_Colour.GREEN);

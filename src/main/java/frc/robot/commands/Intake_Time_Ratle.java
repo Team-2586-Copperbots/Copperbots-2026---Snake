@@ -11,13 +11,14 @@ public class Intake_Time_Ratle extends Command {
     // unfinished class to rattle the intake in and out for auto
     // needs to be runn constantly for the math with the intake roller to work
     private Intake Intake;
-    private double lastActionTime;
+    private double lastJugleTime;
+    private boolean goingOut = false;
+    private int timer = 0;
 
     public Intake_Time_Ratle(Intake Intake) {
         this.Intake = Intake;
-        // make a implementation with current based along side time based
 
-        lastActionTime = System.currentTimeMillis();
+        lastJugleTime = System.currentTimeMillis();
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(Intake);
     }
@@ -25,21 +26,49 @@ public class Intake_Time_Ratle extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        Intake.setRollerSpeed(OPERATOR_CONSTANTS.ROLLER_SPEED);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        Logger.recordOutput("time betwen", Math.abs(lastActionTime - System.currentTimeMillis()));
-        if (Math.abs(lastActionTime - System.currentTimeMillis()) > INTAKE_CONSTANTS.timeBetwenRattaling) {
-            Intake.setIntakePositionTarget(IntakePosition.OUT);
+
+        Intake.setRollerSpeed(OPERATOR_CONSTANTS.ROLLER_SPEED);
+
+        Logger.recordOutput("time betwen", System.currentTimeMillis() - lastJugleTime);
+        // if (Math.abs(lastJugleTime - System.currentTimeMillis()) >
+        // INTAKE_CONSTANTS.timeBetwenRattaling) {
+        // Intake.setIntakePositionTarget(IntakePosition.OUT);
+        // if (Intake.getIsAtTarget()) {
+        // lastJugleTime = System.currentTimeMillis();
+        // }
+        // } else {
+        // Intake.setIntakePositionTarget(IntakePosition.JUGGLE);
+        // }
+        if (timer < INTAKE_CONSTANTS.timeBetwenRattaling) {
             if (Intake.getIsAtTarget()) {
-                lastActionTime = System.currentTimeMillis();
+                Intake.setIntakePositionTarget(IntakePosition.JUGGLE);
             }
+            timer++;
         } else {
-            Intake.setIntakePositionTarget(IntakePosition.JUGGLE);
+            timer = 0;
+            Intake.setIntakePositionTarget(IntakePosition.OUT);
         }
+
+        // if (goingOut == true) {
+        // if (Intake.getIsAtTarget()) {
+        // goingOut = false;
+        // }
+        // } else {
+        // Logger.recordOutput("Intake/time betwen, current based",
+        // System.currentTimeMillis() - lastJugleTime);
+        // if (System.currentTimeMillis()
+        // - lastJugleTime > INTAKE_CONSTANTS.timeBetwenRattaling) {
+        // Intake.setIntakePositionTarget(IntakePosition.OUT);
+        // goingOut = true;
+        // } else {
+        // Intake.setIntakePositionTarget(IntakePosition.JUGGLE);
+        // }
+        // }
 
     }
 

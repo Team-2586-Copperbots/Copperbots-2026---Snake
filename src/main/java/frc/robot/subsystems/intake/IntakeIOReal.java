@@ -44,7 +44,7 @@ public class IntakeIOReal implements IntakeIO {
 
         wristMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake; 
         // when in tolerence no pid
-        wristMotorConfig.ClosedLoopGeneral.GainSchedErrorThreshold = 0.01;
+        wristMotorConfig.ClosedLoopGeneral.GainSchedErrorThreshold = 0.015;
         wristMotorConfig.Slot0.GainSchedBehavior = GainSchedBehaviorValue.Inactive; 
 
         var pidConfig = wristMotorConfig.Slot0;
@@ -53,7 +53,7 @@ public class IntakeIOReal implements IntakeIO {
         pidConfig.kD = 0.000;
 
         // friction
-        pidConfig.kS = 0.320;
+        pidConfig.kS = 0.300;
         pidConfig.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
 
         // gravity
@@ -62,6 +62,7 @@ public class IntakeIOReal implements IntakeIO {
         pidConfig.GravityArmPositionOffset = 0.131;
         
         rollerMotorConfig.CurrentLimits.StatorCurrentLimit = 80;
+        rollerMotorConfig.CurrentLimits.SupplyCurrentLimit = 60;
 
         wristMotor.getConfigurator().apply(wristMotorConfig);
         rollerMotor.getConfigurator().apply(rollerMotorConfig);
