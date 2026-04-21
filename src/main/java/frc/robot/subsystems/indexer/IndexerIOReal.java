@@ -5,6 +5,7 @@ import org.littletonrobotics.junction.Logger;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import frc.robot.Constants;
 import frc.robot.Constants.CANIds;
+import frc.robot.util.auto_logging_stuff.LoggedTalonFXInputs;
 import frc.robot.util.auto_logging_stuff.TalonFXAutoLogged;
 import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
 

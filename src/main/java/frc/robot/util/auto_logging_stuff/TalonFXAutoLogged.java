@@ -8,6 +8,7 @@ import com.ctre.phoenix6.signals.ControlModeValue;
 
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
+import frc.robot.util.driveUtils.PhoenixUtil.TalonFXMotorControllerSim;
 
 public class TalonFXAutoLogged extends TalonFX {
     private TalonFXInputsAutoLogged inputs;

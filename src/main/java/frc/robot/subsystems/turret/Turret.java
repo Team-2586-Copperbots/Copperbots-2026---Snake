@@ -17,21 +17,21 @@ import frc.robot.Constants.TURRET_CONSTANTS;
 
 public class Turret extends SubsystemBase {
     private static Turret instance = null;
-    private TurretIO io;
+    private TurretIOTalonFX io;
     private TurretIOInputsAutoLogged inputs = new TurretIOInputsAutoLogged();
 
     public static Turret getInstance() {
         if (instance == null) {
             switch (Constants.currentMode) {
                 case REAL:
-                    instance = new Turret(new TurretIOReal());
+                    instance = new Turret(new TurretIOTalonFX());
                     break;
                 case SIM:
-                    instance = new Turret(new TurretIOSim());
+                    instance = new Turret(new TurretIOTalonFXsim());
                     break;
 
                 default:
-                    instance = new Turret(new TurretIO() {
+                    instance = new Turret(new TurretIOTalonFX() {
                     });
                     break;
             }
@@ -39,13 +39,13 @@ public class Turret extends SubsystemBase {
         return instance;
     }
 
-    private Turret(TurretIO io) {
+    private Turret(TurretIOTalonFX io) {
         this.io = io;
     }
 
     @Override
     public void periodic() {
-        io.updateInputs(inputs);
+        io.updateInputs();
         Logger.processInputs("Turret", inputs);
     }
 

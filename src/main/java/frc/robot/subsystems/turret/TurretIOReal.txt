@@ -18,7 +18,7 @@ import frc.robot.Constants.TURRET_CONSTANTS;
 import frc.robot.util.auto_logging_stuff.TalonFXAutoLogged;
 import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
 
-public class TurretIOReal implements TurretIO {
+public class TurretIOReal {
 
     // every thing workis in rotations!
     // everything is messured from the limit switch
@@ -27,6 +27,7 @@ public class TurretIOReal implements TurretIO {
     private final TalonFXConfiguration turnMotorConfig;
     private final DigitalInput limitSwitch;
     private final PositionVoltage positionVoltage = new PositionVoltage(0);
+    private TurretIOInputsAutoLogged inputs = new TurretIOInputsAutoLogged();
     private boolean canMakeItToTarget = true;
 
     public TurretIOReal() {
@@ -57,7 +58,7 @@ public class TurretIOReal implements TurretIO {
     }
 
     @Override
-    public void updateInputs(TurretIOInputs inputs) {
+    public void updateInputs() {
         Logger.processInputs("Turret/Motor", turnMotor.getInputs());
 
         inputs.turretRotation = getRobotRelitiveRotation();

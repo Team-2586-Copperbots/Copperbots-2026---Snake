@@ -11,6 +11,7 @@ import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
 import frc.robot.Constants.CANIds;
 import frc.robot.subsystems.intake.Intake.IntakePosition;
+import frc.robot.util.auto_logging_stuff.LoggedTalonFXInputs;
 import frc.robot.util.auto_logging_stuff.TalonFXAutoLogged;
 import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
 
@@ -42,10 +43,10 @@ public class IntakeIOReal implements IntakeIO {
         wristMotorConfig.Feedback.FeedbackRemoteSensorID = CANIds.INTAKE_CANCODER;
         wristMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
 
-        wristMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake; 
+        wristMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         // when in tolerence no pid
         wristMotorConfig.ClosedLoopGeneral.GainSchedErrorThreshold = 0.015;
-        wristMotorConfig.Slot0.GainSchedBehavior = GainSchedBehaviorValue.Inactive; 
+        wristMotorConfig.Slot0.GainSchedBehavior = GainSchedBehaviorValue.Inactive;
 
         var pidConfig = wristMotorConfig.Slot0;
         pidConfig.kP = 18.000;
@@ -60,7 +61,7 @@ public class IntakeIOReal implements IntakeIO {
         pidConfig.kG = 0.3750;
         pidConfig.GravityType = GravityTypeValue.Arm_Cosine;
         pidConfig.GravityArmPositionOffset = 0.131;
-        
+
         rollerMotorConfig.CurrentLimits.StatorCurrentLimit = 80;
         rollerMotorConfig.CurrentLimits.SupplyCurrentLimit = 60;
 
@@ -74,7 +75,6 @@ public class IntakeIOReal implements IntakeIO {
 
         inputs.currentCancoderPosition = cancoder.getPosition().getValueAsDouble();
         inputs.tagertPosition = targetPosition;
-
 
         Logger.processInputs("Intake", inputs);
         Logger.processInputs("Intake/Wrist Motor", wristMotor.getInputs());

@@ -14,7 +14,7 @@ public interface TurretIO {
         public boolean canMakeItToTarget = false;
     }
 
-    public default void updateInputs(TurretIOInputs inputs) {
+    public default void updateInputs() {
     }
 
     public default TalonFXInputsAutoLogged getMotorInputs() {

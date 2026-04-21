@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants.CANIds;
 import frc.robot.Constants.DIO_IDS;
 import frc.robot.subsystems.climb.Climb.ClimbPosition;
+import frc.robot.util.auto_logging_stuff.LoggedTalonFXInputs;
 import frc.robot.util.auto_logging_stuff.TalonFXAutoLogged;
 import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
 
