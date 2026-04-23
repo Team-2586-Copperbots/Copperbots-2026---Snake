@@ -93,6 +93,6 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void periodic() {
-        io.updateInputs();
+        io.periodic();
     }
 }

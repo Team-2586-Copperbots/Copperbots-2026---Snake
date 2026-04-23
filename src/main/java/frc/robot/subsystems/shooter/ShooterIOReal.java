@@ -14,21 +14,15 @@ import frc.robot.util.auto_logging_stuff.LoggedTalonFXInputs;
 import frc.robot.util.auto_logging_stuff.TalonFXAutoLogged;
 import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
 
-import static frc.robot.Constants.CANIds.Canivore;
-
 import org.littletonrobotics.junction.Logger;
 
-public class ShooterIOReal implements ShooterIO {
-    // motors
-    private final TalonFXAutoLogged shooterMotor1, shooterMotor2;
+public class ShooterIOReal extends ShooterIO {
 
     // config vars
     private final TalonFXConfiguration shooterConfig;
-    private final VelocityVoltage velocityVoltage = new VelocityVoltage(0.0).withSlot(0);
 
     public ShooterIOReal() {
-        shooterMotor1 = new TalonFXAutoLogged(Constants.CANIds.SHOOTER_MOTOR_1, Canivore);
-        shooterMotor2 = new TalonFXAutoLogged(Constants.CANIds.SHOOTER_MOTOR_2, Canivore);
+        super();
 
         shooterConfig = new TalonFXConfiguration();
 
@@ -52,34 +46,20 @@ public class ShooterIOReal implements ShooterIO {
     }
 
     @Override
-    public void updateInputs() {
-        Logger.processInputs("Shooter/Motor 1", shooterMotor1.getInputs());
-        Logger.processInputs("Shooter/Motor 2", shooterMotor2.getInputs());
+    public void periodic() {
+        motor1Inputs.log("Shooter/Motor 1", shooterMotor1);
+        motor2Inputs.log("Shooter/Motor 2", shooterMotor2);
     }
 
     @Override
     public TalonFXInputsAutoLogged getMotorInputs(int id) {
         switch (id) {
             case CANIds.SHOOTER_MOTOR_1:
-                return shooterMotor1.getInputs();
-            case CANIds.SHOOTER_MOTOR_2:
-                return shooterMotor2.getInputs();
+                return motor1Inputs.getInputs(shooterMotor1);
+            case CANIds.CLIMB_MOTOR_2:
+                return motor2Inputs.getInputs(shooterMotor2);
+            default:
+                return null;
         }
-        return null;
-    }
-
-    @Override
-    public void runVoltage(double voltage) {
-        shooterMotor1.setVoltage(voltage);
-    }
-
-    @Override
-    public void setMotorSetpoint(double velocity) {
-        shooterMotor1.setControl(velocityVoltage.withVelocity(velocity));
-    }
-
-    @Override
-    public void setPercentageSpeed(double speed) {
-        shooterMotor1.set(speed);
     }
 }

@@ -41,6 +41,10 @@ public final class GeneralUtils {
         return number;
     }
 
+    public static double invert(double number) {
+        return Math.pow(number, -1);
+    }
+
     public static IndexerState getAutoIndexerState() {
         double towerSpeed = (Shooter.getInstance().getMotor1Speed() * 0.9) / 100;
         // double towerSpeed = (shooterSpeedFromTarget() * 0.9) / 100;

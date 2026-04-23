@@ -22,7 +22,7 @@ import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
 import org.littletonrobotics.junction.AutoLog;
 
 public class TurretIO {
-    
+
     @AutoLog
     public static class TurretIOInputs {
         public double absTurretRotation = 0;
@@ -31,13 +31,12 @@ public class TurretIO {
         public boolean limitSwitch = false;
         public boolean canMakeItToTarget = false;
     }
-    
+
     // implements TurretIO
     // every thing workis in rotations!
     // everything is messured from the limit switch
 
     protected final TalonFX turnMotor;
-    protected final TalonFXConfiguration turnMotorConfig;
     protected final DigitalInput limitSwitch;
     protected final PositionVoltage positionVoltage = new PositionVoltage(0);
     protected boolean canMakeItToTarget = false;
@@ -49,37 +48,11 @@ public class TurretIO {
         turnMotor = new TalonFX(CANIds.TURRET_TURN_MOTOR, Canivore);
         limitSwitch = new DigitalInput(DIO_IDS.TURRET_LIMIT_SWITCH);
 
-        turnMotorConfig = new TalonFXConfiguration();
 
-        var motorOutputConfigs = turnMotorConfig.MotorOutput;
-        motorOutputConfigs.NeutralMode = NeutralModeValue.Coast;
-
-        // pid control of the falcon through CTRE's motor configs
-        var pidConfig = turnMotorConfig.Slot0;
-        pidConfig.kP = 2.250;
-        pidConfig.kI = 0.000;
-        pidConfig.kD = 0.000;
-
-        pidConfig.kS = 0.245;
-        pidConfig.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
-
-        turnMotorConfig.ClosedLoopGeneral.GainSchedErrorThreshold = 0.002 * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO;
-        turnMotorConfig.Slot0.GainSchedBehavior = GainSchedBehaviorValue.ZeroOutput;
-
-        turnMotorConfig.CurrentLimits.StatorCurrentLimit = 80;
-        turnMotorConfig.CurrentLimits.SupplyCurrentLimit = 40;
-
-        turnMotor.getConfigurator().apply(turnMotorConfig);
     }
 
-    public void updateInputs() {
-        Logger.processInputs("Turret/Motor", motorInputs.getInputs(turnMotor));
+    public void periodic() {
 
-        inputs.turretRotation = getRobotRelitiveRotation();
-        inputs.absTurretRotation = getRingRotation();
-
-        inputs.canMakeItToTarget = canMakeItToTarget;
-        inputs.limitSwitch = !limitSwitch.get();
     }
 
     public TalonFXInputsAutoLogged getMotorInputs() {

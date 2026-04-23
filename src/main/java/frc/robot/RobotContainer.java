@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.FIELD_CONSTANTS;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.OPERATOR_CONSTANTS;
@@ -89,8 +90,7 @@ public class RobotContainer {
                         OPERATOR_CONSTANTS.OPERATOR_CONTROLER_PORT);
         private final CommandPS4Controller testController1 = new CommandPS4Controller(
                         OPERATOR_CONSTANTS.TEST_CONTROLER1_PORT);
-        @SuppressWarnings("unused")
-        private final CommandPS4Controller simControler = new CommandPS4Controller(
+        private final CommandXboxController simControler = new CommandXboxController(
                         OPERATOR_CONSTANTS.SIM_CONTROLER_PORT);
 
         // private final SendableChooser<Command> autoChooser;
@@ -346,6 +346,12 @@ public class RobotContainer {
                 // testController1.square().onTrue(new Shooter_ShootSpeed(shooter, -5, true));
                 // testController1.circle().onTrue(new Shooter_ShootSpeed(shooter, 1, true));
                 // testController1.cross().onTrue(new Shooter_ShootSpeed(shooter, -1, true));
+
+                // MARK:- SimController
+                // simControler.x().whileTrue(shooter.sysIdDynamic(Direction.kForward));
+
+                simControler.rightTrigger().onTrue(new Shooter_ShootSpeed(shooter, 40, false));
+                simControler.rightBumper().onTrue(new Shooter_ShootSpeed(shooter, 0, false));
         }
 
         public Command resetGyro() {

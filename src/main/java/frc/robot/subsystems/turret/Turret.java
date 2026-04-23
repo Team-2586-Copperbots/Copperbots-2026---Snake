@@ -18,13 +18,12 @@ import frc.robot.Constants.TURRET_CONSTANTS;
 public class Turret extends SubsystemBase {
     private static Turret instance = null;
     private TurretIO io;
-    private TurretIOInputsAutoLogged inputs = new TurretIOInputsAutoLogged();
 
     public static Turret getInstance() {
         if (instance == null) {
             switch (Constants.currentMode) {
                 case REAL:
-                    instance = new Turret(new TurretIO());
+                    instance = new Turret(new TurretIOReal());
                     break;
                 case SIM:
                     instance = new Turret(new TurretIOSim());
@@ -45,8 +44,7 @@ public class Turret extends SubsystemBase {
 
     @Override
     public void periodic() {
-        io.updateInputs();
-        Logger.processInputs("Turret", inputs);
+        io.periodic();
     }
 
     public void setTurretRotationTarget(double roations) {
@@ -62,11 +60,11 @@ public class Turret extends SubsystemBase {
     }
 
     public boolean getLimitSwitch() {
-        return inputs.limitSwitch;
+        return io.inputs.limitSwitch;
     }
 
     public boolean canGetToTarget() {
-        return inputs.canMakeItToTarget;
+        return io.inputs.canMakeItToTarget;
     }
 
     public boolean isAtTarget() {
