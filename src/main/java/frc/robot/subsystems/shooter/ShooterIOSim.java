@@ -2,8 +2,6 @@ package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.Volts;
 
-import org.littletonrobotics.junction.Logger;
-
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -11,13 +9,10 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
-import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import frc.robot.Constants.CANIds;
 import frc.robot.Constants.SHOOTER_CONSTANTS;
-import frc.robot.util.auto_logging_stuff.SimMotorAutoLogged;
 import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
 
 public class ShooterIOSim extends ShooterIO {
@@ -25,7 +20,6 @@ public class ShooterIOSim extends ShooterIO {
     private TalonFXConfiguration config;
     private TalonFXSimState simState;
     private DCMotorSim motorSim;
-    private LinearSystem linarsystem;
     private double moi = 0.001096772 * 2;
 
     public ShooterIOSim() {
@@ -50,10 +44,9 @@ public class ShooterIOSim extends ShooterIO {
         shooterMotor2.setControl(new Follower(shooterMotor1.getDeviceID(), MotorAlignmentValue.Opposed));
 
         simState = shooterMotor1.getSimState();
-        linarsystem = LinearSystemId.createDCMotorSystem(DCMotor.getFalcon500(2), moi, 1);
-        motorSim = new DCMotorSim(linarsystem,
+        motorSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(DCMotor.getFalcon500(2), moi, 1),
                 DCMotor.getFalcon500(2), 0.01, 0.25);
-                linarsystem.
+                
     }
 
     @Override
