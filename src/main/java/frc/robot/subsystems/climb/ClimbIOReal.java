@@ -17,7 +17,7 @@ import frc.robot.util.auto_logging_stuff.TalonFXAutoLogged;
 import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
 
 public class ClimbIOReal implements ClimbIO {
-    private final TalonFXAutoLogged climbMotor1, climbMotor2;
+    private final TalonFXAutoLogged climbMotor1;
     // private final LoggedTalonFX climb1, climb2;
     private final DigitalInput limitSwitch;
     private final TalonFXConfiguration climbMotorConfig;
@@ -35,7 +35,6 @@ public class ClimbIOReal implements ClimbIO {
 
     public ClimbIOReal() {
         climbMotor1 = new TalonFXAutoLogged(CANIds.CLIMB_MOTOR_1);
-        climbMotor2 = new TalonFXAutoLogged(CANIds.CLIMB_MOTOR_2);
         limitSwitch = new DigitalInput(DIO_IDS.CLIMB_LIMIT_SWITCH);
         climbMotorConfig = new TalonFXConfiguration();
 
@@ -51,9 +50,7 @@ public class ClimbIOReal implements ClimbIO {
         pidConfig.kD = 0.000;
 
         climbMotor1.getConfigurator().apply(climbMotorConfig);
-        climbMotor2.getConfigurator().apply(climbMotorConfig);
 
-        climbMotor2.setControl(new Follower(climbMotor1.getDeviceID(), MotorAlignmentValue.Aligned));
 
         // climbMotor1IO = new MotorIOTalon(climbMotor1);
         // climbMotor2IO = new MotorIOTalon(climbMotor2);
@@ -61,13 +58,12 @@ public class ClimbIOReal implements ClimbIO {
 
     @Override
     public void updateAndLogInputs() {
-        inputs.limitSwitch = !limitSwitch.get();
+        inputs.limitSwitch = limitSwitch.get();
         inputs.targetPosition = targePosition;
 
         Logger.processInputs("Climb", inputs);
 
         Logger.processInputs("Climb/Climb Motor 1", climbMotor1.getInputs());
-        Logger.processInputs("Climb/Climb motor 2", climbMotor2.getInputs());
     }
 
     @Override
@@ -80,8 +76,6 @@ public class ClimbIOReal implements ClimbIO {
         switch (id) {
             case CANIds.CLIMB_MOTOR_1:
                 return climbMotor1.getInputs();
-            case CANIds.CLIMB_MOTOR_2:
-                return climbMotor2.getInputs();
             default:
                 return null;
         }
@@ -90,7 +84,6 @@ public class ClimbIOReal implements ClimbIO {
     @Override
     public void setPosition(double position) {
         climbMotor1.setPosition(position);
-        climbMotor2.setPosition(position);
     }
 
     @Override

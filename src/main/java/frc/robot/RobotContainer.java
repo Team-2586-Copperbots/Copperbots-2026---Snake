@@ -11,6 +11,8 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilderImpl;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -22,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.FIELD_CONSTANTS;
 import frc.robot.Constants.Mode;
 import frc.robot.Constants.OPERATOR_CONSTANTS;
@@ -89,14 +92,14 @@ public class RobotContainer {
                         OPERATOR_CONSTANTS.OPERATOR_CONTROLER_PORT);
         private final CommandPS4Controller testController1 = new CommandPS4Controller(
                         OPERATOR_CONSTANTS.TEST_CONTROLER1_PORT);
-        @SuppressWarnings("unused")
-        private final CommandPS4Controller simControler = new CommandPS4Controller(
+        private final CommandXboxController simControler = new CommandXboxController(
                         OPERATOR_CONSTANTS.SIM_CONTROLER_PORT);
 
         // private final SendableChooser<Command> autoChooser;
         private final SendableChooser<Command> bLineChouser;
         private final SendableChooser<Command> characterizationChooser;
         private final SendableChooser<Double> polarityChooser;
+        private final SendableChooser<Double> delayChooser = new SendableChooser<Double>();
         public static final SendableChooser<Boolean> autofliper = new SendableChooser<Boolean>();
 
         /**
@@ -117,11 +120,15 @@ public class RobotContainer {
 
                 autofliper.addOption("left", true);
                 autofliper.setDefaultOption("right", false);
-                SmartDashboard.putData("autofliper, default left", autofliper);
+                SmartDashboard.putData("autofliper, default right", autofliper);
                 polarityChooser = new SendableChooser<Double>();
                 polarityChooser.addOption("negative", -1.0);
                 polarityChooser.setDefaultOption("pos", 1.0);
-                SmartDashboard.putData("Polarity chooser", polarityChooser);
+                SmartDashboard.putData("Subsystem Polarity chooser", polarityChooser);
+                delayChooser.setDefaultOption("0", 0.0);
+                for (int i = 1; i < 20; i++) {
+                        delayChooser.addOption("" + i, (double) i);
+                }
 
                 // Configure the trigger bindings
                 bLineChouser = new SendableChooser<Command>();
@@ -129,22 +136,16 @@ public class RobotContainer {
                 configureAutoCommands();
                 // make bline autos
                 buildBLineAutos();
+
                 // make chouser for drive charecterization
                 characterizationChooser = new SendableChooser<Command>();
                 addOptionsForCharecterization();
 
-                // For convenience a programmer could change this when going to competition.
-                // boolean isCompetition = false;
-                // Build an auto chooser. This will use Commands.none() as the default option.
-                // As an example, this will only show autos that start with "comp" while at
-                // competition as defined by the programmer
-                // autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier(
-                // (stream) -> isCompetition
-                // ? stream.filter(auto -> auto.getName().startsWith("comp"))
-                // : stream);
-                // SmartDashboard.putData("pathplaner chooser", autoChooser);
+                // make chouser for auto delay
+
                 SmartDashboard.putData("bline chooser", bLineChouser);
                 SmartDashboard.putData("characterization Chooset", characterizationChooser);
+                SmartDashboard.putData("Auto delay", delayChooser);
                 configureBindings();
 
         }
@@ -346,6 +347,12 @@ public class RobotContainer {
                 // testController1.square().onTrue(new Shooter_ShootSpeed(shooter, -5, true));
                 // testController1.circle().onTrue(new Shooter_ShootSpeed(shooter, 1, true));
                 // testController1.cross().onTrue(new Shooter_ShootSpeed(shooter, -1, true));
+
+                // MARK:- SimController
+                // simControler.x().whileTrue(shooter.sysIdDynamic(Direction.kForward));
+
+                simControler.povLeft().onTrue(new Shooter_ShootSpeed(shooter, 40, false));
+                simControler.povRight().onTrue(new Shooter_ShootSpeed(shooter, 0, false));
         }
 
         public Command resetGyro() {
@@ -376,7 +383,7 @@ public class RobotContainer {
          */
         public Command getAutonomousCommand() {
                 // return characterizationChooser.getSelected();
-                return Autos.getAuto();
+                return new SequentialCommandGroup(new WaitCommand(delayChooser.getSelected()), Autos.getAuto());
 
         }
 
