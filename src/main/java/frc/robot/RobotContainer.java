@@ -350,8 +350,8 @@ public class RobotContainer {
                 // MARK:- SimController
                 // simControler.x().whileTrue(shooter.sysIdDynamic(Direction.kForward));
 
-                simControler.rightTrigger().onTrue(new Shooter_ShootSpeed(shooter, 40, false));
-                simControler.rightBumper().onTrue(new Shooter_ShootSpeed(shooter, 0, false));
+                simControler.povLeft().onTrue(new Shooter_ShootSpeed(shooter, 40, false));
+                simControler.povRight().onTrue(new Shooter_ShootSpeed(shooter, 0, false));
         }
 
         public Command resetGyro() {

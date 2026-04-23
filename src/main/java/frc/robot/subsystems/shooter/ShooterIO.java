@@ -1,6 +1,7 @@
 package frc.robot.subsystems.shooter;
 
 import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -43,6 +44,7 @@ public class ShooterIO {
     }
 
     public void setMotorSetpoint(double velocity) {
+        Logger.recordOutput("commanded velocity", velocity);
         shooterMotor1.setControl(velocityVoltage.withVelocity(velocity));
     }
 

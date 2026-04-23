@@ -11,6 +11,7 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
+import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
@@ -24,6 +25,7 @@ public class ShooterIOSim extends ShooterIO {
     private TalonFXConfiguration config;
     private TalonFXSimState simState;
     private DCMotorSim motorSim;
+    private LinearSystem linarsystem;
     private double moi = 0.001096772 * 2;
 
     public ShooterIOSim() {
@@ -38,19 +40,20 @@ public class ShooterIOSim extends ShooterIO {
         motorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive;
 
         var pidConfig = config.Slot0;
-        pidConfig.kP = 0.550;
+        pidConfig.kP = 0.100;
         pidConfig.kI = 0.000;
-        pidConfig.kD = 0.200;
-        pidConfig.kV = 0.000;
-        // pidConfig.kS = 0.050;
+        pidConfig.kD = 0.000;
+        pidConfig.kV = 0.1125;
 
         shooterMotor1.getConfigurator().apply(config);
         shooterMotor2.getConfigurator().apply(config);
         shooterMotor2.setControl(new Follower(shooterMotor1.getDeviceID(), MotorAlignmentValue.Opposed));
 
         simState = shooterMotor1.getSimState();
-        motorSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(DCMotor.getFalcon500(2), moi, 1),
+        linarsystem = LinearSystemId.createDCMotorSystem(DCMotor.getFalcon500(2), moi, 1);
+        motorSim = new DCMotorSim(linarsystem,
                 DCMotor.getFalcon500(2), 0.01, 0.25);
+                linarsystem.
     }
 
     @Override
