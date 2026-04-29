@@ -33,7 +33,9 @@ import static edu.wpi.first.units.Units.Seconds;
 import java.util.List;
 
 public final class Autos {
-        private static final SendableChooser<Command> chooser = new SendableChooser<>();
+        private static final SendableChooser<Command> autoChouser = new SendableChooser<Command>();
+
+        private static final SendableChooser<Double> delayChooser = new SendableChooser<Double>();
 
         private static final Climb climb = Climb.getInstance();
         private static final Drive drive = Drive.getInstance();
@@ -50,17 +52,35 @@ public final class Autos {
         }
 
         public static Command getAuto() {
-                // Command torun = new SequentialCommandGroup(chooser.getSelected());
-                return chooser.getSelected();
+                SequentialCommandGroup torun = new SequentialCommandGroup(Commands.none());
+
+                if (delayChooser.getSelected() >= 2) {
+                        torun.addCommands(new ParallelDeadlineGroup(new WaitCommand(delayChooser.getSelected()),
+                                        Shooter_AutoShoot_Sequence.get(shooter, turret, indexer)));
+                } else {
+                        torun.addCommands(new WaitCommand(delayChooser.getSelected()));
+                }
+
+                Command auto = autoChouser.getSelected().asProxy();
+                torun.addCommands(auto);
+
+                return torun;
         }
 
         public static void putChouser() {
-                chooser.setDefaultOption("Do Nothing", Commands.none());
+                autoChouser.setDefaultOption("Do Nothing", Commands.none());
                 makeAutos();
                 for (AutoDefinition autoDefinition : AUTOS) {
-                        chooser.addOption(autoDefinition.name(), autoDefinition.command());
+                        autoChouser.addOption(autoDefinition.name(), autoDefinition.command());
                 }
-                SmartDashboard.putData("AUTOS chouser", chooser);
+                SmartDashboard.putData("AUTOS chouser", autoChouser);
+
+                // delays
+                delayChooser.setDefaultOption("0", 0.0);
+                for (int i = 1; i < 20; i++) {
+                        delayChooser.addOption("" + i, (double) i);
+                }
+                SmartDashboard.putData("Auto delay", delayChooser);
 
         }
 
