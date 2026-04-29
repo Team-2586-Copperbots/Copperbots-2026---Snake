@@ -99,7 +99,6 @@ public class RobotContainer {
         private final SendableChooser<Command> bLineChouser;
         private final SendableChooser<Command> characterizationChooser;
         private final SendableChooser<Double> polarityChooser;
-        private final SendableChooser<Double> delayChooser = new SendableChooser<Double>();
         public static final SendableChooser<Boolean> autofliper = new SendableChooser<Boolean>();
 
         /**
@@ -125,10 +124,6 @@ public class RobotContainer {
                 polarityChooser.addOption("negative", -1.0);
                 polarityChooser.setDefaultOption("pos", 1.0);
                 SmartDashboard.putData("Subsystem Polarity chooser", polarityChooser);
-                delayChooser.setDefaultOption("0", 0.0);
-                for (int i = 1; i < 20; i++) {
-                        delayChooser.addOption("" + i, (double) i);
-                }
 
                 // Configure the trigger bindings
                 bLineChouser = new SendableChooser<Command>();
@@ -145,7 +140,6 @@ public class RobotContainer {
 
                 SmartDashboard.putData("bline chooser", bLineChouser);
                 SmartDashboard.putData("characterization Chooset", characterizationChooser);
-                SmartDashboard.putData("Auto delay", delayChooser);
                 configureBindings();
 
         }
@@ -309,7 +303,7 @@ public class RobotContainer {
                 // testController1.povRight().whileTrue(new Intake_Spin(intake, 0, false));
                 // testController1.povLeft().whileTrue(new Intake_Spin(intake,
                 // OPERATOR_CONSTANTS.ROLLER_SPEED, false));
-                testController1.triangle().whileTrue(new Intake_Time_Ratle(intake));
+                // testController1.triangle().whileTrue(new Intake_Time_Ratle(intake));
                 // testController1.cross().whileTrue(new Intake_Current_Ratle(intake));
 
                 // // code to test the indexer
@@ -340,9 +334,10 @@ public class RobotContainer {
                 // testController1.circle().onTrue(new Climb_Move(climb, ClimbPosition.UP));
 
                 // // code for getting speeds
-                // testController1.triangle().onTrue(new Shooter_ShootSpeed(shooter, 55,
-                // false));
-                // testController1.cross().onTrue(new Shooter_ShootSpeed(shooter, 0, false));
+                // testController1.povUp().onTrue(new Shooter_ShootSpeed(shooter, 55,
+                //                 false));
+                // testController1.povDown().onTrue(new Shooter_ShootSpeed(shooter, 0, false));
+                
                 // testController1.triangle().onTrue(new Shooter_ShootSpeed(shooter, 5, true));
                 // testController1.square().onTrue(new Shooter_ShootSpeed(shooter, -5, true));
                 // testController1.circle().onTrue(new Shooter_ShootSpeed(shooter, 1, true));
@@ -383,7 +378,8 @@ public class RobotContainer {
          */
         public Command getAutonomousCommand() {
                 // return characterizationChooser.getSelected();
-                return new SequentialCommandGroup(new WaitCommand(delayChooser.getSelected()), Autos.getAuto());
+                return Autos.getAuto();
+                // return Autos.getAuto();
 
         }
 
