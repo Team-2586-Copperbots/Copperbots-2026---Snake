@@ -15,13 +15,14 @@ public class IndexerIOReal implements IndexerIO {
     private final TalonFXConfiguration motorConfig;
 
     private final IndexerIOInputsAutoLogged inputs = new IndexerIOInputsAutoLogged();
+    private final 
 
     public IndexerIOReal() {
         indexerMotor = new TalonFXAutoLogged(Constants.CANIds.SPINDEXER_INDEXER_MOTOR, Constants.CANIds.Canivore);
         towerMotor = new TalonFXAutoLogged(Constants.CANIds.SPINDEXER_TOWER_MOTOR, Constants.CANIds.Canivore);
 
         motorConfig = new TalonFXConfiguration();
-        motorConfig.CurrentLimits.StatorCurrentLimit = 80;
+        motorConfig.CurrentLimits.SupplyCurrentLimit = 60;
         indexerMotor.getConfigurator().apply(motorConfig);
         towerMotor.getConfigurator().apply(motorConfig);
     }
