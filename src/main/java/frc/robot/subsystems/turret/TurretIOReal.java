@@ -6,6 +6,7 @@ import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GainSchedBehaviorValue;
 import com.ctre.phoenix6.signals.GainSchedKpBehaviorValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -17,20 +18,22 @@ import frc.robot.Constants.DIO_IDS;
 import frc.robot.Constants.TURRET_CONSTANTS;
 import frc.robot.util.auto_logging_stuff.TalonFXAutoLogged;
 import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
+import frc.robot.util.auto_logging_stuff.TalonFXLoggableInputs;
 
 public class TurretIOReal implements TurretIO {
 
     // every thing workis in rotations!
     // everything is messured from the limit switch
 
-    private final TalonFXAutoLogged turnMotor;
+    private final TalonFX turnMotor;
     private final TalonFXConfiguration turnMotorConfig;
+    private final TalonFXLoggableInputs turnMotorInputs;
     private final DigitalInput limitSwitch;
     private final PositionVoltage positionVoltage = new PositionVoltage(0);
     private boolean canMakeItToTarget = true;
 
     public TurretIOReal() {
-        turnMotor = new TalonFXAutoLogged(CANIds.TURRET_TURN_MOTOR, Canivore);
+        turnMotor = new TalonFX(CANIds.TURRET_TURN_MOTOR, Canivore);
         limitSwitch = new DigitalInput(DIO_IDS.TURRET_LIMIT_SWITCH);
 
         turnMotorConfig = new TalonFXConfiguration();
@@ -54,11 +57,13 @@ public class TurretIOReal implements TurretIO {
         turnMotorConfig.CurrentLimits.SupplyCurrentLimit = 40;
 
         turnMotor.getConfigurator().apply(turnMotorConfig);
+
+        turnMotorInputs = new TalonFXLoggableInputs(turnMotor);
     }
 
     @Override
     public void updateInputs(TurretIOInputs inputs) {
-        Logger.processInputs("Turret/Motor", turnMotor.getInputs());
+        turnMotorInputs.log("Turret/Motor");
 
         inputs.turretRotation = getRobotRelitiveRotation();
         inputs.absTurretRotation = getRingRotation();
@@ -69,7 +74,7 @@ public class TurretIOReal implements TurretIO {
 
     @Override
     public TalonFXInputsAutoLogged getMotorInputs() {
-        return turnMotor.getInputs();
+        return turnMotorInputs.getInputs();
     }
 
     // set comand to set the turning motor to a speed -1 to 1

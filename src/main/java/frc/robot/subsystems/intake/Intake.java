@@ -60,7 +60,7 @@ public class Intake extends SubsystemBase {
 
     public boolean getWristStalled() {
         double stallCurrent = 30;
-        if (io.getMotorInputs(CANIds.INTAKE_WRIST_MOTOR).amps > stallCurrent) {
+        if (io.getMotorInputs(CANIds.INTAKE_WRIST_MOTOR).statorCurrent > stallCurrent) {
             return true;
         } else {
             return false;
