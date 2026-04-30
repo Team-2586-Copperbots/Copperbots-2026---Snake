@@ -49,6 +49,8 @@ public class ClimbIOReal implements ClimbIO {
         pidConfig.kI = 0.000;
         pidConfig.kD = 0.000;
 
+        // climbMotorConfig.CurrentLimits.SupplyCurrentLimit = 80;
+
         climbMotor1.getConfigurator().apply(climbMotorConfig);
 
 
