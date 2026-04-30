@@ -4,8 +4,8 @@ public class SimMotorAutoLogged extends TalonFXAutoLogged {
 
     public SimMotorAutoLogged() {
         super(0);
-        getInputs().isOk = false;
-        getInputs().amps = -1;
+        getInputs().isConected = false;
+        getInputs().statorCurrent = -1;
         getInputs().temp = -1;
         getInputs().volts = -1;
     }

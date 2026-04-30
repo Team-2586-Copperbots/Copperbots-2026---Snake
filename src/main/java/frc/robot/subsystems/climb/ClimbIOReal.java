@@ -5,6 +5,7 @@ import org.littletonrobotics.junction.Logger;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -15,10 +16,11 @@ import frc.robot.Constants.DIO_IDS;
 import frc.robot.subsystems.climb.Climb.ClimbPosition;
 import frc.robot.util.auto_logging_stuff.TalonFXAutoLogged;
 import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
+import frc.robot.util.auto_logging_stuff.TalonFXLoggableInputs;
 
 public class ClimbIOReal implements ClimbIO {
-    private final TalonFXAutoLogged climbMotor1;
-    // private final LoggedTalonFX climb1, climb2;
+    private final TalonFX climbMotor;
+    private final TalonFXLoggableInputs climbMotorInputs;
     private final DigitalInput limitSwitch;
     private final TalonFXConfiguration climbMotorConfig;
     private final PositionVoltage positionVoltage = new PositionVoltage(0);
@@ -34,7 +36,7 @@ public class ClimbIOReal implements ClimbIO {
     // MotorIOInputsAutoLogged();
 
     public ClimbIOReal() {
-        climbMotor1 = new TalonFXAutoLogged(CANIds.CLIMB_MOTOR_1);
+        climbMotor = new TalonFX(CANIds.CLIMB_MOTOR_1);
         limitSwitch = new DigitalInput(DIO_IDS.CLIMB_LIMIT_SWITCH);
         climbMotorConfig = new TalonFXConfiguration();
 
@@ -51,11 +53,9 @@ public class ClimbIOReal implements ClimbIO {
 
         // climbMotorConfig.CurrentLimits.SupplyCurrentLimit = 80;
 
-        climbMotor1.getConfigurator().apply(climbMotorConfig);
+        climbMotor.getConfigurator().apply(climbMotorConfig);
 
-
-        // climbMotor1IO = new MotorIOTalon(climbMotor1);
-        // climbMotor2IO = new MotorIOTalon(climbMotor2);
+        climbMotorInputs = new TalonFXLoggableInputs(climbMotor);
     }
 
     @Override
@@ -64,8 +64,7 @@ public class ClimbIOReal implements ClimbIO {
         inputs.targetPosition = targePosition;
 
         Logger.processInputs("Climb", inputs);
-
-        Logger.processInputs("Climb/Climb Motor 1", climbMotor1.getInputs());
+        climbMotorInputs.log("Climb/Motor 1");
     }
 
     @Override
@@ -77,7 +76,7 @@ public class ClimbIOReal implements ClimbIO {
     public TalonFXInputsAutoLogged getMotorInputs(int id) {
         switch (id) {
             case CANIds.CLIMB_MOTOR_1:
-                return climbMotor1.getInputs();
+                return climbMotorInputs.getInputs();
             default:
                 return null;
         }
@@ -85,17 +84,17 @@ public class ClimbIOReal implements ClimbIO {
 
     @Override
     public void setPosition(double position) {
-        climbMotor1.setPosition(position);
+        climbMotor.setPosition(position);
     }
 
     @Override
     public void setSpeed(double speed) {
-        climbMotor1.set(speed);
+        climbMotor.set(speed);
     }
 
     @Override
     public void setTargetPosition(ClimbPosition targetPosition) {
         targePosition = targetPosition;
-        climbMotor1.setControl(positionVoltage.withPosition(targetPosition.value));
+        climbMotor.setControl(positionVoltage.withPosition(targetPosition.value));
     }
 }

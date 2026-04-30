@@ -15,10 +15,11 @@ public class TalonFXAutoLogged extends TalonFX {
     @AutoLog
     public static class TalonFXInputs {
         // public String name = "";
-        public boolean isOk = false;
+        public boolean isConected = false;
 
         public double volts = 0.0;
-        public double amps = 0.0;
+        public double statorCurrent = 0.0;
+        public double supplyCurrent = 0.0;
         public double temp = 0.0;
 
         public double position = 0.0;
@@ -46,9 +47,9 @@ public class TalonFXAutoLogged extends TalonFX {
         // inputs.name = motor.toString();
         if (Constants.currentMode != Mode.SIM) {
 
-            inputs.isOk = this.isConnected();
+            inputs.isConected = this.isConnected();
 
-            inputs.amps = this.getStatorCurrent().getValueAsDouble();
+            inputs.statorCurrent = this.getStatorCurrent().getValueAsDouble();
             inputs.volts = this.getMotorVoltage().getValueAsDouble();
             inputs.temp = this.getDeviceTemp().getValueAsDouble();
 
