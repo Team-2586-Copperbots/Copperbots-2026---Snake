@@ -59,7 +59,7 @@ public class Climb extends SubsystemBase {
     }
 
     public static enum ClimbPosition {
-        UP(126),
+        UP(168),
         CLIMBED(20),
         DOWN(0);
 

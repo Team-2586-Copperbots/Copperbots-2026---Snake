@@ -189,7 +189,7 @@ public final class Autos {
                                                                 drive.commandFromPath(drive.pathFromString("m2-1")),
                                                                 Shooter_AutoShoot_Sequence.get(shooter, turret,
                                                                                 indexer))),
-                                auto("middle, back-shoot-depo-shoot", new SequentialCommandGroup(
+                                auto("middle, depo and no kliemb", new SequentialCommandGroup(
                                                 new ParallelDeadlineGroup(
                                                                 drive.commandFromPath(drive.pathFromString("m1-2")),
                                                                 new Intake_PID(intake, IntakePosition.OUT,
@@ -198,7 +198,7 @@ public final class Autos {
                                                 Shooter_AutoShoot_Sequence
                                                                 .getWRumble(shooter, turret, indexer,
                                                                                 intake))),
-                                auto("middle, back-shoot-depo-shoot-autoclimb", new SequentialCommandGroup(
+                                auto("middle, depo and yay! kliemb", new SequentialCommandGroup(
                                                 new ParallelDeadlineGroup(
                                                                 drive.commandFromPath(drive.pathFromString("m1-2")),
                                                                 new Intake_PID(intake, IntakePosition.OUT,
@@ -210,6 +210,21 @@ public final class Autos {
                                                                                                 intake)
                                                                                 .withTimeout(5.5),
                                                                 new Climb_move(climb, ClimbPosition.UP)),
+                                                new Intake_PID(intake, IntakePosition.IN, 0)
+                                                                .withTimeout(1),
+                                                drive.commandFromPath(drive.changeConstrains(
+                                                                drive.pathFromString("m1-4"),
+                                                                BLine_Constants.highTolerence
+                                                                                .setMaxVelocityMetersPerSec(0.25))),
+                                                // drive.commandFromPath(drive.pathFromPose(new Pose2d(0.98, 05.010,
+                                                // new Rotation2d(Degrees.of(90))))),
+                                                drive.cRunVelocity(new ChassisSpeeds(-0.25, 0, 0)).withTimeout(2),
+                                                new Climb_move(climb, ClimbPosition.CLIMBED))),
+                                auto("middle, sad kliemb", new SequentialCommandGroup(new ParallelCommandGroup(
+                                                Shooter_AutoShoot_Sequence
+                                                                .get(shooter, turret, indexer)
+                                                                .withTimeout(5.5),
+                                                new Climb_move(climb, ClimbPosition.UP)),
                                                 new Intake_PID(intake, IntakePosition.IN, 0)
                                                                 .withTimeout(1),
                                                 drive.commandFromPath(drive.changeConstrains(
