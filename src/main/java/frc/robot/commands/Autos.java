@@ -207,11 +207,9 @@ public final class Autos {
                                                 new ParallelCommandGroup(
                                                                 Shooter_AutoShoot_Sequence
                                                                                 .getWRumble(shooter, turret, indexer,
-                                                                                                intake)
-                                                                                .withTimeout(5.5),
-                                                                new Climb_move(climb, ClimbPosition.UP)),
-                                                new Intake_PID(intake, IntakePosition.IN, 0)
-                                                                .withTimeout(1),
+                                                                                                intake),
+                                                                new Climb_move(climb, ClimbPosition.UP)).withTimeout(5),
+                                                new Intake_PID(intake, IntakePosition.IN, 0).withTimeout(1),
                                                 drive.commandFromPath(drive.changeConstrains(
                                                                 drive.pathFromString("m1-4"),
                                                                 BLine_Constants.highTolerence
