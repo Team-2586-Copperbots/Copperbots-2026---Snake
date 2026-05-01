@@ -2,6 +2,7 @@ package frc.robot.subsystems.intake;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -28,7 +29,8 @@ public class IntakeIOReal implements IntakeIO {
 
     private final TalonFXConfiguration wristMotorConfig, rollerMotorConfig;
 
-    private final PositionVoltage positionVoltage = new PositionVoltage(0);
+    private final PositionVoltage wristControl = new PositionVoltage(0).withEnableFOC(true);
+    private final VelocityVoltage rollerControl = new VelocityVoltage(0).withEnableFOC(true);
     private IntakePosition targetPosition = IntakePosition.IN;
 
     private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
@@ -39,7 +41,6 @@ public class IntakeIOReal implements IntakeIO {
         cancoder = new CANcoder(CANIds.INTAKE_CANCODER, Canivore);
 
         wristMotorConfig = new TalonFXConfiguration();
-        rollerMotorConfig = new TalonFXConfiguration();
 
         wristMotorConfig.CurrentLimits.StatorCurrentLimit = 45;
         wristMotorConfig.CurrentLimits.SupplyCurrentLimit = SupplyLimmits.INTAKE_WRIST;
@@ -66,7 +67,10 @@ public class IntakeIOReal implements IntakeIO {
         pidConfig.GravityType = GravityTypeValue.Arm_Cosine;
         pidConfig.GravityArmPositionOffset = 0.131;
 
+        rollerMotorConfig = new TalonFXConfiguration();
+
         rollerMotorConfig.CurrentLimits.SupplyCurrentLimit = SupplyLimmits.INTAKE_ROLLER;
+        rollerMotorConfig.Slot0.kV = 0.12;
 
         wristMotor.getConfigurator().apply(wristMotorConfig);
         rollerMotor.getConfigurator().apply(rollerMotorConfig);
@@ -105,13 +109,14 @@ public class IntakeIOReal implements IntakeIO {
 
     @Override
     public void setRollerSpeed(double speed) {
-        rollerMotor.set(speed);
+        rollerMotor.setControl(rollerControl.withVelocity(speed * 100));
+        // rollerMotor.set(speed);
     }
 
     @Override
     public void setWristPositionTarget(IntakePosition position) {
         targetPosition = position;
-        wristMotor.setControl(positionVoltage.withPosition(position.value));
+        wristMotor.setControl(wristControl.withPosition(position.value));
     }
 
     @Override

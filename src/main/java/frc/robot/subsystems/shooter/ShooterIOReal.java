@@ -27,7 +27,7 @@ public class ShooterIOReal implements ShooterIO {
 
     // config vars
     private final TalonFXConfiguration shooterConfig;
-    private final VelocityVoltage velocityVoltage = new VelocityVoltage(0.0).withSlot(0);
+    private final VelocityVoltage velocityVoltage = new VelocityVoltage(0.0).withEnableFOC(true);
 
     public ShooterIOReal() {
         motor1 = new TalonFX(Constants.CANIds.SHOOTER_MOTOR_1, Canivore);
