@@ -11,6 +11,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
 import frc.robot.Constants.CANIds;
+import frc.robot.Constants.SupplyLimmits;
 import frc.robot.subsystems.intake.Intake.IntakePosition;
 import frc.robot.util.auto_logging_stuff.TalonFXAutoLogged;
 import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
@@ -41,7 +42,7 @@ public class IntakeIOReal implements IntakeIO {
         rollerMotorConfig = new TalonFXConfiguration();
 
         wristMotorConfig.CurrentLimits.StatorCurrentLimit = 45;
-        wristMotorConfig.CurrentLimits.SupplyCurrentLimit = 60;
+        wristMotorConfig.CurrentLimits.SupplyCurrentLimit = SupplyLimmits.INTAKE_WRIST;
 
         wristMotorConfig.Feedback.FeedbackRemoteSensorID = CANIds.INTAKE_CANCODER;
         wristMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
@@ -65,7 +66,7 @@ public class IntakeIOReal implements IntakeIO {
         pidConfig.GravityType = GravityTypeValue.Arm_Cosine;
         pidConfig.GravityArmPositionOffset = 0.131;
 
-        rollerMotorConfig.CurrentLimits.SupplyCurrentLimit = 50;
+        rollerMotorConfig.CurrentLimits.SupplyCurrentLimit = SupplyLimmits.INTAKE_ROLLER;
 
         wristMotor.getConfigurator().apply(wristMotorConfig);
         rollerMotor.getConfigurator().apply(rollerMotorConfig);
