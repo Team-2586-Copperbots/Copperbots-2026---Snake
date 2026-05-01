@@ -93,7 +93,7 @@ public final class Constants {
     public static final double ROLLER_SPEED = 0.8; // percentage
 
     // stollen from 857
-    public static final double LOOP_TIME = 0.15;
+    public static final double INPUTtoOUTPUT_DELAY = 0.15;
   }
 
   // math for the field, maby should be in its own file, but not a lot of math,

@@ -82,7 +82,7 @@ public final class GeneralUtils {
         Logger.recordOutput("Stuff/distancs for shooter", distance);
         double speed = ((6.56 * distance) + 28.4);
         // if (speed > 90) {
-        //     speed = 90;
+        // speed = 90;
         // }
         return speed;
     }
@@ -93,7 +93,7 @@ public final class GeneralUtils {
         double exitVelocity = (SHOOTER_CONSTANTS.SHOOTER_WHEELE_CIRCUMFERENCE.in(Meters) * speed) / 2;
         double xVelocity = Math.sin(SHOOTER_CONSTANTS.SHOOTER_HOOD_ANGLE.in(Radians)) * exitVelocity;
         double time = distance / (xVelocity);
-        time += OPERATOR_CONSTANTS.LOOP_TIME;
+        time += OPERATOR_CONSTANTS.INPUTtoOUTPUT_DELAY;
         return time;
     }
 
