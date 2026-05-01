@@ -11,6 +11,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.Constants;
 import frc.robot.Constants.CANIds;
 import frc.robot.Constants.SHOOTER_CONSTANTS;
+import frc.robot.Constants.SupplyLimmits;
 import frc.robot.util.auto_logging_stuff.TalonFXAutoLogged;
 import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
 import frc.robot.util.auto_logging_stuff.TalonFXLoggableInputs;
@@ -22,7 +23,7 @@ import org.littletonrobotics.junction.Logger;
 public class ShooterIOReal implements ShooterIO {
     // motors
     private final TalonFX motor1, motor2;
-    private final TalonFXLoggableInputs motor1Inputs, motor2Inputs; 
+    private final TalonFXLoggableInputs motor1Inputs, motor2Inputs;
 
     // config vars
     private final TalonFXConfiguration shooterConfig;
@@ -33,9 +34,9 @@ public class ShooterIOReal implements ShooterIO {
         motor2 = new TalonFX(Constants.CANIds.SHOOTER_MOTOR_2, Canivore);
         shooterConfig = new TalonFXConfiguration();
 
-        // shooterConfig.CurrentLimits.StatorCurrentLimit = SHOOTER_CONSTANTS.CURRENT_LIMIT;
-        shooterConfig.CurrentLimits.SupplyCurrentLimit = 50;
-        
+        shooterConfig.CurrentLimits.StatorCurrentLimit = SHOOTER_CONSTANTS.STATOR_CURRENT_LIMIT;
+        shooterConfig.CurrentLimits.SupplyCurrentLimit = SupplyLimmits.SHOOTER;
+
         var motorOutputConfigs = shooterConfig.MotorOutput;
         motorOutputConfigs.NeutralMode = NeutralModeValue.Brake;
         motorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive;
@@ -57,7 +58,7 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void updateInputs() {
-        motor2Inputs.log("Shooter/Motor 1");
+        motor1Inputs.log("Shooter/Motor 1");
         motor2Inputs.log("Shooter/Motor 2");
     }
 

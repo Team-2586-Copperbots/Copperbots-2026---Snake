@@ -202,29 +202,15 @@ public final class Autos {
                                                                 ountNSwepBumpNum2(),
                                                                 Shooter_AutoShoot_Sequence.getWRumble(shooter, turret,
                                                                                 indexer, intake))),
-                                auto("middle, back-shoot-depo-shoot-autoclimb", new SequentialCommandGroup(
+                                auto("middle, back-shoot-depo-shoot", new SequentialCommandGroup(
                                                 new ParallelDeadlineGroup(
                                                                 drive.commandFromPath(drive.pathFromString("m1-2")),
                                                                 new Intake_PID(intake, IntakePosition.OUT,
                                                                                 OPERATOR_CONSTANTS.ROLLER_SPEED)),
                                                 drive.commandFromPath(drive.pathFromString("m1-3")),
-                                                new ParallelCommandGroup(
-                                                                Shooter_AutoShoot_Sequence
-                                                                                .getWRumble(shooter, turret, indexer,
-                                                                                                intake)
-                                                                                .withTimeout(5.5),
-                                                                new Climb_move(climb, ClimbPosition.UP)),
-                                                new Intake_PID(intake, IntakePosition.IN, 0)
-                                                                .withTimeout(1),
-                                                drive.commandFromPath(drive.changeConstrains(
-                                                                drive.pathFromPose(new Pose2d(0.957, 05.1,
-                                                                                new Rotation2d(Degrees.of(90)))),
-                                                                BLine_Constants.highTolerence
-                                                                                .setMaxVelocityMetersPerSec(0.25))),
-                                                // drive.commandFromPath(drive.pathFromPose(new Pose2d(0.98, 05.010,
-                                                // new Rotation2d(Degrees.of(90))))),
-                                                drive.cRunVelocity(new ChassisSpeeds(-0.25, 0, 0)).withTimeout(2),
-                                                new Climb_move(climb, ClimbPosition.CLIMBED))),
+                                                Shooter_AutoShoot_Sequence
+                                                                .getWRumble(shooter, turret, indexer,
+                                                                                intake))),
                                 auto("drive forwards",
                                                 new SequentialCommandGroup(
                                                                 drive.cRunVelocity(new ChassisSpeeds(1, 0, 0))

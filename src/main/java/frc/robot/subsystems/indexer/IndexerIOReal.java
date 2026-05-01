@@ -7,6 +7,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import frc.robot.Constants;
 import frc.robot.Constants.CANIds;
+import frc.robot.Constants.SupplyLimmits;
 import frc.robot.util.auto_logging_stuff.TalonFXAutoLogged;
 import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
 import frc.robot.util.auto_logging_stuff.TalonFXLoggableInputs;
@@ -25,7 +26,7 @@ public class IndexerIOReal implements IndexerIO {
         towerMotor = new TalonFX(Constants.CANIds.INDEXER_TOWER_MOTOR, Constants.CANIds.Canivore);
 
         motorConfig = new TalonFXConfiguration();
-        motorConfig.CurrentLimits.SupplyCurrentLimit = 60;
+        motorConfig.CurrentLimits.SupplyCurrentLimit = SupplyLimmits.INDEXER;
 
         spindexerMotor.getConfigurator().apply(motorConfig);
         towerMotor.getConfigurator().apply(motorConfig);

@@ -15,6 +15,7 @@ import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants.CANIds;
 import frc.robot.Constants.DIO_IDS;
+import frc.robot.Constants.SupplyLimmits;
 import frc.robot.Constants.TURRET_CONSTANTS;
 import frc.robot.util.auto_logging_stuff.TalonFXAutoLogged;
 import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
@@ -53,8 +54,7 @@ public class TurretIOReal implements TurretIO {
         turnMotorConfig.ClosedLoopGeneral.GainSchedErrorThreshold = 0.002 * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO;
         turnMotorConfig.Slot0.GainSchedBehavior = GainSchedBehaviorValue.ZeroOutput;
 
-        turnMotorConfig.CurrentLimits.StatorCurrentLimit = 80;
-        turnMotorConfig.CurrentLimits.SupplyCurrentLimit = 40;
+        turnMotorConfig.CurrentLimits.SupplyCurrentLimit = SupplyLimmits.TURRET;
 
         turnMotor.getConfigurator().apply(turnMotorConfig);
 

@@ -141,6 +141,17 @@ public final class Constants {
     public static final int PIGION = 32;
   }
 
+  public static class SupplyLimmits {
+    public static final double Stear = 20;
+    public static final double Drive = 45;
+    public static final double TURRET = 30;
+    public static final double INTAKE_ROLLER = 50;
+    public static final double INTAKE_WRIST = 55;
+    public static final double SHOOTER = 70;
+    public static final double INDEXER = 55;
+
+  }
+
   public static class DIO_IDS {
     public static final int TURRET_LIMIT_SWITCH = 9;
     public static final int CLIMB_LIMIT_SWITCH = 8;
@@ -152,7 +163,7 @@ public final class Constants {
     public static final Distance SHOOTER_WHEELE_CIRCUMFERENCE = Inches.of(4 * Math.PI);
     public static final Angle SHOOTER_HOOD_ANGLE = Degrees.of(22.165);
     public static final double TOLERENCE = 5;
-    public static final double CURRENT_LIMIT = 80;
+    public static final double STATOR_CURRENT_LIMIT = 80;
   }
 
   public static class TURRET_CONSTANTS {
