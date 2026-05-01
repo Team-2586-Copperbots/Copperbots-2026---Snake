@@ -3,6 +3,7 @@ package frc.robot.subsystems.climb;
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TorqueCurrentConfigs;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -20,20 +21,14 @@ import frc.robot.util.auto_logging_stuff.TalonFXLoggableInputs;
 
 public class ClimbIOReal implements ClimbIO {
     private final TalonFX climbMotor;
+    private final TalonFXConfiguration climbMotorConfig;
     private final TalonFXLoggableInputs climbMotorInputs;
     private final DigitalInput limitSwitch;
-    private final TalonFXConfiguration climbMotorConfig;
-    private final PositionVoltage positionVoltage = new PositionVoltage(0);
+    private final PositionVoltage positionVoltage = new PositionVoltage(0).withEnableFOC(true);
     private ClimbPosition targePosition = ClimbPosition.DOWN;
-    // private final SparkMax motot = new SparkMax(0, MotorType.kBrushless)
     // private final PositionTorqueCurrentFOC
 
     private final ClimbIOInputsAutoLogged inputs = new ClimbIOInputsAutoLogged();
-    // private final MotorIOTalon climbMotor1IO, climbMotor2IO;
-    // private final MotorIOInputsAutoLogged climbMotor1Inputs = new
-    // MotorIOInputsAutoLogged();
-    // private final MotorIOInputsAutoLogged climbMotor2Inputs = new
-    // MotorIOInputsAutoLogged();
 
     public ClimbIOReal() {
         climbMotor = new TalonFX(CANIds.CLIMB_MOTOR_1);
