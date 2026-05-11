@@ -337,7 +337,10 @@ public class RobotContainer {
                 // testController1.povUp().onTrue(new Shooter_ShootSpeed(shooter, 55,
                 //                 false));
                 // testController1.povDown().onTrue(new Shooter_ShootSpeed(shooter, 0, false));
-                
+                testController1.triangle().whileTrue(shooter.sysIdDynamic(Direction.kForward));
+                testController1.cross().whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
+                // testController1.R1().onTrue()
+
                 // testController1.triangle().onTrue(new Shooter_ShootSpeed(shooter, 5, true));
                 // testController1.square().onTrue(new Shooter_ShootSpeed(shooter, -5, true));
                 // testController1.circle().onTrue(new Shooter_ShootSpeed(shooter, 1, true));
