@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "editor_config": {
+    "gui": {
+      "robot": {
+        "length_meters": 0.8128,
+        "width_meters": 0.8636
+      },
+      "protrusions": {
+        "enabled": true,
+        "distance_meters": 0.2,
+        "side": "front",
+        "default_state": "shown",
+        "show_on_event_keys": [],
+        "hide_on_event_keys": []
+      },
+      "field": {
+        "selected_field_id": "frc2026-rebuilt",
+        "custom_fields": []
+      }
+    },
+    "kinematic_constraints": {
+      "default_auto_velocity_velocity_safety_factor": 0.9,
+      "default_auto_velocity_acceleration_safety_factor": 0.8,
+      "default_auto_velocity_merge_tolerance_meters_per_sec": 0.3
+    }
+  },
+  "active_path_file_name": "m1-2.json",
+  "active_path_group_id": null,
+  "path_groups": [],
+  "paths": {
+    "m1-2.json": {
+      "display_name": "m1 2",
+      "editor_metadata": null
+    },
+    "b1-2.json": {
+      "display_name": "b1 2",
+      "editor_metadata": null
+    },
+    "m1-3.json": {
+      "display_name": "m1 3",
+      "editor_metadata": null
+    },
+    "b1-3.json": {
+      "display_name": "b1 3",
+      "editor_metadata": null
+    },
+    "example_a.json": {
+      "display_name": "example a",
+      "editor_metadata": null
+    },
+    "example_c.json": {
+      "display_name": "example c",
+      "editor_metadata": null
+    },
+    "b1-1.json": {
+      "display_name": "b1 1",
+      "editor_metadata": null
+    },
+    "e-2_secret.json": {
+      "display_name": "e 2 secret",
+      "editor_metadata": null
+    },
+    "b1-4.json": {
+      "display_name": "b1 4",
+      "editor_metadata": null
+    },
+    "b1-1_3.json": {
+      "display_name": "b1 1 3",
+      "editor_metadata": null
+    },
+    "m1-4.json": {
+      "display_name": "m1 4",
+      "editor_metadata": null
+    },
+    "example_b.json": {
+      "display_name": "example b",
+      "editor_metadata": null
+    },
+    "m1-1.json": {
+      "display_name": "m1 1",
+      "editor_metadata": null
+    },
+    "e-1.json": {
+      "display_name": "e 1",
+      "editor_metadata": null
+    },
+    "pathv.json": {
+      "display_name": "pathv",
+      "editor_metadata": null
+    }
+  },
+  "field_assets": {}
+}
