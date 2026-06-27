@@ -3,15 +3,14 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
-import frc.robot.subsystems.ClimbSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.climb.Climb;;
 
 public class ClimbSpeed extends Command {
-    private ClimbSubsystem climb;
+    private Climb climb;
     private Double Speed;
 
 
-    public ClimbSpeed(ClimbSubsystem climbSubsystem, double speed) {
+    public ClimbSpeed(Climb climbSubsystem, double speed) {
         this.climb = climbSubsystem;
         this.Speed = speed;
 
