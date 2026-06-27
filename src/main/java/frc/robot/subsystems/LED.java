@@ -17,6 +17,7 @@ import static frc.robot.Constants.CANIds.Canivore;
 public class LED extends SubsystemBase {
     private static LED instance = null;
     private CANdle candle;
+    private CANdleConfiguration config;
 
     public static LED getInstance() {
         if (instance == null) {
@@ -54,8 +55,17 @@ public class LED extends SubsystemBase {
 
     private LED() {
         candle = new CANdle(CANIds.CANDLE, Canivore);
-        @SuppressWarnings("unused")
-        CANdleConfiguration config = new CANdleConfiguration();
+        config = new CANdleConfiguration();
+        config.LED.BrightnessScalar = 0.5;
+        candle.getConfigurator().apply(config);
+        setDefaultCommand(updateLEDs(LED_Strip.FIRST, LED_Colour.ORANGE));
+    }
+
+    public Command updateLEDs(LED_Strip strip, LED_Colour colour) {
+        return run(() -> {
+            candle.setControl(new SolidColor(strip.start, strip.end).withColor(colour.getColor()));
+
+        });
     }
 
     public Command setColor(LED_Strip strip, LED_Colour colour) {
@@ -71,7 +81,7 @@ public class LED extends SubsystemBase {
     // Indexe of the CANdle's light strips
     public static enum LED_Strip {
         BUILT_IN(0, 7),
-        FIRST(8, 44),;
+        FIRST(8, 111),;
 
         public final int start;
         public final int end;
