@@ -6,6 +6,8 @@ import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.signals.GainSchedBehaviorValue;
+import com.ctre.phoenix6.signals.GainSchedKpBehaviorValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
@@ -46,6 +48,7 @@ public class TurretIOReal implements TurretIO {
         pidConfig.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
 
         turnMotorConfig.ClosedLoopGeneral.GainSchedErrorThreshold = 0.002 * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO;
+        turnMotorConfig.Slot0.GainSchedBehavior = GainSchedBehaviorValue.ZeroOutput;
 
         turnMotorConfig.CurrentLimits.StatorCurrentLimit = 80;
         turnMotorConfig.CurrentLimits.SupplyCurrentLimit = 40;

@@ -221,6 +221,7 @@ public class RobotContainer {
                                 OPERATOR_CONSTANTS.MAX_SPEED_LIMITER, polarityChooser::getSelected));
 
                 drive.resetOdometry(new Pose2d(2, 2, new Rotation2d()));
+                driveController.cross().onTrue(new Turret_ZeroTurret(turret));
 
                 // speed up or slow down drivtrain command that overrides the default command
                 // driveController.cross().whileTrue(DriveCommands.myDrive(drive,
@@ -264,8 +265,7 @@ public class RobotContainer {
                 // indexer sudsystem
                 operatorController.circle().whileTrue(new Indexer_Spin(indexer, IndexerStates.ON));
                 operatorController.triangle().onTrue(new Indexer_Spin(indexer, IndexerStates.OFF));
-                operatorController.touchpad().onTrue(led.setColor(LED_Strip.FIRST, LED_Colour.BLACK));
-                operatorController.PS().onTrue(led.setColor(LED_Strip.FIRST, LED_Colour.BLUE));
+                operatorController.L2().whileTrue(new Indexer_Spin(indexer, new IndexerState(0.2, -0.5)));
 
                 // climb
                 operatorController.R1().whileTrue(new Climb_move(climb, 0.9));
