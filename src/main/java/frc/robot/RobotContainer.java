@@ -253,7 +253,7 @@ public class RobotContainer {
                 // LEDState.COPPER));
 
                 // operatorController.povRight().whileTrue(candle.fire(STRIPS.FIRST));
-                //driveController.R2().whileTrue(LED.fire(LED_Strip.FIRST));
+                // driveController.R2().whileTrue(LED.fire(LED_Strip.FIRST));
 
                 operatorController.square()
                                 .onTrue(new Shooter_ShootSpeed(shooter, 0, false));
@@ -266,7 +266,7 @@ public class RobotContainer {
                 // climb
                 operatorController.R1().whileTrue(new Climb_move(climb, 0.9));
                 operatorController.R2().whileTrue(new Climb_move(climb, -0.9));
-                operatorController.L1().onTrue(new Climb_ZeroClimb(climb));
+                // operatorController.L1().onTrue(new Climb_ZeroClimb(climb));
 
                 // pid intake
                 operatorController.povUp()
@@ -336,7 +336,7 @@ public class RobotContainer {
 
                 // // code for getting speeds
                 // testController1.povUp().onTrue(new Shooter_ShootSpeed(shooter, 55,
-                //                 false));
+                // false));
                 // testController1.povDown().onTrue(new Shooter_ShootSpeed(shooter, 0, false));
                 testController1.triangle().whileTrue(shooter.sysIdDynamic(Direction.kForward));
                 testController1.cross().whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
@@ -365,7 +365,7 @@ public class RobotContainer {
                         zeroed = true;
                         return new ParallelCommandGroup(
                                         new Turret_ZeroTurret(turret),
-                                        new Climb_ZeroClimb(climb),
+                                        // new Climb_ZeroClimb(climb),
                                         new Shooter_ShootSpeed(shooter, 0, false),
                                         new Indexer_Spin(indexer, IndexerStates.OFF).withTimeout(0.04),
                                         new Intake_Spin(intake, 0, false),
