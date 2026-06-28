@@ -155,8 +155,13 @@ public final class Autos {
                                                                 indexer, intake))),
                                 auto("new out then out again", new SequentialCommandGroup(
                                                 newOutNSweepFirst(),
-                                                Shooter_AutoShoot_Sequence.getWRumble(shooter, turret, indexer,
-                                                                intake).withTimeout(9),
+                                                new ParallelCommandGroup(
+                                                                Shooter_AutoShoot_Sequence.get(shooter, turret, indexer),
+                                                                new SequentialCommandGroup(
+                                                                        new WaitCommand(1),
+                                                                        new Intake_Spin(intake, -OPERATOR_CONSTANTS.ROLLER_SPEED, true).withTimeout(0.25),
+                                                                        new Intake_Time_Ratle(intake))
+                                                                ).withTimeout(9),
                                                 newOutNSweepFirst(),
                                                 Shooter_AutoShoot_Sequence.getWRumble(shooter, turret, indexer,
                                                                 intake))),
