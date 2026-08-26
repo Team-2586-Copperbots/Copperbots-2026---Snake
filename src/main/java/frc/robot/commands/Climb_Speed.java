@@ -5,12 +5,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.climb.Climb;;
 
-public class ClimbSpeed extends Command {
+public class Climb_Speed extends Command {
     private Climb climb;
     private Double Speed;
 
 
-    public ClimbSpeed(Climb climbSubsystem, double speed) {
+    public Climb_Speed(Climb climbSubsystem, double speed) {
         this.climb = climbSubsystem;
         this.Speed = speed;
 
