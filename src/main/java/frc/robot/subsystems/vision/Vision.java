@@ -124,7 +124,7 @@ public class Vision extends SubsystemBase {
       // Loop over pose observations
       for (var observation : inputs[cameraIndex].poseObservations) {
         // Check whether to reject pose
-        Logger.recordOutput("Z height", observation.pose().getZ());
+        // Logger.recordOutput("Z height", observation.pose().getZ());
         boolean rejectPose = observation.tagCount() == 0 // Must have at least one tag
             || (observation.tagCount() == 1
                 && observation.ambiguity() > maxAmbiguity) // Cannot be high ambiguity
@@ -150,19 +150,23 @@ public class Vision extends SubsystemBase {
         }
 
         // Calculate standard deviations
+        // farther tags are less consistent, but not liniarly so we do it by the power of 2
         double stdDevFactor = Math.pow(observation.averageTagDistance(), 2.0) / observation.tagCount();
+        // mabey change these two?
         double linearStdDev = linearStdDevBaseline * stdDevFactor;
         double angularStdDev = angularStdDevBaseline * stdDevFactor;
+        // for limelight?
         if (observation.type() == PoseObservationType.MEGATAG_2) {
           linearStdDev *= linearStdDevMegatag2Factor;
           angularStdDev *= angularStdDevMegatag2Factor;
         }
+        // each camera can have its own stddev if some are diffrent moddles
         if (cameraIndex < cameraStdDevFactors.length) {
           linearStdDev *= cameraStdDevFactors[cameraIndex];
           angularStdDev *= cameraStdDevFactors[cameraIndex];
         }
 
-        Logger.recordOutput("backCamera", observation.pose().toPose2d());
+        // Logger.recordOutput("backCamera", observation.pose().toPose2d());
 
         // Send vision observation
         consumer.accept(
