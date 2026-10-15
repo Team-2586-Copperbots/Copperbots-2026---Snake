@@ -1,25 +1,27 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.turret.Turret;;
+import frc.robot.subsystems.turret.Turret;
 
 public class Turret_ManualTurret extends Command {
-    // command to set the target angle of the turret manulay, proably for
-    // trouble-shooting
-    private Turret Turret;
-    private double angle;
+    private final Turret turret;
+    private final Rotation2d angle;
 
-    public Turret_ManualTurret(Turret TurretSubsystem, double angle) {
-        this.Turret = TurretSubsystem;
+    public Turret_ManualTurret(Turret turretSubsystem, Rotation2d angle) {
+        this.turret = turretSubsystem;
         this.angle = angle;
-        // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(TurretSubsystem);
+        addRequirements(turretSubsystem);
+    }
+
+    public Turret_ManualTurret(Turret turretSubsystem, double angleRotations) {
+        this(turretSubsystem, Rotation2d.fromRotations(angleRotations));
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        Turret.setTurretRotationTarget(angle);
+        turret.setTurretRotationTarget(angle);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -39,7 +41,7 @@ public class Turret_ManualTurret extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        Turret.setTurretRotationTarget(0);
+        turret.setTurretRotationTarget(Rotation2d.kZero);
     }
 
 }

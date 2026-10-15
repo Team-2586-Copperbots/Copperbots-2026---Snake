@@ -15,6 +15,7 @@ import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
@@ -156,17 +157,32 @@ public final class Constants {
   }
 
   public static class TURRET_CONSTANTS {
-    public static final double MOTOR_TO_RING_RATIO = (66 / 12) * 3 * 3 * 1.105598958;// weried mystery number from the
-                                                                                     // ring of oditys
-    public static final double TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET = 0.044;
+    // Gear ratio: (66.0 / 12.0) * 3 * 3 with empirical ring gear factor
+    public static final double MOTOR_TO_RING_RATIO = (66.0 / 12.0) * 3.0 * 3.0 * 1.105598958; // 49.75195
+
+    // Physical turret limits in standard WPILib robot frame (0 deg = robot front, +90 deg = robot left)
+    // The limit switch is located near the back/side at ~195.84° (which is -164.16°)
+    public static final Rotation2d LIMIT_SWITCH_ROBOT_ROTATION = Rotation2d.fromRotations(0.5 + 0.044); // ~195.84° (-164.16°)
+    public static final Rotation2d ROTATION_RANGE = Rotation2d.fromRotations(0.79); // ~284.4°
     public static final double ROTATION_RANGE_IN_ROT = 0.79;
-    public static final Pose2d TURRET_OFFSET_FROM_ROBOT_CENTER = new Pose2d(Units.inchesToMeters(-7.5),
-        Units.inchesToMeters(-8.5), null);
+    public static final double TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET = 0.044;
+
+    // Turret center offset from robot center in robot frame (-X = towards back, -Y = towards right)
+    public static final Translation2d TURRET_OFFSET_FROM_ROBOT_CENTER = new Translation2d(
+        Units.inchesToMeters(-7.5),
+        Units.inchesToMeters(-8.5)
+    );
+    public static final Pose2d TURRET_POSE_OFFSET_FROM_ROBOT_CENTER = new Pose2d(
+        TURRET_OFFSET_FROM_ROBOT_CENTER,
+        Rotation2d.kZero
+    );
+
+    public static final Rotation2d TOLERANCE = Rotation2d.fromRotations(0.01); // ~3.6 degrees
     public static final double TOLERENCE = 0.01 * MOTOR_TO_RING_RATIO;
   }
 
   public static class INTAKE_CONSTANTS {
-    public static final double rotorToSensor = (5 / 1) * (57 / 24) * (45 / 20);
+    public static final double rotorToSensor = (5.0 / 1.0) * (57.0 / 24.0) * (45.0 / 20.0);
     public static final double distanceToStopAt = 0.08;
     public static final double POSITION_TOLERENCE = 0.01;
     public static final double timeBetwenRattaling = 700;

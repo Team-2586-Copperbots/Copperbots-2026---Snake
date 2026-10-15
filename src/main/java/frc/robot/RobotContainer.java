@@ -339,8 +339,8 @@ public class RobotContainer {
                 if (!zeroed) {
                         zeroed = true;
                         return new ParallelCommandGroup(
-                                        new Turret_ZeroTurret(turret),
-                                        new Climb_ZeroClimb(climb),
+                                        new Turret_ZeroTurret(turret).withTimeout(2.5),
+                                        new Climb_ZeroClimb(climb).withTimeout(2.5),
                                         new Shooter_ShootSpeed(shooter, 0, false),
                                         new Indexer_Spin(indexer, IndexerStates.OFF).withTimeout(0.04),
                                         new Intake_Spin(intake, 0, false),

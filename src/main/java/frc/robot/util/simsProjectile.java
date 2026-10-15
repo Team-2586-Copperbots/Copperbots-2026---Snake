@@ -52,7 +52,7 @@ public class simsProjectile {
                                 robotPose.get().getTranslation(),
                                 // Specify the translation of the shooter from the robot center (in the
                                 // shooter’s reference frame)
-                                Constants.TURRET_CONSTANTS.TURRET_OFFSET_FROM_ROBOT_CENTER.getTranslation(),
+                                Constants.TURRET_CONSTANTS.TURRET_OFFSET_FROM_ROBOT_CENTER,
                                 // Specify the field-relative speed of the chassis, adding it to the initial
                                 // velocity of the projectile
                                 fieldRelativeSpeeds.get(),

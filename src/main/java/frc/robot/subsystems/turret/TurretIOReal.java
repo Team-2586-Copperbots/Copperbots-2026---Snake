@@ -9,6 +9,8 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants.CANIds;
 import frc.robot.Constants.DIO_IDS;
@@ -18,14 +20,12 @@ import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
 
 public class TurretIOReal implements TurretIO {
 
-    // every thing workis in rotations!
-    // everything is messured from the limit switch
-
     private final TalonFXAutoLogged turnMotor;
     private final TalonFXConfiguration turnMotorConfig;
     private final DigitalInput limitSwitch;
     private final PositionVoltage positionVoltage = new PositionVoltage(0);
     private boolean canMakeItToTarget = true;
+    private Rotation2d targetRotation = Rotation2d.kZero;
 
     public TurretIOReal() {
         turnMotor = new TalonFXAutoLogged(CANIds.TURRET_TURN_MOTOR, Canivore);
@@ -56,8 +56,10 @@ public class TurretIOReal implements TurretIO {
     public void updateInputs(TurretIOInputs inputs) {
         Logger.processInputs("Turret/Motor", turnMotor.getInputs());
 
-        inputs.turretRotation = getRobotRelitiveRotation();
+        inputs.robotRelativeRotation = getRobotRelativeRotation();
+        inputs.turretRotation = inputs.robotRelativeRotation.getRotations();
         inputs.absTurretRotation = getRingRotation();
+        inputs.targetRotation = targetRotation;
 
         inputs.canMakeItToTarget = canMakeItToTarget;
         inputs.limitSwitch = !limitSwitch.get();
@@ -68,29 +70,43 @@ public class TurretIOReal implements TurretIO {
         return turnMotor.getInputs();
     }
 
-    // set comand to set the turning motor to a speed -1 to 1
+    // set command to set the turning motor to a speed -1 to 1
     public void setTurretSpeed(double speed) {
         turnMotor.set(speed);
     }
 
-    // this uses the CTRE motors built-in positionVoltage controler to set the angle
-    // of the turret within the limits of 0-320 degreas
     @Override
-    public void setTurretSetpoint(double roations) {
-        if ((roations >= 0)
-                && (roations < TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT)) {
+    public void setTurretSetpoint(Rotation2d robotRelativeRotation) {
+        this.targetRotation = robotRelativeRotation;
+        double diffDeg = MathUtil.inputModulus(
+            robotRelativeRotation.getDegrees() - TURRET_CONSTANTS.LIMIT_SWITCH_ROBOT_ROTATION.getDegrees(),
+            0.0, 360.0
+        );
+        double mechRotations = diffDeg / 360.0;
+        double motorSetpoint;
+        if (mechRotations <= TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT) {
             canMakeItToTarget = true;
-            turnMotor.setControl(
-                    positionVoltage.withPosition(((roations + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET)
-                            * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO)));
+            motorSetpoint = mechRotations * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO;
         } else {
             canMakeItToTarget = false;
-            turnMotor.setControl(positionVoltage.withPosition(1));
+            // Clamp to closest soft limit
+            double distToMax = mechRotations - TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT;
+            double distToMin = 1.0 - mechRotations;
+            if (distToMax < distToMin) {
+                motorSetpoint = TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO;
+            } else {
+                motorSetpoint = 0.0;
+            }
         }
-
+        turnMotor.setControl(positionVoltage.withPosition(motorSetpoint));
     }
 
-    // set the turn motors's internal encoder
+    @Override
+    public void setTurretSetpoint(double rotations) {
+        setTurretSetpoint(Rotation2d.fromRotations(rotations));
+    }
+
+    // set the turn motor's internal encoder to 0 at the limit switch
     @Override
     public void setTurretZero() {
         turnMotor.setPosition(0);
@@ -102,8 +118,14 @@ public class TurretIOReal implements TurretIO {
     }
 
     @Override
+    public Rotation2d getRobotRelativeRotation() {
+        double mechRotations = getRingRotation();
+        return TURRET_CONSTANTS.LIMIT_SWITCH_ROBOT_ROTATION.plus(Rotation2d.fromRotations(mechRotations));
+    }
+
+    @Override
     public double getRobotRelitiveRotation() {
-        return getRingRotation() + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET;
+        return getRobotRelativeRotation().getRotations();
     }
 
 }

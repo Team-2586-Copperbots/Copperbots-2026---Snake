@@ -49,8 +49,12 @@ public class Turret extends SubsystemBase {
         Logger.processInputs("Turret", inputs);
     }
 
-    public void setTurretRotationTarget(double roations) {
-        io.setTurretSetpoint(roations);
+    public void setTurretRotationTarget(Rotation2d rotation) {
+        io.setTurretSetpoint(rotation);
+    }
+
+    public void setTurretRotationTarget(double rotations) {
+        io.setTurretSetpoint(rotations);
     }
 
     public void setTurretSpeed(double speed) {
@@ -58,7 +62,7 @@ public class Turret extends SubsystemBase {
     }
 
     public Rotation2d getRotation() {
-        return new Rotation2d(Rotations.of(io.getRobotRelitiveRotation()));
+        return inputs.robotRelativeRotation;
     }
 
     public boolean getLimitSwitch() {
@@ -70,8 +74,11 @@ public class Turret extends SubsystemBase {
     }
 
     public boolean isAtTarget() {
-        return (Math.abs(io.getMotorInputs().position - io.getMotorInputs().setpoint) < TURRET_CONSTANTS.TOLERENCE)
-                && canGetToTarget();
+        Rotation2d current = inputs.robotRelativeRotation;
+        Rotation2d target = inputs.targetRotation;
+        double errorRotations = Math.abs(current.minus(target).getRotations());
+        errorRotations = Math.min(errorRotations, 1.0 - errorRotations);
+        return (errorRotations < TURRET_CONSTANTS.TOLERANCE.getRotations()) && canGetToTarget();
     }
 
     public void setTurretToZero() {

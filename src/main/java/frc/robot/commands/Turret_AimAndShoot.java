@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.OPERATOR_CONSTANTS;
 import frc.robot.subsystems.shooter.Shooter;
@@ -32,9 +33,9 @@ public class Turret_AimAndShoot extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        Turret.setTurretRotationTarget(GeneralUtils.getAngleToTarget());
-        Shooter.setShooterSpeedSet(GeneralUtils.shooterSpeedFromTarget());
-
+        var aim = GeneralUtils.calculateAim();
+        Turret.setTurretRotationTarget(aim.robotRelativeAngle());
+        Shooter.setShooterSpeedSet(aim.shooterSpeedRPS());
     }
 
     @Override
@@ -46,7 +47,7 @@ public class Turret_AimAndShoot extends Command {
     @Override
     public void end(boolean interrupted) {
         Shooter.setShooterSpeedSet(OPERATOR_CONSTANTS.IDLE_SHOOTER_SPEED);
-        Turret.setTurretRotationTarget(0);
+        Turret.setTurretRotationTarget(Rotation2d.kZero);
     }
 
 }

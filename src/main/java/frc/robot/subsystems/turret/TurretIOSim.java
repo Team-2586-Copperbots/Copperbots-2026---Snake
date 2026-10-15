@@ -1,17 +1,13 @@
 package frc.robot.subsystems.turret;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants.TURRET_CONSTANTS;
-import frc.robot.util.auto_logging_stuff.SimMotorAutoLogged;
 
 public class TurretIOSim implements TurretIO {
-    private SimMotorAutoLogged turnMotor;
-    private double turretMotorPose;
-    @SuppressWarnings("unused")
-    private double motorSpeed = 0;
-    @SuppressWarnings("unused")
-    private boolean isClosedLoop = true;
-    @SuppressWarnings("unused")
-    private boolean isAtPosition = true;
+    private double turretMotorPose = 0;
+    private Rotation2d targetRotation = Rotation2d.kZero;
+    private boolean isReachable = true;
 
     public TurretIOSim() {
         turretMotorPose = 0;
@@ -19,27 +15,42 @@ public class TurretIOSim implements TurretIO {
 
     @Override
     public void updateInputs(TurretIOInputs inputs) {
-
+        inputs.robotRelativeRotation = getRobotRelativeRotation();
+        inputs.turretRotation = inputs.robotRelativeRotation.getRotations();
+        inputs.absTurretRotation = getRingRotation();
+        inputs.targetRotation = targetRotation;
+        inputs.canMakeItToTarget = isReachable;
+        inputs.limitSwitch = (turretMotorPose <= 0.05);
     }
 
     @Override
-    public void setTurretSetpoint(double roations) {
-        isClosedLoop = true;
-
-        // limits are typed in as degres
-        if (roations >= (-TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET)
-                && (TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT - roations) < 0) {
-            isAtPosition = true;
-            turretMotorPose = (roations + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET)
-                    * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO;
+    public void setTurretSetpoint(Rotation2d robotRelativeRotation) {
+        this.targetRotation = robotRelativeRotation;
+        double diffDeg = MathUtil.inputModulus(
+            robotRelativeRotation.getDegrees() - TURRET_CONSTANTS.LIMIT_SWITCH_ROBOT_ROTATION.getDegrees(),
+            0.0, 360.0
+        );
+        double mechRotations = diffDeg / 360.0;
+        if (mechRotations <= TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT) {
+            isReachable = true;
+            turretMotorPose = mechRotations * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO;
         } else {
-            // says that it did not make it to the desired position
-            isAtPosition = false;
-
+            isReachable = false;
+            double distToMax = mechRotations - TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT;
+            double distToMin = 1.0 - mechRotations;
+            if (distToMax < distToMin) {
+                turretMotorPose = TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO;
+            } else {
+                turretMotorPose = 0.0;
+            }
         }
     }
 
-    // set the turn motors's internal encoder
+    @Override
+    public void setTurretSetpoint(double rotations) {
+        setTurretSetpoint(Rotation2d.fromRotations(rotations));
+    }
+
     @Override
     public void setTurretZero() {
         turretMotorPose = 0;
@@ -51,9 +62,13 @@ public class TurretIOSim implements TurretIO {
     }
 
     @Override
-    public double getRobotRelitiveRotation() {
-        return (turretMotorPose / TURRET_CONSTANTS.MOTOR_TO_RING_RATIO)
-                + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET;
+    public Rotation2d getRobotRelativeRotation() {
+        double mechRotations = getRingRotation();
+        return TURRET_CONSTANTS.LIMIT_SWITCH_ROBOT_ROTATION.plus(Rotation2d.fromRotations(mechRotations));
     }
 
+    @Override
+    public double getRobotRelitiveRotation() {
+        return getRobotRelativeRotation().getRotations();
+    }
 }

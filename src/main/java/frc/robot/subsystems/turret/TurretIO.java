@@ -2,6 +2,7 @@ package frc.robot.subsystems.turret;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
 
 public interface TurretIO {
@@ -9,6 +10,8 @@ public interface TurretIO {
     public static class TurretIOInputs {
         public double absTurretRotation = 0;
         public double turretRotation = 0;
+        public Rotation2d robotRelativeRotation = Rotation2d.kZero;
+        public Rotation2d targetRotation = Rotation2d.kZero;
 
         public boolean limitSwitch = false;
         public boolean canMakeItToTarget = false;
@@ -19,6 +22,9 @@ public interface TurretIO {
 
     public default TalonFXInputsAutoLogged getMotorInputs() {
         return null;
+    }
+
+    public default void setTurretSetpoint(Rotation2d robotRelativeRotation) {
     }
 
     public default void setTurretSetpoint(double rotation) {
@@ -38,4 +44,7 @@ public interface TurretIO {
         return 0;
     }
 
+    public default Rotation2d getRobotRelativeRotation() {
+        return Rotation2d.kZero;
+    }
 }
