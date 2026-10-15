@@ -368,10 +368,12 @@ public class Drive extends SubsystemBase {
   }
 
   public Command autoPathFromString(String name) {
-    Logger.recordOutput("Autos/flip logic", AllianceFlipUtil.applyY(getPose().getY()) > AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY()));
+    Logger.recordOutput("Autos/flip logic",
+        AllianceFlipUtil.applyY(getPose().getY()) > AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY()));
     Logger.recordOutput("Autos/roboty", AllianceFlipUtil.applyY(getPose().getY()));
     Logger.recordOutput("Autos/huby", AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY()));
-    if (RobotContainer.autofliper.getSelected() == true) { // AllianceFlipUtil.applyY(getPose().getY()) > AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY())
+    if (RobotContainer.autoFliper.getSelected() == true) { // AllianceFlipUtil.applyY(getPose().getY()) >
+                                                           // AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY())
       return pathFromStringFlipable(name, true);
     } else {
       return pathFromStringFlipable(name, false);
@@ -387,7 +389,8 @@ public class Drive extends SubsystemBase {
   }
 
   public Path autoMirrorPath(Path path) {
-    if (RobotContainer.autofliper.getSelected() == true) { // AllianceFlipUtil.applyY(getPose().getY()) < AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY())
+    if (RobotContainer.autoFliper.getSelected() == true) { // AllianceFlipUtil.applyY(getPose().getY()) <
+                                                           // AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY())
       path.mirror();
     }
     return path;
