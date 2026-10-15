@@ -96,7 +96,7 @@ public class RobotContainer {
         private final SendableChooser<Command> bLineChouser;
         private final SendableChooser<Command> characterizationChooser;
         private final SendableChooser<Double> polarityChooser;
-        public static final SendableChooser<Boolean> autofliper = new SendableChooser<Boolean>();;
+        public static final SendableChooser<Boolean> autoFliper = new SendableChooser<Boolean>();;
 
         /**
          * MARK: Init
@@ -114,9 +114,9 @@ public class RobotContainer {
 
                 Autos.putChouser();
 
-                autofliper.addOption("left", true);
-                autofliper.setDefaultOption("right", false);
-                SmartDashboard.putData("autofliper, default left", autofliper);
+                autoFliper.addOption("left", true);
+                autoFliper.setDefaultOption("right", false);
+                SmartDashboard.putData("autofliper, default left", autoFliper);
                 polarityChooser = new SendableChooser<Double>();
                 polarityChooser.addOption("negative", -1.0);
                 polarityChooser.setDefaultOption("pos", 1.0);
