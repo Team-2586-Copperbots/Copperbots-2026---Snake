@@ -2,6 +2,7 @@ package frc.robot.subsystems.climb;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -17,29 +18,31 @@ import frc.robot.util.auto_logging_stuff.TalonFXAutoLogged;
 import frc.robot.util.auto_logging_stuff.TalonFXInputsAutoLogged;
 
 public class ClimbIOReal implements ClimbIO {
+    // Note: Climb motors are physically wired to the RoboRIO internal CAN loop
     private final TalonFXAutoLogged climbMotor1, climbMotor2;
-    // private final LoggedTalonFX climb1, climb2;
+    private final BaseStatusSignal[] allClimbSignals;
     private final DigitalInput limitSwitch;
     private final TalonFXConfiguration climbMotorConfig;
     private final PositionVoltage positionVoltage = new PositionVoltage(0);
     private ClimbPosition targePosition = ClimbPosition.DOWN;
-    // private final SparkMax motot = new SparkMax(0, MotorType.kBrushless)
-    // private final PositionTorqueCurrentFOC
 
     private final ClimbIOInputsAutoLogged inputs = new ClimbIOInputsAutoLogged();
-    // private final MotorIOTalon climbMotor1IO, climbMotor2IO;
-    // private final MotorIOInputsAutoLogged climbMotor1Inputs = new
-    // MotorIOInputsAutoLogged();
-    // private final MotorIOInputsAutoLogged climbMotor2Inputs = new
-    // MotorIOInputsAutoLogged();
 
     public ClimbIOReal() {
         climbMotor1 = new TalonFXAutoLogged(CANIds.CLIMB_MOTOR_1);
         climbMotor2 = new TalonFXAutoLogged(CANIds.CLIMB_MOTOR_2);
+
+        BaseStatusSignal[] c1 = climbMotor1.getSignals();
+        BaseStatusSignal[] c2 = climbMotor2.getSignals();
+        allClimbSignals = new BaseStatusSignal[c1.length + c2.length];
+        System.arraycopy(c1, 0, allClimbSignals, 0, c1.length);
+        System.arraycopy(c2, 0, allClimbSignals, c1.length, c2.length);
+
         limitSwitch = new DigitalInput(DIO_IDS.CLIMB_LIMIT_SWITCH);
         climbMotorConfig = new TalonFXConfiguration();
 
-        // climbMotorConfig.CurrentLimits.StatorCurrentLimit = 80; un necicary
+        climbMotorConfig.CurrentLimits.StatorCurrentLimit = 80;
+        climbMotorConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
         var motorOutputConfigs = climbMotorConfig.MotorOutput;
         motorOutputConfigs.NeutralMode = NeutralModeValue.Brake;
@@ -54,13 +57,15 @@ public class ClimbIOReal implements ClimbIO {
         climbMotor2.getConfigurator().apply(climbMotorConfig);
 
         climbMotor2.setControl(new Follower(climbMotor1.getDeviceID(), MotorAlignmentValue.Aligned));
-
-        // climbMotor1IO = new MotorIOTalon(climbMotor1);
-        // climbMotor2IO = new MotorIOTalon(climbMotor2);
     }
 
     @Override
     public void updateAndLogInputs() {
+        // Refresh all climb signals on the RIO bus in a single batched native call
+        BaseStatusSignal.refreshAll(allClimbSignals);
+        climbMotor1.updateInputsFromRefreshedSignals();
+        climbMotor2.updateInputsFromRefreshedSignals();
+
         inputs.limitSwitch = !limitSwitch.get();
         inputs.targetPosition = targePosition;
 

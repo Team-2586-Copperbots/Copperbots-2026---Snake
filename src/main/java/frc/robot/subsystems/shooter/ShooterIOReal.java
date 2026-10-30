@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooter;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -20,6 +21,7 @@ import org.littletonrobotics.junction.Logger;
 public class ShooterIOReal implements ShooterIO {
     // motors
     private final TalonFXAutoLogged shooterMotor1, shooterMotor2;
+    private final BaseStatusSignal[] allShooterSignals;
 
     // config vars
     private final TalonFXConfiguration shooterConfig;
@@ -29,11 +31,19 @@ public class ShooterIOReal implements ShooterIO {
         shooterMotor1 = new TalonFXAutoLogged(Constants.CANIds.SHOOTER_MOTOR_1, Canivore);
         shooterMotor2 = new TalonFXAutoLogged(Constants.CANIds.SHOOTER_MOTOR_2, Canivore);
 
+        // Combine all signals from both motors for unified batch refreshing
+        BaseStatusSignal[] s1 = shooterMotor1.getSignals();
+        BaseStatusSignal[] s2 = shooterMotor2.getSignals();
+        allShooterSignals = new BaseStatusSignal[s1.length + s2.length];
+        System.arraycopy(s1, 0, allShooterSignals, 0, s1.length);
+        System.arraycopy(s2, 0, allShooterSignals, s1.length, s2.length);
+
         shooterConfig = new TalonFXConfiguration();
 
         shooterConfig.CurrentLimits.StatorCurrentLimit = SHOOTER_CONSTANTS.CURRENT_LIMIT;
+        shooterConfig.CurrentLimits.StatorCurrentLimitEnable = true;
         var motorOutputConfigs = shooterConfig.MotorOutput;
-        motorOutputConfigs.NeutralMode = NeutralModeValue.Brake;
+        motorOutputConfigs.NeutralMode = NeutralModeValue.Coast;
         motorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive;
 
         var pidConfig = shooterConfig.Slot0;
@@ -46,11 +56,15 @@ public class ShooterIOReal implements ShooterIO {
         shooterMotor1.getConfigurator().apply(shooterConfig);
         shooterMotor2.getConfigurator().apply(shooterConfig);
         shooterMotor2.setControl(new Follower(shooterMotor1.getDeviceID(), MotorAlignmentValue.Opposed));
-
     }
 
     @Override
     public void updateInputs() {
+        // Refresh all 14 signals across both shooter motors in a single batched native call
+        BaseStatusSignal.refreshAll(allShooterSignals);
+        shooterMotor1.updateInputsFromRefreshedSignals();
+        shooterMotor2.updateInputsFromRefreshedSignals();
+
         Logger.processInputs("Shooter/Motor 1", shooterMotor1.getInputs());
         Logger.processInputs("Shooter/Motor 2", shooterMotor2.getInputs());
     }
