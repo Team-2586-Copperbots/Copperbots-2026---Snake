@@ -52,7 +52,7 @@ public final class Constants {
   public static class ROBOT_PROPERTIES {
     public static final double widthOffset = 14;
     public static final double lengthOffset = 13;
-    public static final double floorOffset = 6.125; // frame the floor to the top of the 1x1 upper rail of the frame
+    public static final double floorOffset = 6.125; // from the floor to the top of the 1x1 upper rail of the frame
 
     private static RobotConfig ROBOT_CONFIG;
 
