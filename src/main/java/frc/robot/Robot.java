@@ -51,7 +51,7 @@ public class Robot extends LoggedRobot {
         switch (2) {
           case 0 -> "All changes committed";
           case 1 -> "Uncommitted changes";
-          case 2 -> "temporary workarond in robot.java";
+          case 2 -> "temporary workaround in robot.java";
           default -> "Unknown";
         });
 
@@ -113,7 +113,7 @@ public class Robot extends LoggedRobot {
 
     // Return to normal thread priority
     Threads.setCurrentThreadPriority(false, 10);
-    // vision is now done using a drive supplyer and periodic in vision.java
+    // vision is now done using a drive supplier and periodic in vision.java
 
   }
 

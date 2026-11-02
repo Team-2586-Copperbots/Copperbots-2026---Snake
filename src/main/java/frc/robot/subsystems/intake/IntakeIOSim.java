@@ -25,13 +25,13 @@ public class IntakeIOSim implements IntakeIO {
         rollerMotor = new SimMotorAutoLogged();
         wristMotor = new SimMotorAutoLogged();
         // simulatedIntake = IntakeSimulation.OverTheBumperIntake("Fule", drive, width,
-        //         length, IntakeSide.FRONT, 80);
+        // length, IntakeSide.FRONT, 80);
     }
 
     @Override
     public void updateInputs() {
         inputs.currentCancoderPosition = wristMotor.getInputs().position;
-        inputs.tagertPosition = targetPosition;
+        inputs.targetPosition = targetPosition;
         Logger.processInputs("Intake", inputs);
         Logger.processInputs("Intake/wrist motor", wristMotor.getInputs());
         Logger.processInputs("Intake/roller motor", rollerMotor.getInputs());
@@ -47,9 +47,9 @@ public class IntakeIOSim implements IntakeIO {
         targetPosition = position;
         wristMotor.setSimTarget(targetPosition.value, false);
         // if (position.equals(IntakePosition.OUT)) {
-        //     simulatedIntake.startIntake();
+        // simulatedIntake.startIntake();
         // } else {
-        //     simulatedIntake.stopIntake();
+        // simulatedIntake.stopIntake();
         // }
     }
 

@@ -9,7 +9,7 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.driveUtils.MathedClimbUtils;
 
 public class Climb_AutoClimb_Sequence {
-        // class to get a command sequence for automaticly climbing
+        // class to get a command sequence for automatically climbing
         // does not work as of now, 4-8-2026
         // TODO: test and fix
         public static Command get(Drive drive, Climb climb) {

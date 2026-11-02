@@ -70,7 +70,7 @@ public class Turret extends SubsystemBase {
     }
 
     public boolean isAtTarget() {
-        return (Math.abs(io.getMotorInputs().position - io.getMotorInputs().setpoint) < TURRET_CONSTANTS.TOLERENCE)
+        return (Math.abs(io.getMotorInputs().position - io.getMotorInputs().setpoint) < TURRET_CONSTANTS.TOLERANCE)
                 && canGetToTarget();
     }
 

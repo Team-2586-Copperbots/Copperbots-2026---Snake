@@ -16,7 +16,7 @@ import frc.robot.util.AllianceFlipUtil;
 
 public class BrutalClimbUtils {
 
-    private static final PathConstraints finalConstraints = BLine_Constants.highTolerence
+    private static final PathConstraints finalConstraints = BLine_Constants.highTolerance
             .setMaxVelocityMetersPerSec(0.25);
     /*
      * Changables
@@ -75,7 +75,7 @@ public class BrutalClimbUtils {
                     .plus(new Transform2d(Meters.of(-amountOut), Meters.of(0), FINAL_CLIMB_TARGET.getRotation()));
         }
 
-        return drive.pathFromPoseWithConstraints(PRE_CLIMB_TARGET, BLine_Constants.highTolerence);
+        return drive.pathFromPoseWithConstraints(PRE_CLIMB_TARGET, BLine_Constants.highTolerance);
 
     }
 

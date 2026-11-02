@@ -8,7 +8,7 @@ public interface IntakeIO {
     @AutoLog
     public static class IntakeIOInputs {
 
-        public IntakePosition tagertPosition = null;
+        public IntakePosition targetPosition = null;
         public double currentCancoderPosition = 0;
     }
 

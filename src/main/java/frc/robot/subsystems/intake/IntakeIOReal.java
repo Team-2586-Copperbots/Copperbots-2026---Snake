@@ -42,10 +42,10 @@ public class IntakeIOReal implements IntakeIO {
         wristMotorConfig.Feedback.FeedbackRemoteSensorID = CANIds.INTAKE_CANCODER;
         wristMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
 
-        wristMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake; 
-        // when in tolerence no pid
+        wristMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        // when in tolerance no pid
         wristMotorConfig.ClosedLoopGeneral.GainSchedErrorThreshold = 0.01;
-        wristMotorConfig.Slot0.GainSchedBehavior = GainSchedBehaviorValue.Inactive; 
+        wristMotorConfig.Slot0.GainSchedBehavior = GainSchedBehaviorValue.Inactive;
 
         var pidConfig = wristMotorConfig.Slot0;
         pidConfig.kP = 18.000;
@@ -60,7 +60,7 @@ public class IntakeIOReal implements IntakeIO {
         pidConfig.kG = 0.3750;
         pidConfig.GravityType = GravityTypeValue.Arm_Cosine;
         pidConfig.GravityArmPositionOffset = 0.131;
-        
+
         rollerMotorConfig.CurrentLimits.StatorCurrentLimit = 80;
 
         wristMotor.getConfigurator().apply(wristMotorConfig);
@@ -72,8 +72,7 @@ public class IntakeIOReal implements IntakeIO {
     public void updateInputs() {
 
         inputs.currentCancoderPosition = cancoder.getPosition().getValueAsDouble();
-        inputs.tagertPosition = targetPosition;
-
+        inputs.targetPosition = targetPosition;
 
         Logger.processInputs("Intake", inputs);
         Logger.processInputs("Intake/Wrist Motor", wristMotor.getInputs());

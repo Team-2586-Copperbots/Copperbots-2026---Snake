@@ -18,7 +18,7 @@ import frc.robot.util.AllianceFlipUtil;
 
 public class MathedClimbUtils {
 
-    private static final PathConstraints finalConstraings = BLine_Constants.highTolerence
+    private static final PathConstraints finalConstraings = BLine_Constants.highTolerance
             .setMaxVelocityMetersPerSec(0.25);
     /*
      * Changables
@@ -86,7 +86,7 @@ public class MathedClimbUtils {
                     FINAL_CLIMB_TARGET.getMeasureY().minus(amountOut), FINAL_CLIMB_TARGET.getRotation());
         }
 
-        return drive.pathFromPoseWithConstraints(PRE_CLIMB_TARGET, BLine_Constants.highTolerence);
+        return drive.pathFromPoseWithConstraints(PRE_CLIMB_TARGET, BLine_Constants.highTolerance);
 
     }
 

@@ -372,8 +372,8 @@ public class Drive extends SubsystemBase {
         AllianceFlipUtil.applyY(getPose().getY()) > AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY()));
     Logger.recordOutput("Autos/roboty", AllianceFlipUtil.applyY(getPose().getY()));
     Logger.recordOutput("Autos/huby", AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY()));
-    if (RobotContainer.autoFliper.getSelected() == true) { // AllianceFlipUtil.applyY(getPose().getY()) >
-                                                           // AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY())
+    if (RobotContainer.autoFlipper.getSelected() == true) { // AllianceFlipUtil.applyY(getPose().getY()) >
+                                                            // AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY())
       return pathFromStringFlipable(name, true);
     } else {
       return pathFromStringFlipable(name, false);
@@ -389,8 +389,8 @@ public class Drive extends SubsystemBase {
   }
 
   public Path autoMirrorPath(Path path) {
-    if (RobotContainer.autoFliper.getSelected() == true) { // AllianceFlipUtil.applyY(getPose().getY()) <
-                                                           // AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY())
+    if (RobotContainer.autoFlipper.getSelected() == true) { // AllianceFlipUtil.applyY(getPose().getY()) <
+                                                            // AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY())
       path.mirror();
     }
     return path;
@@ -403,11 +403,11 @@ public class Drive extends SubsystemBase {
     return pathBuilder.build(path);
   }
 
-  public Path setHighTolerence(Pose2d pose) {
+  public Path setHighTolerance(Pose2d pose) {
     Path path = new Path(new Path.Waypoint(pose));
     path.setPathConstraints(
-        new PathConstraints().setEndRotationToleranceDeg(BLine_Constants.highTolerenceRot)
-            .setEndTranslationToleranceMeters(BLine_Constants.highTolerenceTranlation));
+        new PathConstraints().setEndRotationToleranceDeg(BLine_Constants.highToleranceRot)
+            .setEndTranslationToleranceMeters(BLine_Constants.highToleranceTranlation));
     return path;
   }
 
