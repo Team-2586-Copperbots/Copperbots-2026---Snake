@@ -158,7 +158,7 @@ public final class Constants {
 
   public static class TURRET_CONSTANTS {
     // Gear ratio: (66.0 / 12.0) * 3 * 3 with empirical ring gear factor
-    public static final double MOTOR_TO_RING_RATIO = (66.0 / 12.0) * 3.0 * 3.0 * 1.105598958; // 49.75195
+    public static final double MOTOR_TO_RING_RATIO = (66.0 / 12.0) * 3.0 * 3.0;
 
     // Physical turret limits in standard WPILib robot frame (0 deg = robot front, +90 deg = robot left)
     // The limit switch is located near the back/side at ~195.84° (which is -164.16°)

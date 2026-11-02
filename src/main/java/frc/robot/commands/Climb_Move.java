@@ -5,56 +5,59 @@ import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.Climb.ClimbPosition;
 
 public class Climb_Move extends Command {
-    // this is a class to move the climb subsystem up and down
-    // two constructors are provided so you can move the climb using a ClimbPosition
-    // varialble or a speed -1 - 1 for the motors to run at
-
-    private Climb climb;
-    private double Speed = -2;
+    // Class to move the climb subsystem up and down
+    // Supports either an open-loop speed (-1.0 to 1.0) or a closed-loop ClimbPosition target
+    private final Climb climb;
+    private double speed = -2.0;
     private ClimbPosition position = null;
 
     public Climb_Move(Climb climbSubsystem, double speed) {
         this.climb = climbSubsystem;
-        this.Speed = speed;
-
+        this.speed = speed;
         addRequirements(climbSubsystem);
     }
 
     public Climb_Move(Climb climbSubsystem, ClimbPosition position) {
         this.climb = climbSubsystem;
         this.position = position;
-
         addRequirements(climbSubsystem);
     }
 
-    // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        if (Speed != -2) {
-            climb.setClimbSpeed(Speed);
-        } else if (position != null) {
+        if (position != null) {
+            climb.setClimbTargetPosition(position);
+        } else if (speed != -2.0) {
+            climb.setClimbSpeed(speed);
+        }
+    }
+
+    @Override
+    public void execute() {
+        if (position != null) {
             climb.setClimbTargetPosition(position);
         }
     }
 
-    // Called every time the scheduler runs while the command is scheduled.
-    @Override
-    public void execute() {
-
-    }
-
     @Override
     public boolean isFinished() {
-        if (position != null && (Math.abs(climb.getPosition() - position.value) < 0.1)) {
-            return true;
+        if (position != null) {
+            return Math.abs(climb.getPosition() - position.value) < 0.1;
         }
         return false;
     }
 
-    // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        climb.setClimbSpeed(0);
+        if (position != null) {
+            // Closed loop position target: maintain position holding if target reached, stop if interrupted
+            if (!interrupted) {
+                climb.setClimbTargetPosition(position);
+            } else {
+                climb.setClimbSpeed(0);
+            }
+        } else {
+            climb.setClimbSpeed(0);
+        }
     }
-
 }

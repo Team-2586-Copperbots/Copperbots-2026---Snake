@@ -27,9 +27,12 @@ import frc.robot.util.driveUtils.BrutalClimbUtils;
 import static edu.wpi.first.units.Units.Seconds;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 public final class Autos {
-        private static final SendableChooser<Command> chooser = new SendableChooser<>();
+        // Uses Supplier<Command> to ensure a fresh, unpolluted command tree is constructed
+        // every time autonomous runs, preventing WPILib multiple CommandGroup registration crashes.
+        private static final SendableChooser<Supplier<Command>> chooser = new SendableChooser<>();
 
         private static final Climb climb = Climb.getInstance();
         private static final Drive drive = Drive.getInstance();
@@ -46,119 +49,109 @@ public final class Autos {
         }
 
         public static Command getAuto() {
-                // Command torun = new SequentialCommandGroup(chooser.getSelected());
-                return chooser.getSelected();
+                Supplier<Command> selected = chooser.getSelected();
+                return selected != null ? selected.get() : Commands.none();
         }
 
-        public static void putChouser() {
-                chooser.setDefaultOption("Do Nothing", Commands.none());
+        public static void putChooser() {
+                chooser.setDefaultOption("Do Nothing", Commands::none);
                 makeAutos();
                 for (AutoDefinition autoDefinition : AUTOS) {
-                        chooser.addOption(autoDefinition.name(), autoDefinition.command());
+                        chooser.addOption(autoDefinition.name(), autoDefinition.commandSupplier());
                 }
-                SmartDashboard.putData("AUTOS chouser", chooser);
-
+                SmartDashboard.putData("AUTOS chooser", chooser);
         }
 
         private static Command outNSweepFirst() {
                 return new SequentialCommandGroup(
                                 new ParallelDeadlineGroup(drive.defer(() -> drive.autoPathFromString("b1-1")),
-                                                new SequentialCommandGroup(new WaitCommand(1),
+                                                new SequentialCommandGroup(new WaitCommand(1.0),
                                                                 new Intake_PID(intake, IntakePosition.OUT,
                                                                                 OPERATOR_CONSTANTS.ROLLER_SPEED))),
-                                // drive.autoPathFromString("b1-2"),
                                 drive.defer(() -> drive.commandFromPath(drive.changeConstrains(
                                                 drive.autoMirrorPath(drive.pathFromString("b1-2")),
                                                 new PathConstraints().setMaxVelocityMetersPerSec(0.75))))
-                                                .withTimeout(4),
+                                                .withTimeout(4.0),
                                 new Intake_Spin(intake, 0, false),
                                 drive.defer(() -> drive.autoPathFromString("b1-3")));
         }
 
-        private static Command ountNSwepBumpNum2() {
+        private static Command outNSweepBumpNum2() {
                 return new ParallelDeadlineGroup(drive.defer(() -> drive.autoPathFromString("b1-4")),
                                 new Intake_PID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED));
         }
 
+        @SuppressWarnings("unused")
         private static Command toUpperClimb() {
                 return new SequentialCommandGroup(
-                                drive.commandFromPath(drive.pathFromPose(FIELD_CONSTANTS.TEST_POSE2D)),
+                                drive.defer(() -> drive.commandFromPath(drive.pathFromPose(FIELD_CONSTANTS.TEST_POSE2D))),
                                 new ParallelCommandGroup(
-                                                drive.commandFromPath(BrutalClimbUtils.getPreClimbTarget(drive)),
+                                                drive.defer(() -> drive.commandFromPath(BrutalClimbUtils.getPreClimbTarget(drive))),
                                                 new Climb_Move(climb, ClimbPosition.UP)),
-                                drive.commandFromPath(BrutalClimbUtils.getFinalClimbTarget(drive)),
+                                drive.defer(() -> drive.commandFromPath(BrutalClimbUtils.getFinalClimbTarget(drive))),
                                 new Climb_Move(climb, ClimbPosition.CLIMBED));
         }
 
         private static void makeAutos() {
                 AUTOS = List.of(
-                                auto("8ball then out",
-                                                new SequentialCommandGroup(
-                                                                Shooter_AutoShoot_Sequence
-                                                                                .getWRumble(shooter, turret, indexer,
-                                                                                                intake)
-                                                                                .withDeadline(new WaitCommand(2)),
-                                                                outNSweepFirst())),
-                                auto("out", new SequentialCommandGroup(
+                                auto("8ball then out", () -> new SequentialCommandGroup(
+                                                Shooter_AutoShoot_Sequence
+                                                                .getWRumble(shooter, turret, indexer, intake)
+                                                                .withDeadline(new WaitCommand(2.0)),
+                                                outNSweepFirst())),
+                                auto("out", () -> new SequentialCommandGroup(
+                                                outNSweepFirst(),
+                                                Shooter_AutoShoot_Sequence.getWRumble(shooter, turret,
+                                                                indexer, intake).withTimeout(3.0))),
+                                auto("out then out again", () -> new SequentialCommandGroup(
+                                                outNSweepFirst(),
+                                                Shooter_AutoShoot_Sequence.getWRumble(shooter, turret,
+                                                                indexer, intake).withTimeout(9.0),
                                                 outNSweepFirst(),
                                                 Shooter_AutoShoot_Sequence.getWRumble(shooter, turret,
                                                                 indexer, intake))),
-                                auto("out then out again",
-                                                new SequentialCommandGroup(
-                                                                outNSweepFirst(),
-                                                                Shooter_AutoShoot_Sequence.getWRumble(shooter, turret,
-                                                                                indexer, intake).withTimeout(9),
-                                                                outNSweepFirst(),
-                                                                Shooter_AutoShoot_Sequence.getWRumble(shooter, turret,
-                                                                                indexer, intake))),
-                                auto("out then back on bump",
-                                                new SequentialCommandGroup(
-                                                                outNSweepFirst(),
-                                                                Shooter_AutoShoot_Sequence.getWRumble(shooter, turret,
-                                                                                indexer, intake).withTimeout(9),
-                                                                ountNSwepBumpNum2(),
-                                                                Shooter_AutoShoot_Sequence.getWRumble(shooter, turret,
-                                                                                indexer, intake))),
-                                auto("middle, back-shoot-depo-shoot-autoclimb", new SequentialCommandGroup(
-                                                drive.commandFromPath(drive.pathFromString("m1-1")),
+                                auto("out then back on bump", () -> new SequentialCommandGroup(
+                                                outNSweepFirst(),
+                                                Shooter_AutoShoot_Sequence.getWRumble(shooter, turret,
+                                                                indexer, intake).withTimeout(9.0),
+                                                outNSweepBumpNum2(),
+                                                Shooter_AutoShoot_Sequence.getWRumble(shooter, turret,
+                                                                indexer, intake))),
+                                auto("middle, back-shoot-depo-shoot-autoclimb", () -> new SequentialCommandGroup(
+                                                drive.defer(() -> drive.commandFromPath(drive.pathFromString("m1-1"))),
                                                 Shooter_AutoShoot_Sequence.get(shooter, turret, indexer)
-                                                                .withTimeout(4)),
+                                                                .withTimeout(4.0),
                                                 new ParallelDeadlineGroup(
-                                                                drive.commandFromPath(drive.pathFromString("m1-2")),
+                                                                drive.defer(() -> drive.commandFromPath(drive.pathFromString("m1-2"))),
                                                                 new Intake_PID(intake, IntakePosition.OUT,
                                                                                 OPERATOR_CONSTANTS.ROLLER_SPEED)),
-                                                drive.commandFromPath(drive.pathFromString("m1-3")),
+                                                drive.defer(() -> drive.commandFromPath(drive.pathFromString("m1-3"))),
                                                 new ParallelCommandGroup(
-                                                                drive.commandFromPath(drive.pathFromString("m1-4")),
+                                                                drive.defer(() -> drive.commandFromPath(drive.pathFromString("m1-4"))),
                                                                 Shooter_AutoShoot_Sequence
                                                                                 .getWRumble(shooter, turret, indexer,
                                                                                                 intake)
                                                                                 .withTimeout(5.5),
                                                                 new Climb_Move(climb, ClimbPosition.UP)),
-                                                drive.commandFromPath(BrutalClimbUtils.getFinalClimbTarget(drive)),
-                                                new Climb_Move(climb, ClimbPosition.CLIMBED)),
-                                auto("drive forwards",
-                                                new SequentialCommandGroup(
-                                                                drive.cRunVelocity(new ChassisSpeeds(1, 0, 0))
-                                                                                .withTimeout(Seconds.of(1)),
-                                                                new Intake_PID(intake, IntakePosition.OUT, 0)))
-
+                                                drive.defer(() -> drive.commandFromPath(BrutalClimbUtils.getFinalClimbTarget(drive))),
+                                                new Climb_Move(climb, ClimbPosition.CLIMBED))),
+                                auto("drive forwards", () -> new SequentialCommandGroup(
+                                                drive.cRunVelocity(new ChassisSpeeds(1, 0, 0))
+                                                                .withTimeout(Seconds.of(1)),
+                                                new Intake_PID(intake, IntakePosition.OUT, 0)))
                 );
         }
 
         private static List<AutoDefinition> AUTOS = null;
 
-        private static AutoDefinition auto(String name, Command... commands) {
-                SequentialCommandGroup auto = new SequentialCommandGroup(commands);
-                auto.setName(name);
-                return new AutoDefinition(name, auto);
+        private static AutoDefinition auto(String name, Supplier<Command> commandSupplier) {
+                return new AutoDefinition(name, commandSupplier);
         }
 
         public static Command waitSeconds(double seconds) {
                 return new WaitCommand(seconds);
         }
 
-        private record AutoDefinition(String name, Command command) {
+        private record AutoDefinition(String name, Supplier<Command> commandSupplier) {
         }
-
 }

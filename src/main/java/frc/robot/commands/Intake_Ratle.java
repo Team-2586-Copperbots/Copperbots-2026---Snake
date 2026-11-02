@@ -1,50 +1,72 @@
 package frc.robot.commands;
 
 import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.intake.Intake.IntakePosition;
 import frc.robot.Constants.INTAKE_CONSTANTS;
 import frc.robot.Constants.OPERATOR_CONSTANTS;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.Intake.IntakePosition;
 
 public class Intake_Ratle extends Command {
-    // unfinished class to rattle the intake in and out for auto
-    // TODO: change to current bassed, mabey even a new class for a time based an current bassed
-    // TODO: why does time bassed stop working after a time
-    // needs to be runn constantly for the math with the intake roller to work
-    private Intake Intake;
-    private double lastActionTime;
-    private double timeWhenHitCurrentThreshold;
-    private double maxCurrent = 30;
-
-    public Intake_Ratle(Intake Intake, boolean WCurrent) {
-        this.Intake = Intake;
-        // make a implementation with current based along side time based
-
-        lastActionTime = System.currentTimeMillis();
-        // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(Intake);
+    // Oscillates the intake between OUT and JUGGLE positions to agitate balls into the spindexer
+    // Uses an oscillating timer state machine with position-reached early triggers so it never hangs
+    private enum RattleState {
+        OUT,
+        JUGGLE
     }
 
-    // Called when the command is initially scheduled.
+    private final Intake intake;
+    private final Timer stateTimer = new Timer();
+    private RattleState currentState = RattleState.OUT;
+
+    private static final double RATTLE_PERIOD_SECS = INTAKE_CONSTANTS.timeBetwenRattaling / 1000.0; // 0.700s default
+    private static final double MIN_HOLD_AT_TARGET_SECS = 0.25;
+
+    public Intake_Ratle(Intake intakeSubsystem, boolean withCurrent) {
+        this.intake = intakeSubsystem;
+        addRequirements(intakeSubsystem);
+    }
+
+    public Intake_Ratle(Intake intakeSubsystem) {
+        this(intakeSubsystem, false);
+    }
+
     @Override
     public void initialize() {
-        Intake.setRollerSpeed(OPERATOR_CONSTANTS.ROLLER_SPEED);
+        currentState = RattleState.OUT;
+        stateTimer.restart();
+        intake.setRollerSpeed(OPERATOR_CONSTANTS.ROLLER_SPEED);
+        intake.setIntakePositionTarget(IntakePosition.OUT);
     }
 
-    // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        Logger.recordOutput("time betwen", Math.abs(lastActionTime - System.currentTimeMillis()));
-        if (Math.abs(lastActionTime - System.currentTimeMillis()) > INTAKE_CONSTANTS.timeBetwenRattaling) {
-            Intake.setIntakePositionTarget(IntakePosition.OUT);
-            if (Intake.getIsAtTarget()) {
-                lastActionTime = System.currentTimeMillis();
-            }
-        } else {
-            Intake.setIntakePositionTarget(IntakePosition.JUGGLE);
+        intake.setRollerSpeed(OPERATOR_CONSTANTS.ROLLER_SPEED);
+
+        switch (currentState) {
+            case OUT:
+                intake.setIntakePositionTarget(IntakePosition.OUT);
+                if (stateTimer.hasElapsed(RATTLE_PERIOD_SECS)
+                        || (intake.getIsAtTarget() && stateTimer.hasElapsed(MIN_HOLD_AT_TARGET_SECS))) {
+                    currentState = RattleState.JUGGLE;
+                    stateTimer.restart();
+                }
+                break;
+
+            case JUGGLE:
+                intake.setIntakePositionTarget(IntakePosition.JUGGLE);
+                if (stateTimer.hasElapsed(RATTLE_PERIOD_SECS)
+                        || (intake.getIsAtTarget() && stateTimer.hasElapsed(MIN_HOLD_AT_TARGET_SECS))) {
+                    currentState = RattleState.OUT;
+                    stateTimer.restart();
+                }
+                break;
         }
 
+        Logger.recordOutput("IntakeRattle/State", currentState.toString());
+        Logger.recordOutput("IntakeRattle/ElapsedSecs", stateTimer.get());
     }
 
     @Override
@@ -52,10 +74,9 @@ public class Intake_Ratle extends Command {
         return false;
     }
 
-    // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        Intake.setIntakePositionTarget(IntakePosition.OUT);
+        stateTimer.stop();
+        intake.setIntakePositionTarget(IntakePosition.OUT);
     }
-
 }

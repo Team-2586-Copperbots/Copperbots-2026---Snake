@@ -112,7 +112,7 @@ public class RobotContainer {
 
                 }
 
-                Autos.putChouser();
+                Autos.putChooser();
 
                 autoFliper.addOption("left", true);
                 autoFliper.setDefaultOption("right", false);
@@ -247,8 +247,8 @@ public class RobotContainer {
 
                 driveController.circle().whileTrue(drive.deferedCommandToPose(FIELD_CONSTANTS.TEST_POSE2D));
                 driveController.triangle()
-                                .whileTrue(drive.commandFromPath(BrutalClimbUtils.getFinalClimbTarget(drive)));
-                driveController.square().whileTrue(Autos.getAuto());
+                                .whileTrue(drive.defer(() -> drive.commandFromPath(BrutalClimbUtils.getFinalClimbTarget(drive))));
+                driveController.square().whileTrue(Commands.defer(Autos::getAuto, java.util.Set.of(drive)));
                 driveController.cross().whileTrue(Climb_AutoClimb_Sequence.get(drive, climb));
                 driveController.L1().whileTrue(new Indexer_Spin(indexer, IndexerStates.ON));
 
