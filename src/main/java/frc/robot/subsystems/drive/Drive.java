@@ -416,7 +416,7 @@ public class Drive extends SubsystemBase {
     return path;
   }
 
-  public Command resetHearding() {
+  public Command resetHerding() {
     return runOnce(() -> resetOdometry(new Pose2d(getPose().getTranslation(), Rotation2d.kZero)));
   }
 

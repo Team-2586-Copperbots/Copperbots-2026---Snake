@@ -223,7 +223,7 @@ public class RobotContainer {
                 drive.setDefaultCommand(DriveCommands.myDrive(drive, driveController,
                                 OPERATOR_CONSTANTS.MAX_SPEED_LIMITER, polarityChooser::getSelected));
 
-                // driveController.triangle().onTrue(drive.resetHearding());
+                // driveController.triangle().onTrue(drive.resetHerding());
 
                 // speed up or slow down drivetrain command that overrides the default command
                 // driveController.cross().whileTrue(DriveCommands.myDrive(drive,
