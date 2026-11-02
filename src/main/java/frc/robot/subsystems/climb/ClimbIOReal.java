@@ -39,7 +39,7 @@ public class ClimbIOReal implements ClimbIO {
         limitSwitch = new DigitalInput(DIO_IDS.CLIMB_LIMIT_SWITCH);
         climbMotorConfig = new TalonFXConfiguration();
 
-        // climbMotorConfig.CurrentLimits.StatorCurrentLimit = 80; un necicary
+        // climbMotorConfig.CurrentLimits.StatorCurrentLimit = 80; unnecessary
 
         var motorOutputConfigs = climbMotorConfig.MotorOutput;
         motorOutputConfigs.NeutralMode = NeutralModeValue.Brake;

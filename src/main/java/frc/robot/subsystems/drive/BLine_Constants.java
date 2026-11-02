@@ -16,7 +16,7 @@ public final class BLine_Constants {
     public static final double CTkD = 0;
 
     public static final double highToleranceRot = 0.5;
-    public static final double highToleranceTranlation = 0.02;
+    public static final double highToleranceTranslation = 0.02;
     public static final PathConstraints highTolerance = new PathConstraints()
-            .setEndRotationToleranceDeg(highToleranceRot).setEndTranslationToleranceMeters(highToleranceTranlation);
+            .setEndRotationToleranceDeg(highToleranceRot).setEndTranslationToleranceMeters(highToleranceTranslation);
 }

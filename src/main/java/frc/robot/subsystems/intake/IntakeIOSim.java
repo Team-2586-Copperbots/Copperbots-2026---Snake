@@ -19,7 +19,7 @@ public class IntakeIOSim implements IntakeIO {
     public IntakeIOSim(SwerveDriveSimulation drive) {
         rollerMotor = new SimMotorAutoLogged();
         wristMotor = new SimMotorAutoLogged();
-        // simulatedIntake = IntakeSimulation.OverTheBumperIntake("Fule", drive, width,
+        // simulatedIntake = IntakeSimulation.OverTheBumperIntake("Fuel", drive, width,
         // length, IntakeSide.FRONT, 80);
     }
 

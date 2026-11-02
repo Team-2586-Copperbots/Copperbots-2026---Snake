@@ -228,7 +228,7 @@ public class Drive extends SubsystemBase {
     // Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
     // });
 
-    buildBline();
+    buildBLine();
 
     // Configure SysId
     sysId = new SysIdRoutine(
@@ -265,8 +265,8 @@ public class Drive extends SubsystemBase {
 
     // Log empty setpoint states when disabled
     if (DriverStation.isDisabled()) {
-      Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
-      Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
+      Logger.recordOutput("SwerveStates/SetPoints", new SwerveModuleState[] {});
+      Logger.recordOutput("SwerveStates/SetPointsOptimized", new SwerveModuleState[] {});
     }
 
     // Update odometry
@@ -313,7 +313,7 @@ public class Drive extends SubsystemBase {
 
   // MARK:- BLine
 
-  private void buildBline() {
+  private void buildBLine() {
     // configure BLine
     // BLine:
     // 1. Set global constraints (once, at robot init)
@@ -323,9 +323,9 @@ public class Drive extends SubsystemBase {
     // kNumConfigAttempts);
 
     // 2. Create a FollowPath builder
-    // importent!:
+    // important!:
     // https://www.chiefdelphi.com/t/introducing-bline-a-new-rapid-polyline-autonomous-path-planning-suite/509778/89
-    // how to mirrior
+    // how to mirror
     pathBuilder = new FollowPath.Builder(
         this,
         this::getPose,
@@ -354,7 +354,7 @@ public class Drive extends SubsystemBase {
     return path;
   }
 
-  public DeferredCommand deferedCommandToPose(Pose2d pose) {
+  public DeferredCommand deferredCommandToPose(Pose2d pose) {
     return new DeferredCommand(() -> this.commandFromPath(pathFromPose(pose)), Set.of(this));
   }
 
@@ -373,13 +373,13 @@ public class Drive extends SubsystemBase {
     Logger.recordOutput("Autos/huby", AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY()));
     if (RobotContainer.autoFlipper.getSelected() == true) { // AllianceFlipUtil.applyY(getPose().getY()) >
                                                             // AllianceFlipUtil.applyY(FIELD_CONSTANTS.CENTER_OF_HUB.getY())
-      return pathFromStringFlipable(name, true);
+      return pathFromStringFlippable(name, true);
     } else {
-      return pathFromStringFlipable(name, false);
+      return pathFromStringFlippable(name, false);
     }
   }
 
-  public Command pathFromStringFlipable(String name, boolean mirror) {
+  public Command pathFromStringFlippable(String name, boolean mirror) {
     Path path = new Path(name);
     if (mirror) {
       path.mirror();
@@ -395,7 +395,7 @@ public class Drive extends SubsystemBase {
     return path;
   }
 
-  public Command pathFlipable(Path path, boolean mirror) {
+  public Command pathFlippable(Path path, boolean mirror) {
     if (mirror) {
       path.mirror();
     }
@@ -406,7 +406,7 @@ public class Drive extends SubsystemBase {
     Path path = new Path(new Path.Waypoint(pose));
     path.setPathConstraints(
         new PathConstraints().setEndRotationToleranceDeg(BLine_Constants.highToleranceRot)
-            .setEndTranslationToleranceMeters(BLine_Constants.highToleranceTranlation));
+            .setEndTranslationToleranceMeters(BLine_Constants.highToleranceTranslation));
     return path;
   }
 
@@ -438,22 +438,22 @@ public class Drive extends SubsystemBase {
    * @param speeds Speeds in meters/sec
    */
   public void runVelocity(ChassisSpeeds speeds) {
-    // Calculate module setpoints
+    // Calculate module setPoints
     ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
     SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, TunerConstants.kSpeedAt12Volts);
 
-    // Log unoptimized setpoints and setpoint speeds
-    Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
-    Logger.recordOutput("SwerveChassisSpeeds/Setpoints", discreteSpeeds);
+    // Log unoptimized setPoints and setpoint speeds
+    Logger.recordOutput("SwerveStates/SetPoints", setpointStates);
+    Logger.recordOutput("SwerveChassisSpeeds/SetPoints", discreteSpeeds);
 
-    // Send setpoints to modules
+    // Send setPoints to modules
     for (int i = 0; i < 4; i++) {
       modules[i].runSetpoint(setpointStates[i]);
     }
 
-    // Log optimized setpoints (runSetpoint mutates each state)
-    Logger.recordOutput("SwerveStates/SetpointsOptimized", setpointStates);
+    // Log optimized setPoints (runSetpoint mutates each state)
+    Logger.recordOutput("SwerveStates/SetPointsOptimized", setpointStates);
   }
 
   /** Runs the drive in a straight line with the specified drive output. */

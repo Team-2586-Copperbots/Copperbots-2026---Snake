@@ -56,7 +56,7 @@ public class TurretIOReal implements TurretIO {
     public void updateInputs(TurretIOInputs inputs) {
         Logger.processInputs("Turret/Motor", turnMotor.getInputs());
 
-        inputs.turretRotation = getRobotRelitiveRotation();
+        inputs.turretRotation = getRobotRelativeRotation();
         inputs.absTurretRotation = getRingRotation();
 
         inputs.canMakeItToTarget = canMakeItToTarget;
@@ -102,7 +102,7 @@ public class TurretIOReal implements TurretIO {
     }
 
     @Override
-    public double getRobotRelitiveRotation() {
+    public double getRobotRelativeRotation() {
         return getRingRotation() + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET;
     }
 

@@ -241,7 +241,7 @@ public class RobotContainer {
                 // driveController.povUp().whileTrue(drive
                 // .sysIdDynamic(edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward));
 
-                driveController.circle().whileTrue(drive.deferedCommandToPose(FIELD_CONSTANTS.TEST_POSE2D));
+                driveController.circle().whileTrue(drive.deferredCommandToPose(FIELD_CONSTANTS.TEST_POSE2D));
                 driveController.triangle()
                                 .whileTrue(drive.commandFromPath(BrutalClimbUtils.getFinalClimbTarget(drive)));
                 driveController.square().whileTrue(Autos.getAuto());
