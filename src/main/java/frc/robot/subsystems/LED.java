@@ -49,9 +49,9 @@ public class LED extends SubsystemBase {
 
     private void setAutoState() {
         if (Turret.getInstance().isAtTarget() && Shooter.getInstance().isAtTarget()) {
-            setColor(LED_Strip.FIRST, LED_Colour.GREEN);
+            setColor(LED_Strip.FIRST, LED_Color.GREEN);
         } else {
-            setColor(LED_Strip.FIRST, LED_Colour.RED);
+            setColor(LED_Strip.FIRST, LED_Color.RED);
         }
     }
 
@@ -61,9 +61,9 @@ public class LED extends SubsystemBase {
         CANdleConfiguration config = new CANdleConfiguration();
     }
 
-    public Command setColor(LED_Strip strip, LED_Colour colour) {
+    public Command setColor(LED_Strip strip, LED_Color color) {
         return runOnce(() -> candle.setControl(
-                new SolidColor(strip.start, strip.end).withColor(colour.getColor())));
+                new SolidColor(strip.start, strip.end).withColor(color.getColor())));
     }
 
     public Command fire(LED_Strip strip) {
@@ -71,7 +71,7 @@ public class LED extends SubsystemBase {
                 () -> candle.setControl(new FireAnimation(strip.start, strip.end).withBrightness(.5).withCooling(.3)));
     }
 
-    // Indexe of the CANdle's light strips
+    // Index of the CANdle's light strips
     public static enum LED_Strip {
         BUILT_IN(0, 7),
         FIRST(8, 44),;
@@ -85,7 +85,7 @@ public class LED extends SubsystemBase {
         }
     }
 
-    public static enum LED_Colour {
+    public static enum LED_Color {
         ORANGE(255, 128, 0),
         GREEN(0, 128, 0),
         PURPLE(128, 0, 128),
@@ -101,7 +101,7 @@ public class LED extends SubsystemBase {
         public final int g;
         public final int b;
 
-        private LED_Colour(int r, int g, int b) {
+        private LED_Color(int r, int g, int b) {
             this.r = r;
             this.g = g;
             this.b = b;

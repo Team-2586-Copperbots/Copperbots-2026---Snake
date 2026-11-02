@@ -48,17 +48,17 @@ public final class GeneralUtils {
             if (drive.getX() > FIELD_CONSTANTS.CENTER_OF_HUB.getX()) {
                 return FIELD_CONSTANTS.CENTER_OF_HUB;
             } else if (drive.getY() < FIELD_CONSTANTS.CENTER_OF_HUB.getY()) {
-                return FIELD_CONSTANTS.TOP_FULE_STORAGE;
+                return FIELD_CONSTANTS.TOP_FUEL_STORAGE;
             } else {
-                return FIELD_CONSTANTS.BOTTOM_FULE_STORAGE;
+                return FIELD_CONSTANTS.BOTTOM_FUEL_STORAGE;
             }
         } else {
             if (drive.getX() < FIELD_CONSTANTS.CENTER_OF_HUB.getX()) {
                 return FIELD_CONSTANTS.CENTER_OF_HUB;
             } else if (drive.getY() > FIELD_CONSTANTS.CENTER_OF_HUB.getY()) {
-                return FIELD_CONSTANTS.TOP_FULE_STORAGE;
+                return FIELD_CONSTANTS.TOP_FUEL_STORAGE;
             } else {
-                return FIELD_CONSTANTS.BOTTOM_FULE_STORAGE;
+                return FIELD_CONSTANTS.BOTTOM_FUEL_STORAGE;
             }
         }
     }
@@ -66,6 +66,7 @@ public final class GeneralUtils {
     public static double shooterSpeedFromTarget() {
         return shooterSpeedFromDistance(distanceFromTarget());
     }
+
     public static double shooterSpeedFromDistance(double distance) {
         // regresion equation for shooter
         Logger.recordOutput("Stuff/distancs for shooter", distance);
@@ -75,7 +76,7 @@ public final class GeneralUtils {
     public static double timeFromDistance(double distance) {
         // should be good
         double speed = shooterSpeedFromDistance(distance);
-        double exitVelocity = (SHOOTER_CONSTANTS.SHOOTER_WHEELE_CIRCUMFERENCE.in(Meters) * speed) / 2;
+        double exitVelocity = (SHOOTER_CONSTANTS.SHOOTER_WHEEL_CIRCUMFERENCE.in(Meters) * speed) / 2;
         double xVelocity = Math.sin(SHOOTER_CONSTANTS.SHOOTER_HOOD_ANGLE.in(Radians)) * exitVelocity;
         double time = distance / (xVelocity);
         time += OPERATOR_CONSTANTS.LOOP_TIME;

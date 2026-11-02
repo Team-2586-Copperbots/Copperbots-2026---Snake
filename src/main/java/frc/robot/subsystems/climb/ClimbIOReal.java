@@ -23,7 +23,7 @@ public class ClimbIOReal implements ClimbIO {
     private final TalonFXConfiguration climbMotorConfig;
     private final PositionVoltage positionVoltage = new PositionVoltage(0);
     private ClimbPosition targePosition = ClimbPosition.DOWN;
-    // private final SparkMax motot = new SparkMax(0, MotorType.kBrushless)
+    // private final SparkMax motor = new SparkMax(0, MotorType.kBrushless)
     // private final PositionTorqueCurrentFOC
 
     private final ClimbIOInputsAutoLogged inputs = new ClimbIOInputsAutoLogged();
@@ -39,7 +39,7 @@ public class ClimbIOReal implements ClimbIO {
         limitSwitch = new DigitalInput(DIO_IDS.CLIMB_LIMIT_SWITCH);
         climbMotorConfig = new TalonFXConfiguration();
 
-        // climbMotorConfig.CurrentLimits.StatorCurrentLimit = 80; un necicary
+        // climbMotorConfig.CurrentLimits.StatorCurrentLimit = 80; unnecessary
 
         var motorOutputConfigs = climbMotorConfig.MotorOutput;
         motorOutputConfigs.NeutralMode = NeutralModeValue.Brake;

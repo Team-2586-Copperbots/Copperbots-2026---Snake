@@ -63,16 +63,16 @@ public class Intake extends SubsystemBase {
     }
 
     public boolean getIsAtTarget() {
-        return Math.abs(getWristPosition() - getWristTarget().value) < INTAKE_CONSTANTS.POSITION_TOLERENCE;
+        return Math.abs(getWristPosition() - getWristTarget().value) < INTAKE_CONSTANTS.POSITION_TOLERANCE;
     }
 
     public IntakePosition getWristTarget() {
-        return io.getInputs().tagertPosition;
+        return io.getInputs().targetPosition;
     }
 
     public boolean getIsDown() {
-        if (((getWristPosition() - IntakePosition.IN.value) < INTAKE_CONSTANTS.POSITION_TOLERENCE)
-                || ((getWristPosition() - IntakePosition.OUT.value) < INTAKE_CONSTANTS.POSITION_TOLERENCE)) {
+        if (((getWristPosition() - IntakePosition.IN.value) < INTAKE_CONSTANTS.POSITION_TOLERANCE)
+                || ((getWristPosition() - IntakePosition.OUT.value) < INTAKE_CONSTANTS.POSITION_TOLERANCE)) {
             return true;
         } else {
             return false;

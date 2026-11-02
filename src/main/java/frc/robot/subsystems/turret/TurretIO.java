@@ -34,7 +34,7 @@ public interface TurretIO {
         return 0;
     }
 
-    public default double getRobotRelitiveRotation() {
+    public default double getRobotRelativeRotation() {
         return 0;
     }
 

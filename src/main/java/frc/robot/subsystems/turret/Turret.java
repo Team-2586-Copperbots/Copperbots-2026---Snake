@@ -58,7 +58,7 @@ public class Turret extends SubsystemBase {
     }
 
     public Rotation2d getRotation() {
-        return new Rotation2d(Rotations.of(io.getRobotRelitiveRotation()));
+        return new Rotation2d(Rotations.of(io.getRobotRelativeRotation()));
     }
 
     public boolean getLimitSwitch() {
@@ -70,7 +70,7 @@ public class Turret extends SubsystemBase {
     }
 
     public boolean isAtTarget() {
-        return (Math.abs(io.getMotorInputs().position - io.getMotorInputs().setpoint) < TURRET_CONSTANTS.TOLERENCE)
+        return (Math.abs(io.getMotorInputs().position - io.getMotorInputs().setpoint) < TURRET_CONSTANTS.TOLERANCE)
                 && canGetToTarget();
     }
 

@@ -11,8 +11,6 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
-import com.pathplanner.lib.commands.FollowPathCommand;
-import com.pathplanner.lib.commands.PathfindingCommand;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.Threads;
@@ -51,7 +49,7 @@ public class Robot extends LoggedRobot {
         switch (2) {
           case 0 -> "All changes committed";
           case 1 -> "Uncommitted changes";
-          case 2 -> "temporary workarond in robot.java";
+          case 2 -> "temporary workaround in robot.java";
           default -> "Unknown";
         });
 
@@ -85,8 +83,6 @@ public class Robot extends LoggedRobot {
     // autonomous chooser on the dashboard.
     Constants.FIELD_CONSTANTS.updateUtilsPositions();
     robotContainer = new RobotContainer();
-    FollowPathCommand.warmupCommand().schedule();
-    PathfindingCommand.warmupCommand().schedule();
   }
 
   /**
@@ -113,7 +109,7 @@ public class Robot extends LoggedRobot {
 
     // Return to normal thread priority
     Threads.setCurrentThreadPriority(false, 10);
-    // vision is now done using a drive supplyer and periodic in vision.java
+    // vision is now done using a drive supplier and periodic in vision.java
 
   }
 

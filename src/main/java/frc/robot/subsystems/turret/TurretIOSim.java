@@ -4,6 +4,7 @@ import frc.robot.Constants.TURRET_CONSTANTS;
 import frc.robot.util.auto_logging_stuff.SimMotorAutoLogged;
 
 public class TurretIOSim implements TurretIO {
+    @SuppressWarnings("unused")
     private SimMotorAutoLogged turnMotor;
     private double turretMotorPose;
     @SuppressWarnings("unused")
@@ -23,14 +24,14 @@ public class TurretIOSim implements TurretIO {
     }
 
     @Override
-    public void setTurretSetpoint(double roations) {
+    public void setTurretSetpoint(double rotations) {
         isClosedLoop = true;
 
-        // limits are typed in as degres
-        if (roations >= (-TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET)
-                && (TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT - roations) < 0) {
+        // limits are typed in as degrees
+        if (rotations >= (-TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET)
+                && (TURRET_CONSTANTS.ROTATION_RANGE_IN_ROT - rotations) < 0) {
             isAtPosition = true;
-            turretMotorPose = (roations + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET)
+            turretMotorPose = (rotations + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET)
                     * TURRET_CONSTANTS.MOTOR_TO_RING_RATIO;
         } else {
             // says that it did not make it to the desired position
@@ -51,7 +52,7 @@ public class TurretIOSim implements TurretIO {
     }
 
     @Override
-    public double getRobotRelitiveRotation() {
+    public double getRobotRelativeRotation() {
         return (turretMotorPose / TURRET_CONSTANTS.MOTOR_TO_RING_RATIO)
                 + TURRET_CONSTANTS.TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET;
     }

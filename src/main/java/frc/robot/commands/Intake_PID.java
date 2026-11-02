@@ -6,8 +6,8 @@ import frc.robot.subsystems.intake.Intake.IntakePosition;
 
 public class Intake_PID extends Command {
     // class to move the intake
-    // constructurs to use IntakePosition and wrist speed
-    // needs to be run periodicly to do the logic for the roller
+    // constructors to use IntakePosition and wrist speed
+    // needs to be run periodically to do the logic for the roller
     private Intake intake;
     private Intake.IntakePosition position = null;
     private Double wristSpeed = Double.NaN;

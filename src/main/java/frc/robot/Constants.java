@@ -52,7 +52,7 @@ public final class Constants {
   public static class ROBOT_PROPERTIES {
     public static final double widthOffset = 14;
     public static final double lengthOffset = 13;
-    public static final double floorOffset = 6.125; // frome the floor to the top of the 1x1 upper rail of the frame
+    public static final double floorOffset = 6.125; // frame the floor to the top of the 1x1 upper rail of the frame
 
     private static RobotConfig ROBOT_CONFIG;
 
@@ -60,7 +60,7 @@ public final class Constants {
     // they do?
 
     // exceptions are funny ways to throw errors / allow you to pass errors to
-    // othermethouds to let them do something with it
+    // other methods to let them do something with it
     public static RobotConfig getROBOT_CONFIG() {
       if (ROBOT_CONFIG == null) {
         try {
@@ -77,13 +77,13 @@ public final class Constants {
     public static final double slowdownSpeed = 0.2;
   }
 
-  // MARK: robotcontainer
+  // MARK: robot container
   public static class OPERATOR_CONSTANTS {
-    // controlers
-    public static final int DRIVER_CONTROLER_PORT = 0;
-    public static final int OPERATOR_CONTROLER_PORT = 1;
-    public static final int TEST_CONTROLER1_PORT = 2;
-    public static final int SIM_CONTROLER_PORT = 5;
+    // controllers
+    public static final int DRIVER_CONTROLLER_PORT = 0;
+    public static final int OPERATOR_CONTROLLER_PORT = 1;
+    public static final int TEST_CONTROLLER_1_PORT = 2;
+    public static final int SIM_CONTROLLER_PORT = 5;
 
     // drive speed limiter
     public static final double MAX_SPEED_LIMITER = 1;
@@ -96,23 +96,23 @@ public final class Constants {
     public static final double LOOP_TIME = 0.15;
   }
 
-  // math for the field, maby should be in its own file, but not a lot of math,
-  // just a thing to flip it for the alinace and duplicate for the
+  // math for the field, maybe should be in its own file, but not a lot of math,
+  // just a thing to flip it for the alliance and duplicate for the
 
   public static class FIELD_CONSTANTS {
     public static final Distance FIELD_LENGTH = Meters.of(Units.inchesToMeters(651.22)); // M 16.540988
     public static final Distance FIELD_WIDTH = Meters.of(Units.inchesToMeters(317.69)); // M 8.069326
 
     public static Pose2d CENTER_OF_HUB = new Pose2d();
-    public static Pose2d BOTTOM_FULE_STORAGE = new Pose2d();
-    public static Pose2d TOP_FULE_STORAGE = new Pose2d();
+    public static Pose2d BOTTOM_FUEL_STORAGE = new Pose2d();
+    public static Pose2d TOP_FUEL_STORAGE = new Pose2d();
     public static Pose2d TEST_POSE2D = new Pose2d(Meters.of(2.373), Meters.of(5.369), Rotation2d.kCW_90deg);
 
     public static void updateUtilsPositions() {
       CENTER_OF_HUB = AllianceFlipUtil.apply(new Pose2d(Meters.of(4.62), Meters.of(4.04), Rotation2d.kZero));
-      BOTTOM_FULE_STORAGE = AllianceFlipUtil.apply(new Pose2d(Meters.of(2.75), Meters.of(1.6), Rotation2d.kZero));
-      TOP_FULE_STORAGE = new Pose2d(BOTTOM_FULE_STORAGE.getX(),
-          (FIELD_WIDTH.in(Meters) - BOTTOM_FULE_STORAGE.getY()), Rotation2d.kZero);
+      BOTTOM_FUEL_STORAGE = AllianceFlipUtil.apply(new Pose2d(Meters.of(2.75), Meters.of(1.6), Rotation2d.kZero));
+      TOP_FUEL_STORAGE = new Pose2d(BOTTOM_FUEL_STORAGE.getX(),
+          (FIELD_WIDTH.in(Meters) - BOTTOM_FUEL_STORAGE.getY()), Rotation2d.kZero);
     }
 
   }
@@ -137,8 +137,8 @@ public final class Constants {
     public static final int TURRET_TURN_MOTOR = 23;
     // candle
     public static final int CANDLE = 31;
-    // pigion
-    public static final int PIGION = 32;
+    // pigeon
+    public static final int PIGEON = 32;
   }
 
   public static class DIO_IDS {
@@ -149,26 +149,26 @@ public final class Constants {
   // MARK: subsystems
   public static class SHOOTER_CONSTANTS {
     public static final Distance HEIGHT_OF_WHEEL_OFF_GROUND = Meters.of(0.64135); // in meters
-    public static final Distance SHOOTER_WHEELE_CIRCUMFERENCE = Inches.of(4 * Math.PI);
+    public static final Distance SHOOTER_WHEEL_CIRCUMFERENCE = Inches.of(4 * Math.PI);
     public static final Angle SHOOTER_HOOD_ANGLE = Degrees.of(22.165);
-    public static final double TOLERENCE = 0.8;
+    public static final double TOLERANCE = 0.8;
     public static final double CURRENT_LIMIT = 80;
   }
 
   public static class TURRET_CONSTANTS {
-    public static final double MOTOR_TO_RING_RATIO = (66 / 12) * 3 * 3 * 1.105598958;// weried mystery number from the
-                                                                                     // ring of oditys
+    public static final double MOTOR_TO_RING_RATIO = (66 / 12) * 3 * 3 * 1.105598958;// weird mystery number from the
+                                                                                     // ring of oddities
     public static final double TURRET_RING_MINIMUM_TO_ROBOT_BACK_OFFSET = 0.044;
     public static final double ROTATION_RANGE_IN_ROT = 0.79;
     public static final Pose2d TURRET_OFFSET_FROM_ROBOT_CENTER = new Pose2d(Units.inchesToMeters(-7.5),
         Units.inchesToMeters(-8.5), null);
-    public static final double TOLERENCE = 0.01 * MOTOR_TO_RING_RATIO;
+    public static final double TOLERANCE = 0.01 * MOTOR_TO_RING_RATIO;
   }
 
   public static class INTAKE_CONSTANTS {
     public static final double rotorToSensor = (5 / 1) * (57 / 24) * (45 / 20);
     public static final double distanceToStopAt = 0.08;
-    public static final double POSITION_TOLERENCE = 0.01;
-    public static final double timeBetwenRattaling = 700;
+    public static final double POSITION_TOLERANCE = 0.01;
+    public static final double timeBetweenRattling = 700;
   }
 }

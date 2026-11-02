@@ -9,7 +9,6 @@ import org.ironmaple.simulation.SimulatedArena;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -40,11 +39,9 @@ import frc.robot.commands.Shooter_ShootSpeed;
 import frc.robot.commands.Turret_Aim;
 import frc.robot.commands.Turret_ZeroTurret;
 import frc.robot.subsystems.LED;
-import frc.robot.subsystems.LED.LED_Colour;
+import frc.robot.subsystems.LED.LED_Color;
 import frc.robot.subsystems.LED.LED_Strip;
 import frc.robot.subsystems.climb.Climb;
-import frc.robot.subsystems.climb.Climb.ClimbPosition;
-import frc.robot.subsystems.drive.BLine_Constants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.indexer.Indexer.IndexerStates;
@@ -55,7 +52,6 @@ import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.simsProjectile;
 import frc.robot.util.driveUtils.BrutalClimbUtils;
-import frc.robot.util.driveUtils.MathedClimbUtils;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -83,20 +79,20 @@ public class RobotContainer {
         private final LED led = LED.getInstance();
 
         private final CommandPS4Controller driveController = new CommandPS4Controller(
-                        OPERATOR_CONSTANTS.DRIVER_CONTROLER_PORT);
+                        OPERATOR_CONSTANTS.DRIVER_CONTROLLER_PORT);
         private final CommandPS4Controller operatorController = new CommandPS4Controller(
-                        OPERATOR_CONSTANTS.OPERATOR_CONTROLER_PORT);
+                        OPERATOR_CONSTANTS.OPERATOR_CONTROLLER_PORT);
         private final CommandPS4Controller testController1 = new CommandPS4Controller(
-                        OPERATOR_CONSTANTS.TEST_CONTROLER1_PORT);
+                        OPERATOR_CONSTANTS.TEST_CONTROLLER_1_PORT);
         @SuppressWarnings("unused")
-        private final CommandPS4Controller simControler = new CommandPS4Controller(
-                        OPERATOR_CONSTANTS.SIM_CONTROLER_PORT);
+        private final CommandPS4Controller simController = new CommandPS4Controller(
+                        OPERATOR_CONSTANTS.SIM_CONTROLLER_PORT);
 
         // private final SendableChooser<Command> autoChooser;
-        private final SendableChooser<Command> bLineChouser;
+        private final SendableChooser<Command> bLineChooser;
         private final SendableChooser<Command> characterizationChooser;
         private final SendableChooser<Double> polarityChooser;
-        public static final SendableChooser<Boolean> autoFliper = new SendableChooser<Boolean>();;
+        public static final SendableChooser<Boolean> autoFlipper = new SendableChooser<Boolean>();;
 
         /**
          * MARK: Init
@@ -112,25 +108,25 @@ public class RobotContainer {
 
                 }
 
-                Autos.putChouser();
+                Autos.putChooser();
 
-                autoFliper.addOption("left", true);
-                autoFliper.setDefaultOption("right", false);
-                SmartDashboard.putData("autofliper, default left", autoFliper);
+                autoFlipper.addOption("left", true);
+                autoFlipper.setDefaultOption("right", false);
+                SmartDashboard.putData("autoFlipper, default left", autoFlipper);
                 polarityChooser = new SendableChooser<Double>();
                 polarityChooser.addOption("negative", -1.0);
                 polarityChooser.setDefaultOption("pos", 1.0);
                 SmartDashboard.putData("Polarity chooser", polarityChooser);
 
                 // Configure the trigger bindings
-                bLineChouser = new SendableChooser<Command>();
+                bLineChooser = new SendableChooser<Command>();
                 // make commands for autos
                 configureAutoCommands();
-                // make bline autos
+                // make BLine autos
                 buildBLineAutos();
-                // make chouser for drive charecterization
+                // make chooser for drive characterization
                 characterizationChooser = new SendableChooser<Command>();
-                addOptionsForCharecterization();
+                addOptionsForCharacterization();
 
                 // For convenience a programmer could change this when going to competition.
                 // boolean isCompetition = false;
@@ -141,16 +137,16 @@ public class RobotContainer {
                 // (stream) -> isCompetition
                 // ? stream.filter(auto -> auto.getName().startsWith("comp"))
                 // : stream);
-                // SmartDashboard.putData("pathplaner chooser", autoChooser);
-                SmartDashboard.putData("bline chooser", bLineChouser);
-                SmartDashboard.putData("characterization Chooset", characterizationChooser);
+                // SmartDashboard.putData("pathPlaner chooser", autoChooser);
+                SmartDashboard.putData("bLine chooser", bLineChooser);
+                SmartDashboard.putData("characterization Chooser", characterizationChooser);
                 configureBindings();
 
         }
 
         private void buildBLineAutos() {
                 // MARK: BLine
-                bLineChouser.setDefaultOption("8ball", new SequentialCommandGroup(
+                bLineChooser.setDefaultOption("8ball", new SequentialCommandGroup(
                                 new ParallelCommandGroup(
                                                 new Turret_AimAndShoot(shooter, turret),
                                                 new SequentialCommandGroup(
@@ -159,7 +155,7 @@ public class RobotContainer {
 
         }
 
-        private void addOptionsForCharecterization() {
+        private void addOptionsForCharacterization() {
                 // MARK: Drive Sysid
                 // Set up SysId routines
                 characterizationChooser.setDefaultOption("Not in use", Commands.none());
@@ -227,9 +223,9 @@ public class RobotContainer {
                 drive.setDefaultCommand(DriveCommands.myDrive(drive, driveController,
                                 OPERATOR_CONSTANTS.MAX_SPEED_LIMITER, polarityChooser::getSelected));
 
-                // driveController.triangle().onTrue(drive.resetHearding());
+                // driveController.triangle().onTrue(drive.resetHerding());
 
-                // speed up or slow down drivtrain command that overrides the default command
+                // speed up or slow down drivetrain command that overrides the default command
                 // driveController.cross().whileTrue(DriveCommands.myDrive(drive,
                 // driveController,
                 // OPERATOR_CONSTANTS.SLOW_SPEED_LIMITER, polarityChooser::getSelected));
@@ -245,7 +241,7 @@ public class RobotContainer {
                 // driveController.povUp().whileTrue(drive
                 // .sysIdDynamic(edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward));
 
-                driveController.circle().whileTrue(drive.deferedCommandToPose(FIELD_CONSTANTS.TEST_POSE2D));
+                driveController.circle().whileTrue(drive.deferredCommandToPose(FIELD_CONSTANTS.TEST_POSE2D));
                 driveController.triangle()
                                 .whileTrue(drive.commandFromPath(BrutalClimbUtils.getFinalClimbTarget(drive)));
                 driveController.square().whileTrue(Autos.getAuto());
@@ -269,11 +265,11 @@ public class RobotContainer {
                 operatorController.square()
                                 .onTrue(new Shooter_ShootSpeed(shooter, 0, false));
 
-                // indexer sudsystem
+                // indexer subsystem
                 operatorController.circle().whileTrue(new Indexer_Spin(indexer, IndexerStates.ON));
                 operatorController.triangle().onTrue(new Indexer_Spin(indexer, IndexerStates.OFF));
-                operatorController.touchpad().onTrue(led.setColor(LED_Strip.FIRST, LED_Colour.BLACK));
-                operatorController.PS().onTrue(led.setColor(LED_Strip.FIRST, LED_Colour.BLUE));
+                operatorController.touchpad().onTrue(led.setColor(LED_Strip.FIRST, LED_Color.BLACK));
+                operatorController.PS().onTrue(led.setColor(LED_Strip.FIRST, LED_Color.BLUE));
 
                 // climb
                 operatorController.R1().whileTrue(new Climb_Move(climb, 0.9));
@@ -316,7 +312,7 @@ public class RobotContainer {
                 // testController1.povUp()
                 // .whileTrue(drive.commandFromPath(drive.pathFromPoseWithConstraints(
                 // new Pose2d(MathedClimbUtils.centerOfClimbPose, Rotation2d.kCCW_90deg),
-                // BLine_Constants.highTolerence)));
+                // BLine_Constants.highTolerance)));
                 // testController1.L2().whileTrue(DriveCommands.myDrive(drive, testController1,
                 // 1.0, polarityChooser::getSelected));
                 // testController1.triangle().onTrue(new Climb_ZeroClimb(climb));

@@ -5,13 +5,13 @@ import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.indexer.Indexer.IndexerStates;
 
 public class Indexer_Spin extends Command {
-    // class to manulay run the shooter
+    // class to manually run the shooter
     private Indexer Indexer;
     private IndexerStates State;
-    // private boolean simPojectil = false;
+    // private boolean simProjectile = false;
     // private int counter = 0;
-    // @AutoLogOutput (key="Indexer/timebetwen")
-    // private int timeBetwen = 25;
+    // @AutoLogOutput (key="Indexer/timeBetween")
+    // private int timeBetween = 25;
 
     public Indexer_Spin(Indexer IndexerSubsystem, IndexerStates state) {
         this.Indexer = IndexerSubsystem;
@@ -24,7 +24,7 @@ public class Indexer_Spin extends Command {
     @Override
     public void initialize() {
         // if (State != IndexerStates.OFF && Constants.currentMode == Constants.Mode.SIM) {
-        //     simPojectil = true;
+        //     simProjectile = true;
         // }
         Indexer.setSpindexerSpeed(State.spindexer);
         Indexer.setTowerSpeed(State.tower);
@@ -33,8 +33,8 @@ public class Indexer_Spin extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        // if (simPojectil) {
-        //     if (counter < timeBetwen) {
+        // if (simProjectile) {
+        //     if (counter < timeBetween) {
         //         counter++;
         //     } else {
         //         counter = 0;

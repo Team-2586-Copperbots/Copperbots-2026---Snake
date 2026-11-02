@@ -46,17 +46,17 @@ public final class Autos {
         }
 
         public static Command getAuto() {
-                // Command torun = new SequentialCommandGroup(chooser.getSelected());
+                // Command turn = new SequentialCommandGroup(chooser.getSelected());
                 return chooser.getSelected();
         }
 
-        public static void putChouser() {
+        public static void putChooser() {
                 chooser.setDefaultOption("Do Nothing", Commands.none());
                 makeAutos();
                 for (AutoDefinition autoDefinition : AUTOS) {
                         chooser.addOption(autoDefinition.name(), autoDefinition.command());
                 }
-                SmartDashboard.putData("AUTOS chouser", chooser);
+                SmartDashboard.putData("AUTOS chooser", chooser);
 
         }
 
@@ -75,11 +75,12 @@ public final class Autos {
                                 drive.defer(() -> drive.autoPathFromString("b1-3")));
         }
 
-        private static Command ountNSwepBumpNum2() {
+        private static Command outAndSweepBumpNum2() {
                 return new ParallelDeadlineGroup(drive.defer(() -> drive.autoPathFromString("b1-4")),
                                 new Intake_PID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED));
         }
 
+        @SuppressWarnings("unused")
         private static Command toUpperClimb() {
                 return new SequentialCommandGroup(
                                 drive.commandFromPath(drive.pathFromPose(FIELD_CONSTANTS.TEST_POSE2D)),
@@ -116,7 +117,7 @@ public final class Autos {
                                                                 outNSweepFirst(),
                                                                 Shooter_AutoShoot_Sequence.getWRumble(shooter, turret,
                                                                                 indexer, intake).withTimeout(9),
-                                                                ountNSwepBumpNum2(),
+                                                                outAndSweepBumpNum2(),
                                                                 Shooter_AutoShoot_Sequence.getWRumble(shooter, turret,
                                                                                 indexer, intake))),
                                 auto("middle, back-shoot-depo-shoot-autoclimb", new SequentialCommandGroup(

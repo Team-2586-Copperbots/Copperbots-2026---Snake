@@ -40,7 +40,7 @@ public class simsProjectile {
                 Logger.recordOutput("simProjectile/turretRotation", turretRotation.get());
                 Logger.recordOutput("simProjectile/shooterSpeed", shooterSpeed.get());
                 Logger.recordOutput("simProjectile/fuleSpeed", LinearVelocity.ofBaseUnits(shooterSpeed.get()
-                                * Constants.SHOOTER_CONSTANTS.SHOOTER_WHEELE_CIRCUMFERENCE.in(Meters)
+                                * Constants.SHOOTER_CONSTANTS.SHOOTER_WHEEL_CIRCUMFERENCE.in(Meters)
                                 / 2,
                                 MetersPerSecond));
 
@@ -65,12 +65,11 @@ public class simsProjectile {
                                 // The launch speed is proportional to the RPS
 
                                 LinearVelocity.ofBaseUnits(shooterSpeed.get()
-                                                * Constants.SHOOTER_CONSTANTS.SHOOTER_WHEELE_CIRCUMFERENCE.in(Meters)
+                                                * Constants.SHOOTER_CONSTANTS.SHOOTER_WHEEL_CIRCUMFERENCE.in(Meters)
                                                 / 2,
                                                 MetersPerSecond),
                                 // The angle at which the note is launched
-                                SHOOTER_CONSTANTS.SHOOTER_HOOD_ANGLE
-                );
+                                SHOOTER_CONSTANTS.SHOOTER_HOOD_ANGLE);
                 fuelOnFly.withTargetPosition(
                                 () -> new Pose3d(Constants.FIELD_CONSTANTS.CENTER_OF_HUB).getTranslation())
                                 .withTargetTolerance(new Translation3d(
