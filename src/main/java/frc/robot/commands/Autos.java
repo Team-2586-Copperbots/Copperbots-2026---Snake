@@ -80,6 +80,7 @@ public final class Autos {
                                 new Intake_PID(intake, IntakePosition.OUT, OPERATOR_CONSTANTS.ROLLER_SPEED));
         }
 
+        @SuppressWarnings("unused")
         private static Command toUpperClimb() {
                 return new SequentialCommandGroup(
                                 drive.commandFromPath(drive.pathFromPose(FIELD_CONSTANTS.TEST_POSE2D)),

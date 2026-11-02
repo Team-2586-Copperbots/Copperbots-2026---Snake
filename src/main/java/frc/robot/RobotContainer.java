@@ -9,7 +9,6 @@ import org.ironmaple.simulation.SimulatedArena;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -43,8 +42,6 @@ import frc.robot.subsystems.LED;
 import frc.robot.subsystems.LED.LED_Color;
 import frc.robot.subsystems.LED.LED_Strip;
 import frc.robot.subsystems.climb.Climb;
-import frc.robot.subsystems.climb.Climb.ClimbPosition;
-import frc.robot.subsystems.drive.BLine_Constants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.indexer.Indexer.IndexerStates;
@@ -55,7 +52,6 @@ import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.simsProjectile;
 import frc.robot.util.driveUtils.BrutalClimbUtils;
-import frc.robot.util.driveUtils.MathedClimbUtils;
 
 /**
  * This class is where the bulk of the robot should be declared. Since

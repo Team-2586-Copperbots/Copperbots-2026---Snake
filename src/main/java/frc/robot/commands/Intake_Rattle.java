@@ -15,8 +15,8 @@ public class Intake_Rattle extends Command {
     // needs to be run constantly for the math with the intake roller to work
     private Intake Intake;
     private double lastActionTime;
-    private double timeWhenHitCurrentThreshold;
-    private double maxCurrent = 30;
+    // private double timeWhenHitCurrentThreshold;
+    // private double maxCurrent = 30;
 
     public Intake_Rattle(Intake Intake, boolean WCurrent) {
         this.Intake = Intake;

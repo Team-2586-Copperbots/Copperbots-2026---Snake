@@ -1,13 +1,8 @@
 package frc.robot.subsystems.intake;
 
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Distance;
 import frc.robot.subsystems.intake.Intake.IntakePosition;
 import frc.robot.util.auto_logging_stuff.SimMotorAutoLogged;
 
-import static edu.wpi.first.units.Units.Meter;
-import org.ironmaple.simulation.IntakeSimulation;
-import org.ironmaple.simulation.IntakeSimulation.IntakeSide;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
 
